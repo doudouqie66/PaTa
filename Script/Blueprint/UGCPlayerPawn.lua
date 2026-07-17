@@ -3,6 +3,12 @@ local UGCPlayerPawn = {}
 function UGCPlayerPawn:ReceiveBeginPlay()
     UGCPlayerPawn.SuperClass.ReceiveBeginPlay(self)
     --[[--------------------测试用加速度--------------------------]] --
+
+    -- local MoveComp = self:GetMovementComponent()
+    -- if MoveComp then
+    --     MoveComp.GravityScale = 0
+    -- end
+
     if self:HasAuthority() then
         UGCAttributeSystem.SetGameAttributeValue(self, "UGCGeneralMoveSpeedScale", 6)
     end
