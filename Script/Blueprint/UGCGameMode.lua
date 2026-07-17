@@ -1,6 +1,8 @@
 ---@class UGCGameMode_C:BP_UGCGameBase_C
 --Edit Below--
 ---@class UGCGameMode_C:BP_UGCGameBase_C
+-- Edit Below--
+---@class UGCGameMode_C:BP_UGCGameBase_C
 local UGCGameMode = {
     Version = 1,
     Level = 1,
@@ -9,6 +11,13 @@ local UGCGameMode = {
     Attack = 1,
     MaxHP = 1
 };
+
+--[[----------------------玩家被淘汰后自动复活------------------------]]
+function UGCGameMode:UGC_PlayerKilledEvent(Killer, VictimPlayer, VictimPawn, DamageType)
+    if VictimPlayer then
+        UGCPlayerPawnSystem.RespawnPlayer(VictimPlayer.PlayerKey, 1, false, 0.01)
+    end
+end
 
 --[[----------------------玩家进入游戏时读取存档------------------------]]
 function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)

@@ -27,6 +27,17 @@ function MainUI:LuaInit()
     self.Button_263.OnClicked:Add(self.Button_263_OnClicked, self);
     self.Button_381.OnClicked:Add(self.Button_381_OnClicked, self);
 
+    self:DisableUnUse()
+
+end
+
+--[[---------------------关闭无用UI-------------------------]] --
+function MainUI:DisableUnUse()
+    local MainUI = UGCWidgetManagerSystem.GetMainControlUI()
+    MainUI.NavigatorPanel:SetVisibility(ESlateVisibility.Collapsed)
+    MainUI.Image_0:SetVisibility(ESlateVisibility.Collapsed)
+    MainUI.CanvasPanel_MiniMapAndSetting:SetVisibility(ESlateVisibility.Collapsed)
+
 end
 
 function MainUI:Button_87_OnClicked()
