@@ -5,9 +5,18 @@
 ---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
 ---@field TestButton TestButton_C
 ---@field TextBlock_73 UTextBlock
----@field WBP_RankingListBtn WBP_RankingListBtn_C
 ---@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
 --Edit Below--
+---@class MainUI_C:UUserWidget
+---@field Button_87 UButton
+---@field Button_263 UButton
+---@field Button_381 UButton
+---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
+---@field TestButton TestButton_C
+---@field TextBlock_73 UTextBlock
+---@field WBP_RankingListBtn WBP_RankingListBtn_C
+---@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
+-- Edit Below--
 ---@class MainUI_C:UUserWidget
 ---@field Button_87 UButton
 ---@field Button_263 UButton
@@ -38,7 +47,7 @@ function MainUI:LuaInit()
     self.Button_381.OnClicked:Add(self.Button_381_OnClicked, self);
 
     self:DisableUnUse()
-
+    self:TestInit()
 end
 
 --[[---------------------关闭无用UI-------------------------]] --
@@ -55,6 +64,15 @@ function MainUI:DisableUnUse()
         -- UI:SetVisibility()
     end)
 
+end
+
+--[[--------------------测试--------------------------]] --
+function MainUI:TestInit()
+    local RankListBtnClass = UE.LoadClass(UGCMapInfoLib.GetRootLongPackagePath() ..
+                                              "ExtendResource/RankingList/OfficialPackage/Asset/RankingList/Blueprint/WBP_RankingListBtn.WBP_RankingListBtn_C");
+    local PlayerController = STExtraGameplayStatics.GetFirstPlayerController(self);
+    local RankListBtn = UserWidget.NewWidgetObjectBP(PlayerController, RankListBtnClass);
+    RankListBtn:AddToViewport(1000);
 end
 
 function MainUI:Button_87_OnClicked()
