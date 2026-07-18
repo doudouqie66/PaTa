@@ -6,7 +6,7 @@
 ---@field TestButton TestButton_C
 ---@field TextBlock_73 UTextBlock
 ---@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
---Edit Below--
+-- Edit Below--
 ---@class MainUI_C:UUserWidget
 ---@field Button_87 UButton
 ---@field Button_263 UButton
@@ -84,9 +84,9 @@ function MainUI:Button_263_OnClicked()
 end
 
 function MainUI:Button_381_OnClicked()
-    --[[-------------------测试等级加1---------------------------]] --
-    local PC = UGCGameSystem.GetLocalPlayerController()
-    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.AddLevel, 1)
+    --[[-------------------测试兑换码---------------------------]] --
+    -- local PC = UGCGameSystem.GetLocalPlayerController()
+    -- UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.UseRedemptionCode, "XXXX-XXXX-XXXX")
 end
 
 --[[----------------------刷新玩家等级显示------------------------]]

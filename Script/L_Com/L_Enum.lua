@@ -15,7 +15,8 @@ L_Enum.Name_ClassPath = {
 
 --[[------------------CTRl那里的RPC方法名字----------------------------]] --
 L_Enum.Name_RPC = {
-    AddLevel = "AddLevel"
+    AddLevel = "AddLevel",
+    UseRedemptionCode = "UseRedemptionCode"
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 

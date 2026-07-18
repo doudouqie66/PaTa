@@ -22,7 +22,7 @@ function UGCPlayerController:GetReplicatedProperties()
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
-    return L_Enum.Name_RPC.AddLevel
+    return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode
 end
 
 --[[----------------------下面是RPC方法------------------------]] --
@@ -34,6 +34,30 @@ function UGCPlayerController:AddLevel(AddLevel)
     end
     self:CallRefreshLazy(L_Enum.Name_RepPts.PlayerGameLevel)
     self:SaveArchive()
+end
+
+--[[----------------------测试兑换码------------------------]]
+function UGCPlayerController:UseRedemptionCode(RedemptionCode)
+    if not self.bUseRedemptionCodeResultDelegateInit then
+        self.bUseRedemptionCodeResultDelegateInit = true
+        UGCCommoditySystem.UseRedemptionCodeResultDelegate:Add(self.OnUseRedemptionCodeResult, self)
+    end
+
+    local PlayerPawn = self:GetPlayerCharacterSafety()
+    local UID = UGCPawnAttrSystem.GetPlayerUID(PlayerPawn)
+    print(string.format("[UseRedemptionCode] UID=%s Code=%s", tostring(UID), tostring(RedemptionCode)))
+    UGCCommoditySystem.UseRedemptionCode(tonumber(UID), RedemptionCode)
+end
+
+--[[----------------------打印兑换码结果------------------------]]
+function UGCPlayerController:OnUseRedemptionCodeResult(Result, PlayerKey, UID, CommodityID, Count, ProductID)
+    if Result == EUseRedemptionCodeResult.Success then
+        print(string.format("[UseRedemptionCode] Success UID=%s CommodityID=%s Count=%s ProductID=%s",
+            tostring(UID), tostring(CommodityID), tostring(Count), tostring(ProductID)))
+    else
+        print(string.format("[UseRedemptionCode] Failed Result=%s UID=%s PlayerKey=%s",
+            tostring(Result), tostring(UID), tostring(PlayerKey)))
+    end
 end
 --[[--------------------下面是属性变动后对应的方法--------------------------]] --
 --[[----------------------玩家等级同步后刷新显示------------------------]]
