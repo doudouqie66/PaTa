@@ -2,6 +2,16 @@
 ---@field Button_87 UButton
 ---@field Button_263 UButton
 ---@field Button_381 UButton
+---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
+---@field TestButton TestButton_C
+---@field TextBlock_73 UTextBlock
+---@field WBP_RankingListBtn WBP_RankingListBtn_C
+---@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
+--Edit Below--
+---@class MainUI_C:UUserWidget
+---@field Button_87 UButton
+---@field Button_263 UButton
+---@field Button_381 UButton
 ---@field TextBlock_73 UTextBlock
 -- Edit Below--
 local MainUI = {

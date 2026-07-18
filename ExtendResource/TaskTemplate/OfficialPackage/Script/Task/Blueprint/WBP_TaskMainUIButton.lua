@@ -9,6 +9,8 @@
 ---@field UpdateTaskLineProgressBtn UButton
 ---@field UpdateTaskProgressBtn UButton
 --Edit Below--
+UGCGameSystem.UGCRequire("ExtendResource.TaskTemplate.OfficialPackage." .. "Script.Task.TaskManager");
+
 local WBP_TaskMainUIButton = { bInitDoOnce = false } 
 
 function WBP_TaskMainUIButton:Construct()

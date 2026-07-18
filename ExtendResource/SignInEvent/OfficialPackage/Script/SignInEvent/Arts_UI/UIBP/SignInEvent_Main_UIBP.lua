@@ -4,10 +4,10 @@
 ---@field HelpButton UButton
 ---@field PeriodText UTextBlock
 ---@field SimpleText UTextBlock
----@field TabMenu UUGC_ReuseList2_C
+---@field TabMenu UGC_ReuseList2_C
 ---@field TileText UTextBlock
 ---@field AutoOpen bool
----@field Tabs TArray<FFEventTabInfo__pf601935175>
+---@field Tabs ULuaArrayHelper<FFEventTabInfo__pf1810471436>
 ---@field TipUIClassPath FSoftClassPath
 ---@field SupplementPopUpPath FSoftClassPath
 ---@field SupplementTipPath FSoftClassPath
