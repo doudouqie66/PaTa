@@ -1,5 +1,7 @@
 ---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
 -- Edit Below--
+---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
+-- Edit Below--
 local UGCPlayerPawn = {}
 
 --[[----------------------初始化玩家Pawn------------------------]]
@@ -13,11 +15,11 @@ end
 --[[----------------------初始化测试属性------------------------]]
 function UGCPlayerPawn:TestLua()
 
+    --[[--------------------开启滑铲--------------------------]] --
+    -- self.bIsOpenShovelAbility = true
+
     if self:HasAuthority() then
         UGCAttributeSystem.SetGameAttributeValue(self, "UGCGeneralMoveSpeedScale", 6)
-        -- 关闭攀爬和滑铲
-        UGCPlayerPawnSystem.DisabledPawnState(self, EPawnState.Vault, true)
-        UGCPlayerPawnSystem.DisabledPawnState(self, EPawnState.Shoveling, true)
     end
 
 end

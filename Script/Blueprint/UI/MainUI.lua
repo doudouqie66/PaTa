@@ -38,6 +38,13 @@ function MainUI:DisableUnUse()
     MainUI.Image_0:SetVisibility(ESlateVisibility.Collapsed)
     MainUI.CanvasPanel_MiniMapAndSetting:SetVisibility(ESlateVisibility.Collapsed)
 
+    --[[-------------------打开充值入口---------------------------]] --
+    -- 显示并获取界面对象实例
+    UGCCommoditySystem.ShowRechargeEntryUI():Then(function(Result)
+        local UI = Result:Get()
+        -- UI:SetVisibility()
+    end)
+
 end
 
 function MainUI:Button_87_OnClicked()

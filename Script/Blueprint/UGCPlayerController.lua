@@ -1,3 +1,8 @@
+---@class UGCPlayerController_C:BP_UGCPlayerController_C
+---@field SignInEventComponent SignInEventComponent_C
+---@field ShopV2Component ShopV2Component_C
+---@field UGCTaskTemplateController UUGCTaskTemplateController
+--Edit Below--
 local UGCPlayerController = {
     PlayerGameLevel = 1,
     PlayerAttack = 1,
