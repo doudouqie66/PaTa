@@ -7,7 +7,8 @@
 local UGCPlayerController = {
     PlayerGameLevel = 1,
     PlayerAttack = 1,
-    PlayerMaxHP = 1
+    PlayerMaxHP = 1,
+    Return_To_Death_Location = false -- 是否返回死亡位置
 }
 --[[------------------Ctrl放私人数据和服务器交互----------------------------]] --
 -- ✅ 放这里合适：
@@ -22,7 +23,8 @@ function UGCPlayerController:GetReplicatedProperties()
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
-    return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten
+    return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
+        L_Enum.Name_RPC.Request_Respawn
 end
 
 -- [[----------------------下面是RPC方法------------------------]] --
@@ -36,6 +38,17 @@ end
 
 function UGCPlayerController:Mgr_Atten(bool)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, bool)
+end
+--[[----------------------请求复活当前玩家------------------------]]
+function UGCPlayerController:RequestRespawn(Return_To_Death_Location)
+    self.Return_To_Death_Location = Return_To_Death_Location
+    UGCPlayerPawnSystem.RespawnPlayer(self.PlayerKey, 0, false, 0.01)
+end
+--[[----------------------显示复活界面------------------------]]
+function UGCPlayerController:ShowRespawnUI()
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI09, true)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, false)
+
 end
 --[[----------------------测试玩家等级加一------------------------]]
 function UGCPlayerController:AddLevel(AddLevel)

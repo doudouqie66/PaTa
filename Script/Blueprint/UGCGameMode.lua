@@ -12,11 +12,17 @@ local UGCGameMode = {
     MaxHP = 1
 };
 
---[[----------------------玩家被淘汰后自动复活------------------------]]
-function UGCGameMode:UGC_PlayerKilledEvent(Killer, VictimPlayer, VictimPawn, DamageType)
-    if VictimPlayer then
-        UGCPlayerPawnSystem.RespawnPlayer(VictimPlayer.PlayerKey, 1, false, 0.01)
+--[[----------------------复活后返回死亡位置------------------------]]
+function UGCGameMode:UGC_PlayerRespawnEvent(RespawnedController)
+    if not RespawnedController.Return_To_Death_Location or RespawnedController.Death_Location == nil then
+        return
     end
+
+    local PlayerPawn = RespawnedController:GetPlayerCharacterSafety()
+    if PlayerPawn then
+        PlayerPawn:K2_SetActorLocation(RespawnedController.Death_Location)
+    end
+    RespawnedController.Return_To_Death_Location = false -- 重置返回死亡位置标记
 end
 
 --[[----------------------玩家进入游戏时读取存档------------------------]]
