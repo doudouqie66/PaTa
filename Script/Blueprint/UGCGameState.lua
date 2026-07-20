@@ -5,6 +5,7 @@ UGCGameSystem.UGCRequire('Script.Common.ue_enum_custom')
 UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
 UGCGameSystem.UGCRequire('Script.L_Com.L_TipsTool')
 UGCGameSystem.UGCRequire('Script.L_Com.TipsMgr')
+UGCGameSystem.UGCRequire('Script.L_Com.L_GloTools')
 
 local UGCGameState = {};
 --[[----------------------游戏状态开始时初始化------------------------]]
@@ -23,6 +24,8 @@ function UGCGameState:InitUI()
         local MainUI_BP = UserWidget.NewWidgetObjectBP(PlayerController, MainUI);
         PlayerController.MainUI_BP = MainUI_BP;
         MainUI_BP:AddToViewport();
+        L_GloTools.UI_Map[L_Enum.Name_ClassPath.MainUI] = MainUI_BP
+
     end
 
 end

@@ -2,6 +2,24 @@
 ---@field Button_87 UButton
 ---@field Button_263 UButton
 ---@field Button_381 UButton
+---@field EditorUtilityEditableTextBox_36 UEditorUtilityEditableTextBox
+---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
+---@field TextBlock_73 UTextBlock
+--Edit Below--
+---@class MainUI_C:UUserWidget
+---@field Button_87 UButton
+---@field Button_263 UButton
+---@field Button_381 UButton
+---@field EditorUtilityEditableTextBox_36 UEditorUtilityEditableTextBox
+---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
+---@field TestButton TestButton_C
+---@field TextBlock_73 UTextBlock
+---@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
+-- Edit Below--
+---@class MainUI_C:UUserWidget
+---@field Button_87 UButton
+---@field Button_263 UButton
+---@field Button_381 UButton
 ---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
 ---@field TestButton TestButton_C
 ---@field TextBlock_73 UTextBlock
@@ -45,6 +63,7 @@ function MainUI:LuaInit()
     self.Button_87.OnClicked:Add(self.Button_87_OnClicked, self);
     self.Button_263.OnClicked:Add(self.Button_263_OnClicked, self);
     self.Button_381.OnClicked:Add(self.Button_381_OnClicked, self);
+    self.EditorUtilityEditableTextBox_36.OnTextCommitted:Add(self.EditorUtilityEditableTextBox_36_OnTextCommitted, self);
 
     self:DisableUnUse()
     self:TestInit()
@@ -83,10 +102,20 @@ function MainUI:Button_263_OnClicked()
     L_TipsTool.ShowOfficialTips("测试哈哈")
 end
 
+--[[----------------------切换关注界面显示状态------------------------]]
 function MainUI:Button_381_OnClicked()
     --[[-------------------测试兑换码---------------------------]] --
     -- local PC = UGCGameSystem.GetLocalPlayerController()
     -- UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.UseRedemptionCode, "XXXX-XXXX-XXXX")
+    --[[-------------------测试UImgr---------------------------]] --
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention)
+
+end
+
+--[[----------------------输入完成后提交兑换码------------------------]]
+function MainUI:EditorUtilityEditableTextBox_36_OnTextCommitted(Text, CommitMethod)
+    local PC = UGCGameSystem.GetLocalPlayerController()
+    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.UseRedemptionCode, tostring(Text))
 end
 
 --[[----------------------刷新玩家等级显示------------------------]]
