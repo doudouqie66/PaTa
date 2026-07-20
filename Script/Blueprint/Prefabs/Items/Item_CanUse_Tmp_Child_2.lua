@@ -1,4 +1,4 @@
----@class Item_CanUse_Tmp_Child_C:Item_CanUse_Tmp_C
+---@class Item_CanUse_Tmp_Child_2_C:Item_CanUse_Tmp_C
 --Edit Below--
 local Item_CanUse_Tmp_Child_2 = {} 
 

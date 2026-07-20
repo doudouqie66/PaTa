@@ -1,4 +1,4 @@
----@class jinbi_2_C:Item_Unuse_Tmp_C
+---@class tequan_C:Item_Unuse_Tmp_C
 --Edit Below--
 local tequan = {} 
 
