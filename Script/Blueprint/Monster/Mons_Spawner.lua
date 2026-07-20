@@ -1,4 +1,6 @@
 ---@class Mons_Spawner_C:BP_UGCMobSpawner_C
+--Edit Below--
+---@class Mons_Spawner_C:BP_UGCMobSpawner_C
 -- Edit Below--
 ---@class Mons_Spawner_C:BP_UGCMobSpawner_C
 -- Edit Below--

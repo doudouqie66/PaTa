@@ -2,6 +2,11 @@
 ---@field InnerBox UBoxComponent
 ---@field OutBox UBoxComponent
 ---@field HitBox UCapsuleComponent
+--Edit Below--
+---@class BaseMonse_C:BP_UGC_GenericMobPawn_Base_C
+---@field InnerBox UBoxComponent
+---@field OutBox UBoxComponent
+---@field HitBox UCapsuleComponent
 -- Edit Below--
 ---@class BaseMonse_C:BP_UGC_GenericMobPawn_Base_C
 ---@field InnerBox UBoxComponent
@@ -178,7 +183,7 @@ function BaseMonse:OutBox_OnComponentEndOverlap(OverlappedComponent, OtherActor,
         return
     end
     -- 通知退出警示区域
-    -- UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, false)
+    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, false)
 end
 
 --[[----------------------内部碰撞体，死亡------------------------]] --
