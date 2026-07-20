@@ -1,4 +1,4 @@
----@class UI04_C:UUserWidget
+---@class UI05_C:UUserWidget
 ---@field Button_0 UButton
 ---@field Button_1 UButton
 ---@field Button_2 UButton
@@ -10,7 +10,6 @@
 ---@field Button_9 UButton
 ---@field Button_10 UButton
 ---@field Button_11 UButton
----@field Button_54 UButton
 ---@field Button_203 UButton
 ---@field Button_330 UButton
 ---@field Image_0 UImage
@@ -37,25 +36,24 @@
 ---@field Image_23 UImage
 ---@field Image_55 UImage
 ---@field Image_116 UImage
----@field Image_122 UImage
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
 --Edit Below--
-local UI04 = { bInitDoOnce = false } 
+local UI05 = { bInitDoOnce = false } 
 
 --[==[ Construct
-function UI04:Construct()
+function UI05:Construct()
 	
 end
 -- Construct ]==]
 
--- function UI04:Tick(MyGeometry, InDeltaTime)
+-- function UI05:Tick(MyGeometry, InDeltaTime)
 
 -- end
 
--- function UI04:Destruct()
+-- function UI05:Destruct()
 
 -- end
 
-return UI04
+return UI05

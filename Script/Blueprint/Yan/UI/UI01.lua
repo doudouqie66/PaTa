@@ -1,5 +1,6 @@
 ---@class UI01_C:UUserWidget
 ---@field Button_75 UButton
+---@field Image_0 UImage
 ---@field Image_42 UImage
 ---@field Image_43 UImage
 ---@field Image_44 UImage
