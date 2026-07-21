@@ -2,12 +2,13 @@
 ---@field CloseButton UButton
 ---@field CurrencyBar UHorizontalBox
 ---@field HelpButton UButton
----@field ShopCurrency_1 UShopV2_Currency_UIBP_C
----@field ShopGoods UShopV2_Goods_UIBP_C
----@field ShopTabMenu UUGC_ReuseList2_C
+---@field MYShopV2_Currency_UIBP1 MYShopV2_Currency_UIBP1_C
+---@field ShopCurrency_1 ShopV2_Currency_UIBP_C
+---@field ShopGoods ShopV2_Goods_UIBP_C
+---@field ShopTabMenu UGC_ReuseList2_C
 ---@field TitleIcon UImage
 ---@field TitleText UTextBlock
----@field Tabs TArray<FShopV2_TabInfo__pf3882563479>
+---@field Tabs ULuaArrayHelper<FShopV2_TabInfo__pf3175612852>
 ---@field bShowOasisCoin bool
 ---@field SelectedTabID int32
 ---@field PurchasePanelPath FSoftClassPath
