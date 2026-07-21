@@ -10,6 +10,27 @@ local UGCPlayerController = {
     PlayerMaxHP = 1,
     Return_To_Death_Location = false -- 是否返回死亡位置
 }
+--[[---------------------初始化测试-------------------------]] --
+function UGCPlayerController:ReceiveBeginPlay()
+    self.SuperClass.ReceiveBeginPlay(self)
+    self:InitTest()
+end
+--[[------------------测试送东西----------------------------]] --
+function UGCPlayerController:InitTest()
+    local OBTimerDelegate = ObjectExtend.CreateDelegate(self, function()
+        if self:HasAuthority() == true then
+            local PlayerPawn = self:GetPlayerCharacterSafety()
+            -- V2 背包添加物品
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
+
+        end
+    end)
+    KismetSystemLibrary.K2_SetTimerDelegateForLua(OBTimerDelegate, self, 2, false)
+
+end
+
 --[[------------------Ctrl放私人数据和服务器交互----------------------------]] --
 -- ✅ 放这里合适：
 -- 金币数、累计得分、击杀数（只需要自己知道的）

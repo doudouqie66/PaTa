@@ -1,8 +1,28 @@
 ---@class Item_CanUse_Tmp_Child_13_C:Item_CanUse_Tmp_C
 --Edit Below--
-local Item_CanUse_Tmp_Child_13 = {} 
+---@class Item_CanUse_Tmp_Child_13_C:Item_CanUse_Tmp_C
+-- Edit Below--
+local Item_CanUse_Tmp_Child_13 = {}
 
---[[经典背包事件]]--
+function Item_CanUse_Tmp_Child_13:OnUseV2()
+    Item_CanUse_Tmp_Child_13.SuperClass.OnUseV2(self)
+
+    -- 加载你创建的 Buff 蓝图类
+    local BuffPath = UGCMapInfoLib.GetRootLongPackagePath() .. "Asset/Blueprint/Prefabs/Skills/Skill01.Skill01_C"
+    local BuffClass = UGCObjectUtility.LoadClass(BuffPath)
+
+    -- 获取使用物品的玩家
+    local OwnBackpackComponent = UGCItemSystemV2.GetOwnBackpackComponent(self)
+    local PlayerController = OwnBackpackComponent:GetOwner()
+    local PlayerPawn = UGCGameSystem.GetPlayerPawnByPlayerController(PlayerController)
+
+    -- 给玩家添加 Buff
+    if PlayerPawn then
+        UGCPersistEffectSystem.AddBuffByClass(PlayerPawn, BuffClass)
+    end
+end
+
+--[[经典背包事件]] --
 --[[
 --- func 处理物品的拾取(服务端生效)
 ---@return bool @是否拾取该物品, 返回true才能拾取进背包
@@ -50,9 +70,9 @@ local Item_CanUse_Tmp_Child_13 = {}
 -- function Item_CanUse_Tmp_Child_13:HanldeCleared()
 --    return Item_CanUse_Tmp_Child_13.SuperClass.HanldeCleared(self)
 -- end
-]]--
+]] --
 
---[[V2背包事件]]--
+--[[V2背包事件]] --
 --[[
 --- func 能否创建物品Handle(服务端生效)
 ---@return bool @是否允许创建物品Handle, 若不允许，物品也将创建失败
@@ -116,6 +136,6 @@ local Item_CanUse_Tmp_Child_13 = {}
 -- function Item_CanUse_Tmp_Child_13:UGC_OnStopUse(Reason)
     Item_CanUse_Tmp_Child_13.SuperClass.UGC_OnStopUse(self, Reason)
 -- end
-]]--
+]] --
 
 return Item_CanUse_Tmp_Child_13
