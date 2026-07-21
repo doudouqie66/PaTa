@@ -1,79 +1,81 @@
-local Buff01 = {}
+---@class Buff05_C:PersistEffectBuff
+--Edit Below--
+local Buff05 = {}
  
 -- buff启动条件
 --[[
-function Buff01:CanApply_BP(OwnerActor)
+function Buff05:CanApply_BP(OwnerActor)
 -- return true
 end
 --]]
 
 -- buff开始
 --[[
-function Buff01:OnApply_BP(OwnerActor)
+function Buff05:OnApply_BP(OwnerActor)
 
 end
 --]]
 
 -- buff结束
 --[[
-function Buff01:OnUnApply_BP(OwnerActor, Reason)
+function Buff05:OnUnApply_BP(OwnerActor, Reason)
 
 end
 --]]
 
 -- buff合并条件，A为当前身上已有buff，B为外来buff，当要挂载外来buff时会判断A.CanMerge(B)
 --[[
-function Buff01:CanMerge_BP(PersistEffect)
+function Buff05:CanMerge_BP(PersistEffect)
 -- return true
 end
 --]]
 
 -- buff合并，A为当前身上已有buff，B为外来buff，调用A.OnMerge(B)
 --[[
-function Buff01:OnMerge_BP(PersistEffect)
+function Buff05:OnMerge_BP(PersistEffect)
 
 end
 --]]
 
 -- 开启Tick需要SetTickEnable(true)，或buff为间隔触发类型会自动开启
 --[[
-function Buff01:Tick_BP(OwnerActor, DeltaTime)
+function Buff05:Tick_BP(OwnerActor, DeltaTime)
 
 end
 --]]
 
 --[[
-function Buff01:OnInterrupted_BP(OwnerActor)
+function Buff05:OnInterrupted_BP(OwnerActor)
 
 end
 --]]
 
 -- buff总持续时长变化，如修改ApplyTime、修改StackNum
 --[[
-function Buff01:OnTotalDurationChange_BP(PreTime, CurTime)
+function Buff05:OnTotalDurationChange_BP(PreTime, CurTime)
 
 end
 --]]
 
 -- buff堆叠层数变化
 --[[
-function Buff01:OnStackChange_BP(PreNum, CurNum)
+function Buff05:OnStackChange_BP(PreNum, CurNum)
 
 end
 --]]
 
 -- buff触发前条件判断
 --[[
-function Buff01:CanTrigger_BP()
+function Buff05:CanTrigger_BP()
 	return true
 end
 --]]
 
 -- buff触发效果
 --[[
-function Buff01:OnTrigger_BP(Delta)
+function Buff05:OnTrigger_BP(Delta)
 
 end
 --]]
 
-return Buff01
+return Buff05
