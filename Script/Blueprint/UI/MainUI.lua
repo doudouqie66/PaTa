@@ -6,6 +6,7 @@
 ---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
 ---@field TextBlock_73 UTextBlock
 ---@field TextBlock_134 UTextBlock
+---@field WBP_GiftPackBtn WBP_GiftPackBtn_C
 --Edit Below--
 ---@class MainUI_C:UUserWidget
 ---@field Button_87 UButton
