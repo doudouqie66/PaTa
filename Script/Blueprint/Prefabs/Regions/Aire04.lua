@@ -1,8 +1,4 @@
----@class Aire03_C:BP_MagicFieldActorBase_C
----@field Box UBoxComponent
----@field StaticMesh UStaticMeshComponent
---Edit Below--
----@class Aire03_C:BP_MagicFieldActorBase_C
+---@class Aire04_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
 -- Edit Below--
@@ -10,34 +6,38 @@
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
 -- Edit Below--
-local Aire03 = {}
+---@class Aire03_C:BP_MagicFieldActorBase_C
+---@field Box UBoxComponent
+---@field StaticMesh UStaticMeshComponent
+-- Edit Below--
+local Aire04 = {}
 
 --[[
-function Aire03:ReceiveTick(DeltaTime)
-    Aire03.SuperClass.ReceiveTick(self, DeltaTime)
+function Aire04:ReceiveTick(DeltaTime)
+    Aire04.SuperClass.ReceiveTick(self, DeltaTime)
 end
 --]]
 
 --[[
-function Aire03:ReceiveEndPlay()
-    Aire03.SuperClass.ReceiveEndPlay(self) 
+function Aire04:ReceiveEndPlay()
+    Aire04.SuperClass.ReceiveEndPlay(self) 
 end
 --]]
 
 --[[
-function Aire03:GetReplicatedProperties()
+function Aire04:GetReplicatedProperties()
     return
 end
 --]]
 
 --[[
-function Aire03:GetAvailableServerRPCs()
+function Aire04:GetAvailableServerRPCs()
     return
 end
 --]]
 
 -- [Editor Generated Lua] function define Begin:
-function Aire03:LuaInit()
+function Aire04:LuaInit()
     if self.bInitDoOnce then
         return;
     end
@@ -52,19 +52,24 @@ end
 -- [Editor Generated Lua] function define End;
 
 --[[----------------------绑定盒体重叠事件------------------------]]
-function Aire03:ReceiveBeginPlay()
-    Aire03.SuperClass.ReceiveBeginPlay(self)
+function Aire04:ReceiveBeginPlay()
+    Aire04.SuperClass.ReceiveBeginPlay(self)
     if UGCGameSystem.IsServer() then
         self.Box.OnComponentBeginOverlap:Add(self.Box_OnComponentBeginOverlap, self)
     end
 end
 
---[[----------------------玩家进入盒体时添加减益------------------------]]
-function Aire03:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep,
+--[[----------------------玩家进入盒体时传送回去------------------------]]
+function Aire04:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep,
     SweepResult)
-    local Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Debuff01) -- Buff类
-    local Buff_Instance = UGCPersistEffectSystem.AddBuffByClass(OtherActor, Buff_Class) -- 添加的Buff实例
     self:K2_DestroyActor()
+
+    local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor)
+    if PC == nil then
+        return
+    end
+    UGCPlayerPawnSystem.SetIsDirectlyDie(OtherActor, true)
+
 end
 
-return Aire03
+return Aire04

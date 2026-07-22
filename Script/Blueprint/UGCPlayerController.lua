@@ -28,7 +28,7 @@ function UGCPlayerController:InitTest()
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310020, 33)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310014, 33)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310018, 33)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310007, 33)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310026, 33)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310021, 33)
 
         end
