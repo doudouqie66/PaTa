@@ -18,9 +18,9 @@ function UGCPlayerPawn:TestLua()
     --[[--------------------开启滑铲--------------------------]] --
     -- self.bIsOpenShovelAbility = true
 
-    if self:HasAuthority() then
-        UGCAttributeSystem.SetGameAttributeValue(self, "UGCGeneralMoveSpeedScale", 6)
-    end
+    -- if self:HasAuthority() then
+    --     UGCAttributeSystem.SetGameAttributeValue(self, "UGCGeneralMoveSpeedScale", 6)
+    -- end
 
 end
 

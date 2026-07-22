@@ -18,6 +18,12 @@ L_Enum.Name_ClassPath = {
     UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C"
 
 }
+--[[----------------------Buff名字------------------------]] --
+
+L_Enum.Name_BuffPath = {
+    Debuff01 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff01.DeBuff01_C"
+
+}
 
 --[[------------------CTRl那里的RPC方法名字----------------------------]] --
 L_Enum.Name_RPC = {
@@ -26,7 +32,7 @@ L_Enum.Name_RPC = {
     Mgr_Atten = "Mgr_Atten",
     Tool_Msg_01 = "Tool_Msg_01",
     Request_Respawn = "RequestRespawn", -- 复活请求RPC名称
-    Show_Respawn_UI = "ShowRespawnUI", -- 显示复活界面RPC名称
+    Show_Respawn_UI = "ShowRespawnUI" -- 显示复活界面RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 
