@@ -59,22 +59,26 @@ function EventScheduler:_OnStart(event)
         EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff01, event)
     elseif event.name == L_Enum.Name_Event.DoubleGold then
         -- 开启金币翻倍效果
+        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Buff09, event)
     elseif event.name == L_Enum.Name_Event.AllSpeedUp then
         -- 开启全体移动加速效果
         EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Buff05, event)
-
     elseif event.name == L_Enum.Name_Event.MonsterStop then
         -- 开启怪物静止效果
         EventScheduler:_AddBuffToAllMonsters(L_Enum.Name_BuffPath.Buff02, event)
-
     elseif event.name == L_Enum.Name_Event.FullScreenNight then
         -- 开启全屏黑夜效果
+        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff02, event)
     elseif event.name == L_Enum.Name_Event.AllFly then
         -- 开启全体飞行效果
+        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Buff08, event)
     elseif event.name == L_Enum.Name_Event.ReverseMove then
         -- 开启移动反向效果
+        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff04, event)
     elseif event.name == L_Enum.Name_Event.ShortNight then
         -- 开启短时间黑夜效果
+        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff03, event)
+
     end
 
 end

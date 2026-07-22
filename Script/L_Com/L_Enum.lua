@@ -22,9 +22,15 @@ L_Enum.Name_ClassPath = {
 
 L_Enum.Name_BuffPath = {
     Debuff01 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff01.DeBuff01_C",
-    Buff02 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff02.Buff02_C",
+    Debuff02 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff02.DeBuff02_C",
+    Debuff03 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff03.DeBuff03_C",
+    Debuff04 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff04.DeBuff04_C",
 
-    Buff05 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff05.Buff05_C"
+    Buff02 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff02.Buff02_C",
+    Buff05 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff05.Buff05_C",
+    Buff08 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff08.Buff08_C",
+    Buff09 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff09.Buff09_C"
+
 }
 
 --[[------------------CTRl那里的RPC方法名字----------------------------]] --
