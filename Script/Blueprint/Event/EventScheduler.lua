@@ -129,4 +129,20 @@ function EventScheduler:_AddBuffToAllMonsters(Buff_Path, Active_Event)
     end
 end
 
+--[[----------------------给单个玩家添加事件Buff------------------------]]
+function EventScheduler:_AddBuffToOnePlayers(Pawn, Buff_Path)
+    local Buff_Class = UGCObjectUtility.LoadClass(Buff_Path) -- Buff类
+    local Buff_Instances = UGCPersistEffectSystem.GetBuffsByClass(Pawn, Buff_Class) -- 已有Buff实例
+    if #Buff_Instances > 0 then
+        return
+    end
+    UGCPersistEffectSystem.AddBuffByClass(Pawn, Buff_Class, nil, -1, 1)
+end
+
+--[[----------------------移除单个玩家的事件Buff------------------------]]
+function EventScheduler:_RemoveBuffFromOnePlayers(Pawn, Buff_Path)
+    local Buff_Class = UGCObjectUtility.LoadClass(Buff_Path) -- Buff类
+    UGCPersistEffectSystem.RemoveBuffByClass(Pawn, Buff_Class, -1)
+end
+
 return EventScheduler

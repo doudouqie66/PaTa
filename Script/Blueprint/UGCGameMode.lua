@@ -14,7 +14,7 @@ local UGCGameMode = {
 
 --[[----------------------游戏启动------------------------]] --
 function UGCGameMode:ReceiveBeginPlay()
-    EventScheduler.Start()
+    -- EventScheduler.Start()
 end
 
 --[[----------------------后加入的同步事件状态------------------------]] --
