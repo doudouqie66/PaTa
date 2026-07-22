@@ -9,19 +9,19 @@ function DeBuff04:CanApply_BP(OwnerActor)
 end
 --]]
 
--- buff开始
---[[
+--[[----------------------Buff挂载时开启反向移动------------------------]]
 function DeBuff04:OnApply_BP(OwnerActor)
-
+    if not self:HasAuthority() and self:IsAutonomous(true) then
+        OwnerActor:SetReverseMoveEnabled(true)
+    end
 end
---]]
 
--- buff结束
---[[
+--[[----------------------Buff移除时关闭反向移动------------------------]]
 function DeBuff04:OnUnApply_BP(OwnerActor, Reason)
-
+    if not self:HasAuthority() and self:IsAutonomous(true) then
+        OwnerActor:SetReverseMoveEnabled(false)
+    end
 end
---]]
 
 -- buff合并条件，A为当前身上已有buff，B为外来buff，当要挂载外来buff时会判断A.CanMerge(B)
 --[[
