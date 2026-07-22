@@ -2,6 +2,11 @@
 ---@field InnerBox UBoxComponent
 ---@field OutBox UBoxComponent
 ---@field HitBox UCapsuleComponent
+--Edit Below--
+---@class BaseMonse_C:BP_UGC_GenericMobPawn_Base_C
+---@field InnerBox UBoxComponent
+---@field OutBox UBoxComponent
+---@field HitBox UCapsuleComponent
 -- Edit Below--
 ---@class BaseMonse_C:BP_UGC_GenericMobPawn_Base_C
 ---@field InnerBox UBoxComponent

@@ -1,4 +1,7 @@
 ---@class UGCGameState_C:BP_UGCGameState_C
+---@field EventElapsed int32
+--Edit Below--
+---@class UGCGameState_C:BP_UGCGameState_C
 -- Edit Below--
 --[[----------------------全局提前引用------------------------]] --
 UGCGameSystem.UGCRequire('Script.Common.ue_enum_custom')
@@ -6,6 +9,9 @@ UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
 UGCGameSystem.UGCRequire('Script.L_Com.L_TipsTool')
 UGCGameSystem.UGCRequire('Script.L_Com.TipsMgr')
 UGCGameSystem.UGCRequire('Script.L_Com.L_GloTools')
+UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventConfig')
+UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventScheduler')
+UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventConfig_BackUp')
 
 local UGCGameState = {};
 --[[----------------------游戏状态开始时初始化------------------------]]

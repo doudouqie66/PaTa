@@ -28,7 +28,7 @@ function UGCPlayerController:InitTest()
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310020, 33)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310014, 33)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310018, 33)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310026, 33)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310026, 33)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310021, 33)
 
         end
@@ -116,7 +116,7 @@ function UGCPlayerController:OnRep_PlayerGameLevel()
     if self.MainUI_BP then
         self.MainUI_BP:RefreshPlayerGameLevel(self.PlayerGameLevel)
     end
-    TipsMgr.ShowTips_01(tostring(self.PlayerGameLevel))
+    L_TipsTool.ShowTips_01(tostring(self.PlayerGameLevel))
 end
 
 --[[-----------------------下面是通用方法-----------------------]] --

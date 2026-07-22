@@ -5,41 +5,7 @@
 ---@field EditorUtilityEditableTextBox_36 UEditorUtilityEditableTextBox
 ---@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
 ---@field TextBlock_73 UTextBlock
---Edit Below--
----@class MainUI_C:UUserWidget
----@field Button_87 UButton
----@field Button_263 UButton
----@field Button_381 UButton
----@field EditorUtilityEditableTextBox_36 UEditorUtilityEditableTextBox
----@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
----@field TestButton TestButton_C
----@field TextBlock_73 UTextBlock
----@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
--- Edit Below--
----@class MainUI_C:UUserWidget
----@field Button_87 UButton
----@field Button_263 UButton
----@field Button_381 UButton
----@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
----@field TestButton TestButton_C
----@field TextBlock_73 UTextBlock
----@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
--- Edit Below--
----@class MainUI_C:UUserWidget
----@field Button_87 UButton
----@field Button_263 UButton
----@field Button_381 UButton
----@field ShopV2_OpenShopButton_UIBP ShopV2_OpenShopButton_UIBP_C
----@field TestButton TestButton_C
----@field TextBlock_73 UTextBlock
----@field WBP_RankingListBtn WBP_RankingListBtn_C
----@field WBP_TaskMainUIButton WBP_TaskMainUIButton_C
--- Edit Below--
----@class MainUI_C:UUserWidget
----@field Button_87 UButton
----@field Button_263 UButton
----@field Button_381 UButton
----@field TextBlock_73 UTextBlock
+---@field TextBlock_134 UTextBlock
 -- Edit Below--
 local MainUI = {
     bInitDoOnce = false
@@ -67,6 +33,12 @@ function MainUI:LuaInit()
 
     self:DisableUnUse()
     self:TestInit()
+end
+
+--[[----------------------刷新事件秒数显示------------------------]]
+function MainUI:Tick(MyGeometry, InDeltaTime)
+    local GameState = UGCGameSystem.GameState
+    self.TextBlock_134:SetText(tostring(GameState.EventElapsed or 0))
 end
 
 --[[---------------------关闭无用UI-------------------------]] --

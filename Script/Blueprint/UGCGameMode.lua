@@ -1,5 +1,5 @@
 ---@class UGCGameMode_C:BP_UGCGameBase_C
---Edit Below--
+-- Edit Below--
 ---@class UGCGameMode_C:BP_UGCGameBase_C
 -- Edit Below--
 ---@class UGCGameMode_C:BP_UGCGameBase_C
@@ -11,6 +11,20 @@ local UGCGameMode = {
     Attack = 1,
     MaxHP = 1
 };
+
+--[[----------------------游戏启动------------------------]] --
+function UGCGameMode:ReceiveBeginPlay()
+    EventScheduler.Start()
+end
+
+--[[----------------------后加入的同步事件状态------------------------]] --
+function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
+    local activeEvent = EventScheduler.GetActiveEvent()
+    if activeEvent then
+        -- 施加效果
+        EventScheduler:_OnStart(activeEvent)
+    end
+end
 
 --[[----------------------复活后返回死亡位置------------------------]]
 function UGCGameMode:UGC_PlayerRespawnEvent(RespawnedController)

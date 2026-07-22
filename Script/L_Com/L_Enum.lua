@@ -21,8 +21,10 @@ L_Enum.Name_ClassPath = {
 --[[----------------------Buff名字------------------------]] --
 
 L_Enum.Name_BuffPath = {
-    Debuff01 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff01.DeBuff01_C"
+    Debuff01 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff01.DeBuff01_C",
+    Buff02 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff02.Buff02_C",
 
+    Buff05 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff05.Buff05_C"
 }
 
 --[[------------------CTRl那里的RPC方法名字----------------------------]] --
@@ -34,6 +36,18 @@ L_Enum.Name_RPC = {
     Request_Respawn = "RequestRespawn", -- 复活请求RPC名称
     Show_Respawn_UI = "ShowRespawnUI" -- 显示复活界面RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
+}
+
+L_Enum.Name_Event = {
+    SpeedLow = "移动减速", -- 移动减速事件
+    DoubleGold = "金币翻倍", -- 金币翻倍事件
+    AllSpeedUp = "全体移动加速", -- 全体移动加速事件
+    MonsterStop = "怪物静止", -- 怪物静止事件
+    FullScreenNight = "全屏黑夜", -- 全屏黑夜事件
+    AllFly = "全体飞行", -- 全体飞行事件
+    ReverseMove = "移动反向", -- 移动反向事件
+    ShortNight = "短时间黑夜" -- 短时间黑夜事件
+
 }
 
 --[[-----------------------属性名字-----------------------]] --

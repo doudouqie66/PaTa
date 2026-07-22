@@ -1,4 +1,6 @@
 ---@class BaseMonse_Child_C:BaseMonse_C
+--Edit Below--
+---@class BaseMonse_Child_C:BaseMonse_C
 -- Edit Below--
 local BaseMonse_Child = {}
 
