@@ -30,19 +30,19 @@ EventConfig.CycleEvents = {{
     name = L_Enum.Name_Event.AllFly, -- 事件名字
     warnStartTime = 30, -- 开始时间
     warnDuration = 2, -- 倒计时持续时间
-    eventDuration = 2 -- 事件持续时间
+    eventDuration = 40 -- 事件持续时间
 }, {
     name = L_Enum.Name_Event.ReverseMove, -- 事件名字
-    warnStartTime = 35, -- 开始时间
+    warnStartTime = 73, -- 开始时间
     warnDuration = 2, -- 倒计时持续时间
     eventDuration = 2 -- 事件持续时间
 }, {
     name = L_Enum.Name_Event.ShortNight, -- 事件名字
-    warnStartTime = 40, -- 开始时间
+    warnStartTime = 78, -- 开始时间
     warnDuration = 2, -- 倒计时持续时间
     eventDuration = 2 -- 事件持续时间
 }}
 
--- 一轮总时长 = 最后事件结束时间 = 40 + 2 + 2 = 44 秒
-EventConfig.CycleDuration = 44
+-- 一轮总时长 = 最后事件结束时间 = 78 + 2 + 2 = 82 秒
+EventConfig.CycleDuration = 82
 return EventConfig
