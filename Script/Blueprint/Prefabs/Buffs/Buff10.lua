@@ -57,14 +57,19 @@ function Buff10:CanTrigger_BP()
 end
 --]]
 
---[[----------------------给玩家添加4个金币------------------------]]
+--[[----------------------根据周卡状态给玩家添加金币------------------------]]
 function Buff10:GiveGold(Delta)
     if self:HasAuthority() then
         local Owner_Actor = self:GetOwnerActor() -- Buff所属玩家角色
-        UGCBackpackSystemV2.AddItemV2(Owner_Actor, 8310003, 4)
+        local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Owner_Actor) -- 获取玩家控制器
+        local Gold_Count = 4 -- 本次获得的金币数量
+        local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+        if Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime then
+            Gold_Count = Gold_Count * 2
+        end
+        UGCBackpackSystemV2.AddItemV2(Owner_Actor, 8310003, Gold_Count)
+        L_TipsTool.ShowTips_01("金币加" .. Gold_Count, Player_Controller)
     end
-    L_TipsTool.ShowTips_01("金币加4")
-
 end
 
 return Buff10

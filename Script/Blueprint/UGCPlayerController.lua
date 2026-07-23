@@ -4,7 +4,7 @@
 ---@field RankingListComponent RankingListComponent_C
 ---@field SignInEventComponent SignInEventComponent_C
 ---@field ShopV2Component ShopV2Component_C
---Edit Below--
+-- Edit Below--
 ---@class UGCPlayerController_C:BP_UGCPlayerController_C
 ---@field TaskTemplateComponent TaskTemplateComponent_C
 ---@field RankingListComponent RankingListComponent_C
@@ -15,7 +15,8 @@ local UGCPlayerController = {
     PlayerGameLevel = 1,
     PlayerAttack = 1,
     PlayerMaxHP = 1,
-    Return_To_Death_Location = false -- 是否返回死亡位置
+    Return_To_Death_Location = false, -- 是否返回死亡位置
+    WeekEndTime = nil
 }
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 
@@ -67,7 +68,13 @@ end
 
 --[[----------------------打开礼包界面------------------------]]
 function UGCPlayerController:OpenGiftPack(Gift_Pack_ID)
+    if Gift_Pack_ID == L_Enum.ID_Gift.WeekdGift then
+        local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+        self.WeekEndTime = math.max(self.WeekEndTime or 0, Current_Time) + 7 * 24 * 60 * 60
+    end
     GiftPackManager:OpenGiftPack(Gift_Pack_ID)
+    self:SaveArchive()
+
 end
 
 --[[--------------------通用提示方法1--------------------------]] --

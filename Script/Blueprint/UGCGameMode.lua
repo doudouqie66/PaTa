@@ -58,6 +58,7 @@ function UGCGameMode:LoadPlayerArchive(PlayerController)
     PlayerController.PlayerGameLevel = archiveData.Level or 1
     PlayerController.PlayerAttack = archiveData.Attack or 1
     PlayerController.PlayerMaxHP = archiveData.MaxHP or 1
+    PlayerController.WeekEndTime = archiveData.WeekEndTime
 end
 
 --[[----------------------保存玩家存档数据------------------------]]
@@ -69,6 +70,7 @@ function UGCGameMode:SavePlayerArchive(PlayerController)
     archiveData.Level = PlayerController.PlayerGameLevel
     archiveData.Attack = PlayerController.PlayerAttack
     archiveData.MaxHP = PlayerController.PlayerMaxHP
+    archiveData.WeekEndTime = PlayerController.WeekEndTime
 
     UGCPlayerStateSystem.SavePlayerArchiveData(tonumber(uid), archiveData)
 end

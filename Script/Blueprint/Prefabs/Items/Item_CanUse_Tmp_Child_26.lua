@@ -6,6 +6,9 @@ local Item_CanUse_Tmp_Child_26 = {}
 function Item_CanUse_Tmp_Child_26:OnUseV2()
     local Own_Backpack_Component = UGCItemSystemV2.GetOwnBackpackComponent(self) -- 获取所属背包组件
     local Player_Controller = Own_Backpack_Component:GetOwner() -- 获取使用礼包的玩家
+    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    Player_Controller.WeekEndTime = math.max(Player_Controller.WeekEndTime or 0, Current_Time) + 7 * 24 * 60 * 60
+    Player_Controller:SaveArchive()
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Open_Gift_Pack,
         L_Enum.ID_Gift.WeekdGift)
 end
