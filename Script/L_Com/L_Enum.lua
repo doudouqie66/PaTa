@@ -65,4 +65,10 @@ L_Enum.Name_RepPts = {
     PlayerMaxHP = "PlayerMaxHP"
 
 }
+
+--[[------------------------礼包ID----------------------]] --
+L_Enum.ID_Gift = {
+    WeekdGift = 1030
+
+}
 return L_Enum

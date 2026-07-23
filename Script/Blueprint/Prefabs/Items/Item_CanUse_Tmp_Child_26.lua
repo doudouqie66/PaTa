@@ -1,13 +1,13 @@
 ---@class Item_CanUse_Tmp_Child_26_C:Item_CanUse_Tmp_C
 -- Edit Below--
 local Item_CanUse_Tmp_Child_26 = {}
-local Gift_Pack_ID = 1030 -- 礼包表中的礼包ID
 
 --[[----------------------通知客户端打开礼包界面------------------------]]
 function Item_CanUse_Tmp_Child_26:OnUseV2()
     local Own_Backpack_Component = UGCItemSystemV2.GetOwnBackpackComponent(self) -- 获取所属背包组件
     local Player_Controller = Own_Backpack_Component:GetOwner() -- 获取使用礼包的玩家
-    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Open_Gift_Pack, Gift_Pack_ID)
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Open_Gift_Pack,
+        L_Enum.ID_Gift.WeekdGift)
 end
 
 --[[经典背包事件]] --

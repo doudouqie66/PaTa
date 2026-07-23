@@ -9,8 +9,6 @@
 local GiftPackComponent = {
     RequestMark = "GiftPack"
 }
-local Week_Card_Gift_Pack_Item_ID = 1030 -- 周卡礼包的虚拟物品ID
-local Week_Card_Backpack_Item_ID = 8310028 -- 周卡礼包映射后的背包物品ID
  
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage." .. "Script.GiftPack.GiftPackManager");
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage." .. "Script.Common.Common");
@@ -329,37 +327,13 @@ function GiftPackComponent:ConsumeGiftPack(PlayerController, ItemID, UseNum, Ite
         table.insert(AwardList, {ItemID = AwardID, ItemNum = ItemNum});
     end
 
-    if ItemID == Week_Card_Gift_Pack_Item_ID then
-        local Removed_Count = UGCBackpackSystemV2.RemoveItemV2(PlayerController, Week_Card_Backpack_Item_ID, UseNum)
-        if Removed_Count ~= UseNum then
-            print(string.format("GiftPackComponent:RemoveBackpackGiftPackFailed RemovedCount: %d UseNum: %d",
-                Removed_Count, UseNum))
-            UnrealNetwork.CallUnrealRPC(PlayerController, self, "ResetGiftPackUsing")
-            return
-        end
-
-        local Success = self:AddVirtualItems(ItemList)
-        if Success then
-            self:OpenGiftPackageDelegate(AwardList)
-            UnrealNetwork.CallUnrealRPC(PlayerController, self, "OpenGiftPackageDelegate", AwardList)
-        else
-            UnrealNetwork.CallUnrealRPC(PlayerController, self, "ResetGiftPackUsing")
-        end
-        return
-    end
-
-    self:RemoveVirtualItem(ItemID, UseNum, function()
+    self:RemoveItem(ItemID, UseNum, function()
         local Success = self:AddVirtualItems(ItemList);
         if Success then
             self:OpenGiftPackageDelegate(AwardList);
             UnrealNetwork.CallUnrealRPC(PlayerController, self, "OpenGiftPackageDelegate", AwardList);
         end
     end)
-end
-
---[[----------------------解除礼包使用锁定------------------------]]
-function GiftPackComponent:ResetGiftPackUsing()
-    self.IsUsing = false
 end
 
 function GiftPackComponent:AutoUseGiftPack(PlayerController, GiftPackID, ItemID, UseNum)
@@ -408,10 +382,6 @@ end
 ---@param ItemID number
 ---@return number
 function GiftPackComponent:GetItemNum(ItemID)
-    if ItemID == Week_Card_Gift_Pack_Item_ID then
-        return UGCBackpackSystemV2.GetItemCountV2(self:GetOwner(), Week_Card_Backpack_Item_ID)
-    end
-
     if UE.IsValid(self:GetVirtualItemManager()) then
         local PlayerController = self:GetOwner();
         return self:GetVirtualItemManager():GetItemNum(ItemID, PlayerController); 
@@ -439,13 +409,13 @@ end
 ---@param ItemID number
 ---@param Num number
 ---@param Callback function
-function GiftPackComponent:RemoveVirtualItem(ItemID, Num, Callback)
+function GiftPackComponent:RemoveItem(ItemID, Num, Callback)
     local PlayerController = self:GetOwner();
     if PlayerController:HasAuthority() == false then
         return;
     end
     if UE.IsValid(self:GetVirtualItemManager()) then
-        self:GetVirtualItemManager():RemoveVirtualItem(PlayerController, ItemID, Num, Callback);
+        self:GetVirtualItemManager():RemoveItem(PlayerController, ItemID, Num, Callback);
     end
 end
 
