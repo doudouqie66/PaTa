@@ -1,6 +1,6 @@
 ---@class UGCGameState_C:BP_UGCGameState_C
 ---@field EventElapsed int32
---Edit Below--
+-- Edit Below--
 ---@class UGCGameState_C:BP_UGCGameState_C
 -- Edit Below--
 --[[----------------------全局提前引用------------------------]] --
@@ -12,6 +12,7 @@ UGCGameSystem.UGCRequire('Script.L_Com.L_GloTools')
 UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventConfig')
 UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventScheduler')
 UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventConfig_BackUp')
+UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 
 local UGCGameState = {};
 --[[----------------------游戏状态开始时初始化------------------------]]
@@ -25,12 +26,21 @@ function UGCGameState:InitUI()
     if self:HasAuthority() == true then
         -- 只有客户端加载UI
     else
-        local MainUI = UE.LoadClass(L_Enum.Name_ClassPath.MainUI);
-        local PlayerController = UGCGameSystem.GetLocalPlayerController()
-        local MainUI_BP = UserWidget.NewWidgetObjectBP(PlayerController, MainUI);
-        PlayerController.MainUI_BP = MainUI_BP;
-        MainUI_BP:AddToViewport();
-        L_GloTools.UI_Map[L_Enum.Name_ClassPath.MainUI] = MainUI_BP
+        -- local UI01 = UE.LoadClass(L_Enum.Name_ClassPath.UI01);
+        -- local PlayerController = UGCGameSystem.GetLocalPlayerController()
+        -- local MainUI_BP = UserWidget.NewWidgetObjectBP(PlayerController, UI01);
+        -- PlayerController.MainUI_BP = MainUI_BP;
+        -- MainUI_BP:AddToViewport();
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI01, true)
+
+    end
+
+    local MainUI = UGCWidgetManagerSystem.GetMainControlUI()
+    if MainUI then
+        MainUI.NavigatorPanel:SetVisibility(ESlateVisibility.Collapsed)
+        MainUI.Image_0:SetVisibility(ESlateVisibility.Collapsed)
+
+        MainUI.CanvasPanel_MiniMapAndSetting:SetVisibility(ESlateVisibility.Collapsed)
 
     end
 

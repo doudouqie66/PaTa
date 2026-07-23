@@ -6,6 +6,13 @@
 ---@field ShopV2Component ShopV2Component_C
 -- Edit Below--
 ---@class UGCPlayerController_C:BP_UGCPlayerController_C
+---@field GiftPackComponent GiftPackComponent_C
+---@field TaskTemplateComponent TaskTemplateComponent_C
+---@field RankingListComponent RankingListComponent_C
+---@field SignInEventComponent SignInEventComponent_C
+---@field ShopV2Component ShopV2Component_C
+-- Edit Below--
+---@class UGCPlayerController_C:BP_UGCPlayerController_C
 ---@field TaskTemplateComponent TaskTemplateComponent_C
 ---@field RankingListComponent RankingListComponent_C
 ---@field SignInEventComponent SignInEventComponent_C
@@ -19,7 +26,6 @@ local UGCPlayerController = {
     WeekEndTime = nil,
     WinCup = 0 -- 获得奖杯数量
 }
-UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 
 --[[---------------------初始化测试-------------------------]] --
 function UGCPlayerController:ReceiveBeginPlay()
@@ -62,7 +68,18 @@ end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
-        L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup
+        L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View()
+end
+
+--[[----------------------切换第一和第三人称------------------------]]
+function UGCPlayerController:Switch_View()
+    local Player_Pawn = UGCGameSystem.GetPlayerPawnByPlayerController(self) -- 当前玩家角色
+
+    if UGCPlayerPawnSystem.GetIsFPP(Player_Pawn) then
+        UGCPlayerPawnSystem.SetIsTPP(Player_Pawn, true, true)
+    else
+        UGCPlayerPawnSystem.SetIsFPP(Player_Pawn, true, true)
+    end
 end
 --[[----------------------增加玩家奖杯并保存------------------------]]
 function UGCPlayerController:Add_WinCup(Add_Count)
@@ -153,9 +170,9 @@ end
 --[[--------------------下面是属性变动后对应的方法--------------------------]] --
 --[[----------------------玩家等级同步后刷新显示------------------------]]
 function UGCPlayerController:OnRep_PlayerGameLevel()
-    if self.MainUI_BP then
-        self.MainUI_BP:RefreshPlayerGameLevel(self.PlayerGameLevel)
-    end
+    -- if self.MainUI_BP then
+    --     self.MainUI_BP:RefreshPlayerGameLevel(self.PlayerGameLevel)
+    -- end
     L_TipsTool.ShowTips_01(tostring(self.PlayerGameLevel))
 end
 

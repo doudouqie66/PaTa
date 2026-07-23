@@ -1,6 +1,6 @@
 L_GloTools = L_GloTools or {}
-L_GloTools.UI_Map = L_GloTools.UI_Map or {}  -- 缓存已创建的UI
-L_GloTools.UI_Visibility_Map = L_GloTools.UI_Visibility_Map or {}  -- 缓存UI原始显示状态
+L_GloTools.UI_Map = L_GloTools.UI_Map or {} -- 缓存已创建的UI
+L_GloTools.UI_Visibility_Map = L_GloTools.UI_Visibility_Map or {} -- 缓存UI原始显示状态
 
 --[[----------------------管理UI显示隐藏------------------------]]
 function L_GloTools.UIMgr(str, bVisible)
@@ -14,7 +14,7 @@ function L_GloTools.UIMgr(str, bVisible)
         local UI_Class = UE.LoadClass(str);
         local PlayerController = UGCGameSystem.GetLocalPlayerController()
         UI_BP = UserWidget.NewWidgetObjectBP(PlayerController, UI_Class);
-        UI_BP:AddToViewport();
+        UI_BP:AddToViewport(1);
         L_GloTools.UI_Map[str] = UI_BP
         L_GloTools.UI_Visibility_Map[str] = UI_BP:GetVisibility()
         return

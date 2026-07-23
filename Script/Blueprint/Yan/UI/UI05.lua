@@ -39,14 +39,15 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
---Edit Below--
-local UI05 = { bInitDoOnce = false } 
+-- Edit Below--
+local UI05 = {
+    bInitDoOnce = false
+}
 
---[==[ Construct
 function UI05:Construct()
-	
+    self:LuaInit();
+
 end
--- Construct ]==]
 
 -- function UI05:Tick(MyGeometry, InDeltaTime)
 
@@ -55,5 +56,26 @@ end
 -- function UI05:Destruct()
 
 -- end
+
+-- [Editor Generated Lua] function define Begin:
+function UI05:LuaInit()
+    if self.bInitDoOnce then
+        return;
+    end
+    self.bInitDoOnce = true;
+    -- [Editor Generated Lua] BindingProperty Begin:
+    -- [Editor Generated Lua] BindingProperty End;
+
+    -- [Editor Generated Lua] BindingEvent Begin:
+    self.Button_330.OnClicked:Add(self.Button_330_OnClicked, self);
+    -- [Editor Generated Lua] BindingEvent End;
+end
+
+function UI05:Button_330_OnClicked()
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI05, false)
+
+end
+
+-- [Editor Generated Lua] function define End;
 
 return UI05
