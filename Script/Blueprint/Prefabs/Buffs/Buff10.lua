@@ -65,7 +65,7 @@ function Buff10:GiveGold(Delta)
         local Gold_Count = 4 -- 本次获得的金币数量
         local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
         if Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime then
-            Gold_Count = Gold_Count * 2
+            Gold_Count = math.floor(Gold_Count * 1.5)
         end
         UGCBackpackSystemV2.AddItemV2(Owner_Actor, 8310003, Gold_Count)
         L_TipsTool.ShowTips_01("金币加" .. Gold_Count, Player_Controller)

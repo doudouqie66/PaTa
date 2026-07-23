@@ -23,6 +23,35 @@
 ---@field Image_223 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
+---@field TextBlock_434 UTextBlock
+---@field TextBlock_435 UTextBlock
+---@field TextBlock_436 UTextBlock
+-- Edit Below--
+---@class UI03_C:UUserWidget
+---@field Button_107 UButton
+---@field Button_108 UButton
+---@field Button_203 UButton
+---@field Button_204 UButton
+---@field Button_205 UButton
+---@field Button_206 UButton
+---@field Button_207 UButton
+---@field Button_208 UButton
+---@field Button_209 UButton
+---@field Button_210 UButton
+---@field Button_330 UButton
+---@field Image_55 UImage
+---@field Image_56 UImage
+---@field Image_57 UImage
+---@field Image_216 UImage
+---@field Image_217 UImage
+---@field Image_218 UImage
+---@field Image_219 UImage
+---@field Image_220 UImage
+---@field Image_221 UImage
+---@field Image_222 UImage
+---@field Image_223 UImage
+---@field Image_360 UImage
+---@field Image_481 UImage
 -- Edit Below--
 ---@class UI03_C:UUserWidget
 ---@field Button_107 UButton
@@ -63,6 +92,7 @@ local UI03 = {
 --[[----------------------构造商城界面------------------------]]
 function UI03:Construct()
     self:LuaInit();
+    self:RefreshWeekGiftPurchased(UGCGameSystem.GetLocalPlayerController())
 
 end
 
@@ -74,6 +104,7 @@ end
 function UI03:Destruct()
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
     self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Remove(self.OnItemNumUpdated, self)
+    GiftPackManager.OnOpenGiftPackageDelegate:Remove(self.OnOpenGiftPackage, self)
 end
 
 -- [Editor Generated Lua] function define Begin:
@@ -92,6 +123,7 @@ function UI03:LuaInit()
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyUGCCommodityResult, self)
     self.Virtual_Item_Manager = GiftPackManager:GetVirtualItemManager() -- 获取虚拟物品管理器
     self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Add(self.OnItemNumUpdated, self)
+    GiftPackManager.OnOpenGiftPackageDelegate:Add(self.OnOpenGiftPackage, self)
     -- [Editor Generated Lua] BindingEvent End;
 end
 
@@ -122,8 +154,34 @@ end
 function UI03:OnItemNumUpdated()
     if self.Pending_Open_Gift_Pack and GiftPackManager:GetItemNum(Gift_Pack_ID) > 0 then
         self.Pending_Open_Gift_Pack = false
-        GiftPackManager:OpenGiftPack(Gift_Pack_ID)
+        UGCGameSystem.GetLocalPlayerController():OpenGiftPack(Gift_Pack_ID)
     end
+end
+
+--[[----------------------礼包开启后检测周礼包状态------------------------]]
+function UI03:OnOpenGiftPackage()
+    self:RefreshWeekGiftPurchased(UGCGameSystem.GetLocalPlayerController())
+end
+
+--[[----------------------刷新周礼包已开通状态------------------------]]
+function UI03:RefreshWeekGiftPurchased(ctrl)
+    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    if not ctrl.WeekEndTime or Current_Time >= ctrl.WeekEndTime then
+        return
+    end
+
+    self.TextBlock_435:SetText("已开通")
+    self.TextBlock_435:SetColorAndOpacity({
+        SpecifiedColor = {
+            R = 0,
+            G = 1,
+            B = 0,
+            A = 1
+        },
+        ColorUseRule = 0
+    })
+    self.TextBlock_434:SetText(os.date("%m月%d日 %H:%M", ctrl.WeekEndTime))
+    self.TextBlock_436:SetText("再次购买")
 end
 
 -- [Editor Generated Lua] function define End;
