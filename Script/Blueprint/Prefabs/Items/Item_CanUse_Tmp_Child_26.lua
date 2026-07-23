@@ -1,8 +1,16 @@
 ---@class Item_CanUse_Tmp_Child_26_C:Item_CanUse_Tmp_C
---Edit Below--
-local Item_CanUse_Tmp_Child_26 = {} 
+-- Edit Below--
+local Item_CanUse_Tmp_Child_26 = {}
+local Gift_Pack_ID = 1030 -- 礼包表中的礼包ID
 
---[[经典背包事件]]--
+--[[----------------------通知客户端打开礼包界面------------------------]]
+function Item_CanUse_Tmp_Child_26:OnUseV2()
+    local Own_Backpack_Component = UGCItemSystemV2.GetOwnBackpackComponent(self) -- 获取所属背包组件
+    local Player_Controller = Own_Backpack_Component:GetOwner() -- 获取使用礼包的玩家
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Open_Gift_Pack, Gift_Pack_ID)
+end
+
+--[[经典背包事件]] --
 --[[
 --- func 处理物品的拾取(服务端生效)
 ---@return bool @是否拾取该物品, 返回true才能拾取进背包
@@ -50,9 +58,9 @@ local Item_CanUse_Tmp_Child_26 = {}
 -- function Item_CanUse_Tmp_Child_26:HanldeCleared()
 --    return Item_CanUse_Tmp_Child_26.SuperClass.HanldeCleared(self)
 -- end
-]]--
+]] --
 
---[[V2背包事件]]--
+--[[V2背包事件]] --
 --[[
 --- func 能否创建物品Handle(服务端生效)
 ---@return bool @是否允许创建物品Handle, 若不允许，物品也将创建失败
@@ -116,6 +124,6 @@ local Item_CanUse_Tmp_Child_26 = {}
 -- function Item_CanUse_Tmp_Child_26:UGC_OnStopUse(Reason)
     Item_CanUse_Tmp_Child_26.SuperClass.UGC_OnStopUse(self, Reason)
 -- end
-]]--
+]] --
 
 return Item_CanUse_Tmp_Child_26

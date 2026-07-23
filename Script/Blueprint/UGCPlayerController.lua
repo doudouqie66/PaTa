@@ -17,6 +17,8 @@ local UGCPlayerController = {
     PlayerMaxHP = 1,
     Return_To_Death_Location = false -- 是否返回死亡位置
 }
+UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
+
 --[[---------------------初始化测试-------------------------]] --
 function UGCPlayerController:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self)
@@ -62,6 +64,11 @@ function UGCPlayerController:GetAvailableServerRPCs()
 end
 
 -- [[----------------------下面是RPC方法------------------------]] --
+
+--[[----------------------打开礼包界面------------------------]]
+function UGCPlayerController:OpenGiftPack(Gift_Pack_ID)
+    GiftPackManager:OpenGiftPack(Gift_Pack_ID)
+end
 
 --[[--------------------通用提示方法1--------------------------]] --
 function UGCPlayerController:Tool_Msg_01(str)
