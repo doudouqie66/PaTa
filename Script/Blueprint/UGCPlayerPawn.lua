@@ -3,10 +3,16 @@
 ---@field HeadTop_UI_Component UWidgetComponent
 --Edit Below--
 ---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
+---@field HeadTop_UI_Component_Back UWidgetComponent
+---@field HeadTop_UI_Component UWidgetComponent
 -- Edit Below--
 ---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
 -- Edit Below--
-local UGCPlayerPawn = {}
+---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
+-- Edit Below--
+local UGCPlayerPawn = {
+    WinCup = 0 -- 当前显示的奖杯数量
+}
 
 --[[----------------------初始化玩家Pawn------------------------]]
 function UGCPlayerPawn:ReceiveBeginPlay()
@@ -23,6 +29,24 @@ function UGCPlayerPawn:ReceiveBeginPlay()
     end
 end
 
+--[[----------------------刷新头顶奖杯显示------------------------]]
+function UGCPlayerPawn:RefreshHeadTopTrophy(Trophy_Count)
+    local Head_Top_UI = self.HeadTop_UI_Component:GetUserWidgetObject() -- 头顶UI实例
+    if Head_Top_UI then
+        Head_Top_UI:RefreshTrophyCount(Trophy_Count)
+    end
+
+    local HeadTop_UI_Component_Back = self.HeadTop_UI_Component_Back:GetUserWidgetObject() -- 头顶UI实例
+    if HeadTop_UI_Component_Back then
+        HeadTop_UI_Component_Back:RefreshTrophyCount(Trophy_Count)
+    end
+end
+--[[----------------------奖杯数量同步后刷新头顶显示------------------------]]
+function UGCPlayerPawn:OnRep_WinCup()
+    if not UGCGameSystem.IsServer() then
+        self:RefreshHeadTopTrophy(self.WinCup)
+    end
+end
 --[[--------------------测试代码--------------------------]] --
 
 --[[----------------------初始化测试属性------------------------]]
@@ -39,7 +63,7 @@ end
 
 --[[----------------------返回复制属性------------------------]]
 function UGCPlayerPawn:GetReplicatedProperties()
-    return {"__SubObjectRepList", "Lazy"}
+    return {"__SubObjectRepList", "Lazy"}, {"WinCup", "Lazy"}
 end
 
 --[[----------------------设置反向移动状态------------------------]]

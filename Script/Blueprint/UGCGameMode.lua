@@ -3,22 +3,17 @@
 ---@class UGCGameMode_C:BP_UGCGameBase_C
 -- Edit Below--
 ---@class UGCGameMode_C:BP_UGCGameBase_C
-local UGCGameMode = {
-    Version = 1,
-    Level = 1,
-    Exp = 0,
-    Coins = 0,
-    Attack = 1,
-    MaxHP = 1
-};
+local UGCGameMode = {};
 
 --[[----------------------游戏启动------------------------]] --
 function UGCGameMode:ReceiveBeginPlay()
     -- EventScheduler.Start()
 end
 
---[[----------------------后加入的同步事件状态------------------------]] --
+--[[----------------------玩家进入游戏时读取存档，后加入的同步事件状态------------------------]] --
 function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
+    self:LoadPlayerArchive(PlayerController)
+
     local activeEvent = EventScheduler.GetActiveEvent()
     if activeEvent then
         -- 施加效果
@@ -28,6 +23,7 @@ end
 
 --[[----------------------复活后返回死亡位置------------------------]]
 function UGCGameMode:UGC_PlayerRespawnEvent(RespawnedController)
+    RespawnedController:SyncWinCupToPawn()
     if not RespawnedController.Return_To_Death_Location or RespawnedController.Death_Location == nil then
         return
     end
@@ -37,11 +33,6 @@ function UGCGameMode:UGC_PlayerRespawnEvent(RespawnedController)
         PlayerPawn:K2_SetActorLocation(RespawnedController.Death_Location)
     end
     RespawnedController.Return_To_Death_Location = false -- 重置返回死亡位置标记
-end
-
---[[----------------------玩家进入游戏时读取存档------------------------]]
-function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
-    self:LoadPlayerArchive(PlayerController)
 end
 
 --[[----------------------玩家登录时读取存档------------------------]]
@@ -59,6 +50,8 @@ function UGCGameMode:LoadPlayerArchive(PlayerController)
     PlayerController.PlayerAttack = archiveData.Attack or 1
     PlayerController.PlayerMaxHP = archiveData.MaxHP or 1
     PlayerController.WeekEndTime = archiveData.WeekEndTime
+    PlayerController.WinCup = archiveData.WinCup or 0
+    PlayerController:SyncWinCupToPawn()
 end
 
 --[[----------------------保存玩家存档数据------------------------]]
@@ -71,6 +64,7 @@ function UGCGameMode:SavePlayerArchive(PlayerController)
     archiveData.Attack = PlayerController.PlayerAttack
     archiveData.MaxHP = PlayerController.PlayerMaxHP
     archiveData.WeekEndTime = PlayerController.WeekEndTime
+    archiveData.WinCup = PlayerController.WinCup
 
     UGCPlayerStateSystem.SavePlayerArchiveData(tonumber(uid), archiveData)
 end
@@ -86,12 +80,10 @@ end
 --[[----------------------获取玩家默认存档数据------------------------]]
 function UGCGameMode:GetDefaultArchiveData()
     return {
-        Version = 1,
         Level = 1,
-        Exp = 0,
-        Coins = 0,
         Attack = 1,
-        MaxHP = 1
+        MaxHP = 1,
+        WinCup = 0
     }
 end
 

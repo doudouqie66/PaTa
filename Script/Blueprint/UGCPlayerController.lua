@@ -16,7 +16,8 @@ local UGCPlayerController = {
     PlayerAttack = 1,
     PlayerMaxHP = 1,
     Return_To_Death_Location = false, -- 是否返回死亡位置
-    WeekEndTime = nil
+    WeekEndTime = nil,
+    WinCup = 0 -- 获得奖杯数量
 }
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 
@@ -56,14 +57,34 @@ end
 
 --[[-----------------------需要同步的属性-----------------------]] --
 function UGCPlayerController:GetReplicatedProperties()
-    return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}
+    return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}, {"WinCup", "Lazy"}
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
-        L_Enum.Name_RPC.Request_Respawn
+        L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup
+end
+--[[----------------------增加玩家奖杯并保存------------------------]]
+function UGCPlayerController:Add_WinCup(Add_Count)
+    if not self:HasAuthority() then
+        return
+    end
+
+    self.WinCup = self.WinCup + Add_Count
+    self:SyncWinCupToPawn()
+    self:SaveArchive()
 end
 
+--[[----------------------同步奖杯数量到玩家Pawn------------------------]]
+function UGCPlayerController:SyncWinCupToPawn()
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家Pawn
+    if not Player_Pawn then
+        return
+    end
+
+    Player_Pawn.WinCup = self.WinCup
+    UnrealNetwork.RepLazyProperty(Player_Pawn, "WinCup")
+end
 -- [[----------------------下面是RPC方法------------------------]] --
 
 --[[----------------------打开礼包界面------------------------]]
@@ -74,13 +95,11 @@ function UGCPlayerController:OpenGiftPack(Gift_Pack_ID)
     end
     GiftPackManager:OpenGiftPack(Gift_Pack_ID)
     self:SaveArchive()
-
 end
 
 --[[--------------------通用提示方法1--------------------------]] --
 function UGCPlayerController:Tool_Msg_01(str)
     TipsMgr.ShowTips_01(str)
-
 end
 --[[----------------------通知警示区域------------------------]] --
 

@@ -42,7 +42,9 @@ L_Enum.Name_RPC = {
     Tool_Msg_01 = "Tool_Msg_01",
     Request_Respawn = "RequestRespawn", -- 复活请求RPC名称
     Show_Respawn_UI = "ShowRespawnUI", -- 显示复活界面RPC名称
-    Open_Gift_Pack = "OpenGiftPack" -- 打开礼包界面RPC名称
+    Open_Gift_Pack = "OpenGiftPack", -- 打开礼包界面RPC名称
+    Add_WinCup = "Add_WinCup" -- 添加奖杯
+
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 

@@ -7,7 +7,7 @@
 ---@field TextBlock_73 UTextBlock
 ---@field TextBlock_134 UTextBlock
 ---@field WBP_GiftPackBtn WBP_GiftPackBtn_C
---Edit Below--
+-- Edit Below--
 ---@class MainUI_C:UUserWidget
 ---@field Button_87 UButton
 ---@field Button_263 UButton
@@ -56,8 +56,7 @@ function MainUI:Tick(MyGeometry, InDeltaTime)
     local GameState = UGCGameSystem.GameState
     self.TextBlock_134:SetText(tostring(GameState.EventElapsed or 0))
     if self.Fly_Vertical_Input_Value ~= 0 then
-        UGCGameSystem.GetLocalPlayerPawn():AddMovementInput(Vector.New(0, 0, 1),
-            self.Fly_Vertical_Input_Value, false)
+        UGCGameSystem.GetLocalPlayerPawn():AddMovementInput(Vector.New(0, 0, 1), self.Fly_Vertical_Input_Value, false)
     end
 end
 
@@ -127,7 +126,6 @@ function MainUI:Button_381_OnClicked()
     -- UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.UseRedemptionCode, "XXXX-XXXX-XXXX")
     --[[-------------------测试UImgr---------------------------]] --
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention)
-
 end
 
 --[[----------------------输入完成后提交兑换码------------------------]]
