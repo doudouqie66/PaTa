@@ -4,6 +4,13 @@
 ---@field RankingListComponent RankingListComponent_C
 ---@field SignInEventComponent SignInEventComponent_C
 ---@field ShopV2Component ShopV2Component_C
+--Edit Below--
+---@class UGCPlayerController_C:BP_UGCPlayerController_C
+---@field GiftPackComponent GiftPackComponent_C
+---@field TaskTemplateComponent TaskTemplateComponent_C
+---@field RankingListComponent RankingListComponent_C
+---@field SignInEventComponent SignInEventComponent_C
+---@field ShopV2Component ShopV2Component_C
 -- Edit Below--
 ---@class UGCPlayerController_C:BP_UGCPlayerController_C
 ---@field GiftPackComponent GiftPackComponent_C
