@@ -146,14 +146,16 @@ function UI07:Button_76_OnClicked()
         L_TipsTool.ShowTips_01("请输入四位密码")
         return
     end
+    local PC = UGCGameSystem.GetLocalPlayerController()
 
     local Game_State = UGCGameSystem.GameState -- 当前房间状态
     if tonumber(self.Input_Pass) == Game_State.Room_Pass then
         L_TipsTool.ShowTips_01("密码正确")
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI07, false)
 
+        UnrealNetwork.CallUnrealRPC(PC, UGCGameSystem.GameState, L_Enum.Name_RPC.Men_State, true)
+
         -- 重新生成密码
-        local PC = UGCGameSystem.GetLocalPlayerController()
         UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.New_Pass)
 
     else

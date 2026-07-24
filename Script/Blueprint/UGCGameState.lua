@@ -19,6 +19,12 @@ local UGCGameState = {
     Room_Pass = 0
 };
 
+--[[----------------------注册客户端可调用的服务端RPC------------------------]]
+function UGCGameState:GetAvailableServerRPCs()
+    return L_Enum.Name_RPC.Men_State
+
+end
+
 --[[----------------------声明房间同步属性------------------------]]
 function UGCGameState:GetReplicatedProperties()
     return {"Room_Pass", "Lazy"}
@@ -27,6 +33,25 @@ end
 function UGCGameState:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self);
     self:InitUI()
+end
+
+--[[--------------------改变门状态--------------------------]] --
+function UGCGameState:Men_State(Can_Enter, From_Multicast)
+    if self:HasAuthority() and not From_Multicast then
+        for _, Actor in ipairs(UGCActorComponentUtility.GetAllActorsWithTag(self, "Men")) do
+            Actor:SetActorEnableCollision(not Can_Enter)
+        end
+
+        UnrealNetwork.CallUnrealRPC_Multicast(self, L_Enum.Name_RPC.Men_State, Can_Enter, true)
+        return
+    end
+
+    local Material_Path = Can_Enter and L_Enum.Name_Material.Men_CanEnter or L_Enum.Name_Material.Men_YuanLai -- 门材质路径
+    local Material = UE.LoadObject(Material_Path) -- 加载门材质
+    for _, Actor in ipairs(UGCActorComponentUtility.GetAllActorsWithTag(self, "Men")) do
+        Actor:SetActorEnableCollision(not Can_Enter)
+        Actor.StaticMeshComponent:SetMaterial(0, Material)
+    end
 end
 
 --[[----------------------初始化界面------------------------]]

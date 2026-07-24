@@ -18,6 +18,13 @@ L_Enum.Name_ClassPath = {
     UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C"
 
 }
+
+--[[----------------------材质的路径-----------------------]] --
+L_Enum.Name_Material = {
+    Men_YuanLai = '/Game/UGC/Materials/MasterMaterialInst/UI_Effect/DX_FX_11_Inst.DX_FX_11_Inst',
+    Men_CanEnter = '/Game/UMG/UI_Effect/Materials/DX_FlowLight_09.DX_FlowLight_09'
+
+}
 --[[----------------------Buff名字------------------------]] --
 
 L_Enum.Name_BuffPath = {
@@ -47,8 +54,7 @@ L_Enum.Name_RPC = {
     Switch_View = "Switch_View", -- 切换视角
     New_Pass = "New_Pass", -- 重新生成随机密码
     Add_Backpack_Item = "Add_Backpack_Item", -- 添加背包物品
-    UI_Refre_02 = "UI_Refre_02" -- 刷新02的UI
-
+    Men_State = "Men_State" -- 切换门的状态
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 

@@ -162,8 +162,8 @@ end
 
 --[[----------------------购买周卡成功后更新有效期------------------------]]
 function UGCPlayerController:OnBuyUGCCommodityResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
-    if not bSuccess or PlayerKey ~= self.PlayerKey or ProductID ~= L_Enum.ID_ShopProduct.WeekdGift or
-        CommodityID ~= L_Enum.ID_Gift.WeekdGift then
+    if not bSuccess or PlayerKey ~= self.PlayerKey or ProductID ~= L_Enum.ID_ShopProduct.WeekdGift or CommodityID ~=
+        L_Enum.ID_Gift.WeekdGift then
         return
     end
 

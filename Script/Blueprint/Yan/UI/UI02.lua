@@ -12,7 +12,7 @@
 ---@field Image_38 UImage
 ---@field TextBlock_61 UTextBlock
 ---@field TextBlock_62 UTextBlock
---Edit Below--
+-- Edit Below--
 ---@class UI02_C:UUserWidget
 ---@field Button_1 UButton
 ---@field Button_2 UButton
@@ -124,7 +124,6 @@ end
 function UI02:Button_113_OnClicked()
     -- 打开七天签到界面
     SignInEventManager:OpenMainUI()
-
 end
 --[[--------------------全服排行--------------------------]] --
 
