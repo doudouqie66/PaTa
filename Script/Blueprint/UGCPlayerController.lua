@@ -4,7 +4,7 @@
 ---@field RankingListComponent RankingListComponent_C
 ---@field SignInEventComponent SignInEventComponent_C
 ---@field ShopV2Component ShopV2Component_C
---Edit Below--
+-- Edit Below--
 ---@class UGCPlayerController_C:BP_UGCPlayerController_C
 ---@field GiftPackComponent GiftPackComponent_C
 ---@field TaskTemplateComponent TaskTemplateComponent_C
@@ -93,12 +93,26 @@ function UGCPlayerController:Add_WinCup(Add_Count)
     if not self:HasAuthority() then
         return
     end
+    -- 添加排行榜
+    local Player_UID = UGCGameSystem.GetUIDByPlayerController(self) -- 玩家UID
+    local Ranking_List_ID = 1 -- 奖杯排行榜ID
+    local Add_Score = 1 -- 本次增加的奖杯数
+    RankingListManager:UpdateScore(self, Player_UID, Ranking_List_ID, Add_Score, true)
 
     self.WinCup = self.WinCup + Add_Count
     self:SyncWinCupToPawn()
     self:SaveArchive()
 end
 
+--[[-------------------传送---------------------------]] --
+function UGCPlayerController:TeleToPoint(Point)
+    local pawn = self:K2_GetPawn()
+    local PlayerStartManagerComponentClass = ScriptGameplayStatics.FindClass("PlayerStartManagerComponent")
+    local PlayerStartManagerComponent = UGCGameSystem.GameMode:GetComponentByClass(PlayerStartManagerComponentClass)
+    local PlayerStart = PlayerStartManagerComponent:FindPlayerStartByBornPointID(Point, false)
+    local loc = PlayerStart:K2_GetActorLocation()
+    UGCPlayerControllerSystem.TeleportTo(self, loc.X, loc.Y, loc.Z + 100)
+end
 --[[----------------------同步奖杯数量到玩家Pawn------------------------]]
 function UGCPlayerController:SyncWinCupToPawn()
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家Pawn
