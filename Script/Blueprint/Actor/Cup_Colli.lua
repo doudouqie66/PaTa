@@ -66,7 +66,7 @@ function Cup_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, 
     PC:Add_WinCup(1)
     -- 传送回家
 
-    PC:TeleToPoint(2)
+    PC:TeleToPoint(1)
 end
 
 -- [Editor Generated Lua] function define End;
