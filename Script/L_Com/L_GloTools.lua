@@ -50,4 +50,11 @@ function L_GloTools.BuyShopProduct(Product_ID, Buy_Count)
     UGCCommoditySystem.BuyUGCCommodity2(Product_ID, Object_Data.ItemIcon, Object_Data.ItemDesc, Buy_Count)
 end
 
+--[[----------------------给当前玩家添加背包物品------------------------]]
+function L_GloTools.AddBackpackItem(Item_ID, Item_Count)
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 当前玩家控制器
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Add_Backpack_Item, Item_ID,
+        Item_Count)
+end
+
 return L_GloTools

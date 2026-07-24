@@ -83,8 +83,14 @@ end
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
-        L_Enum.Name_RPC.New_Pass
+        L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item
 
+end
+
+--[[----------------------给当前玩家添加背包物品------------------------]]
+function UGCPlayerController:Add_Backpack_Item(Item_ID, Item_Count)
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager")
+    Virtual_Item_Manager:AddVirtualItem(self, Item_ID, Item_Count)
 end
 
 --[[----------------------重新生成密码------------------------]]
@@ -109,6 +115,8 @@ function UGCPlayerController:Add_WinCup(Add_Count)
     if not self:HasAuthority() then
         return
     end
+
+    self:Add_Backpack_Item(1014, Add_Count)
     -- 添加排行榜
     local Ranking_List_Manager = UGCGamePartSystem.GetGamePartGlobalActor("RankingListManager") -- 排行榜管理器
     local Player_UID = UGCGameSystem.GetUIDByPlayerController(self) -- 玩家UID
