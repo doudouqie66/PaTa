@@ -76,10 +76,14 @@ end
 --[[--------------------七天签到--------------------------]] --
 
 function UI02:Button_113_OnClicked()
+    -- 打开七天签到界面
+    SignInEventManager:OpenMainUI()
 end
 --[[--------------------全服排行--------------------------]] --
 
 function UI02:Button_115_OnClicked()
+    -- 打开排行榜界面
+    RankingListManager:OpenRankingList()
 end
 
 -- [Editor Generated Lua] function define End;

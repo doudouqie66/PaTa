@@ -13,7 +13,8 @@ UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventConfig')
 UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventScheduler')
 UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventConfig_BackUp')
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
-
+UGCGameSystem.UGCRequire("ExtendResource.SignInEvent.OfficialPackage.Script.SignInEvent.SignInEventManager")
+UGCGameSystem.UGCRequire("ExtendResource.RankingList.OfficialPackage.Script.RankingList.RankingListManager")
 local UGCGameState = {};
 --[[----------------------游戏状态开始时初始化------------------------]]
 function UGCGameState:ReceiveBeginPlay()

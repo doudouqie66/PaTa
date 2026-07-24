@@ -71,7 +71,14 @@ L_Enum.Name_RepPts = {
 
 --[[------------------------礼包ID----------------------]] --
 L_Enum.ID_Gift = {
-    WeekdGift = 1030
+    WeekdGift = 1030,
+    StarterGift = 1031
+
+}
+--[[------------------------商品ID----------------------]] --
+L_Enum.ID_ShopProduct = {
+    WeekdGift = 9000029,
+    StarterGift = 9000032
 
 }
 return L_Enum

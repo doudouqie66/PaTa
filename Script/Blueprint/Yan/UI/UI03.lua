@@ -81,9 +81,6 @@
 -- Edit Below--
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 
-local Gift_Pack_Product_ID = 9000029 -- 礼包对应的商品ID
-local Gift_Pack_ID = 1030 -- 礼包表中的礼包ID
-
 local UI03 = {
     bInitDoOnce = false,
     Pending_Open_Gift_Pack = false
@@ -135,26 +132,21 @@ end
 
 --[[----------------------购买礼包商品------------------------]]
 function UI03:Button_108_OnClicked()
-
-    local Buy_Count = 1 -- 购买数量
-    local Product_Data = ShopV2Manager:GetProductConfigData(Gift_Pack_Product_ID) -- 商品信息
-    local Object_Data = ShopV2Manager:GetItemConfigData(Product_Data.ItemID) -- 物品信息
-
-    UGCCommoditySystem.BuyUGCCommodity2(Gift_Pack_Product_ID, Object_Data.ItemIcon, Object_Data.ItemDesc, Buy_Count)
+    L_GloTools.BuyShopProduct(L_Enum.ID_ShopProduct.WeekdGift)
 end
 
 --[[----------------------记录购买成功后待开启的礼包------------------------]]
 function UI03:OnBuyUGCCommodityResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
-    if bSuccess and ProductID == Gift_Pack_Product_ID and CommodityID == Gift_Pack_ID then
+    if bSuccess and ProductID == L_Enum.ID_ShopProduct.WeekdGift and CommodityID == L_Enum.ID_Gift.WeekdGift then
         self.Pending_Open_Gift_Pack = true
     end
 end
 
 --[[----------------------礼包到账后自动开启------------------------]]
 function UI03:OnItemNumUpdated()
-    if self.Pending_Open_Gift_Pack and GiftPackManager:GetItemNum(Gift_Pack_ID) > 0 then
+    if self.Pending_Open_Gift_Pack and GiftPackManager:GetItemNum(L_Enum.ID_Gift.WeekdGift) > 0 then
         self.Pending_Open_Gift_Pack = false
-        UGCGameSystem.GetLocalPlayerController():OpenGiftPack(Gift_Pack_ID)
+        UGCGameSystem.GetLocalPlayerController():OpenGiftPack(L_Enum.ID_Gift.WeekdGift)
     end
 end
 
