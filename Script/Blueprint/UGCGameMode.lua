@@ -66,6 +66,7 @@ function UGCGameMode:LoadPlayerArchive(PlayerController)
     PlayerController.PlayerAttack = archiveData.Attack or 1
     PlayerController.PlayerMaxHP = archiveData.MaxHP or 1
     PlayerController.WeekEndTime = archiveData.WeekEndTime
+    UnrealNetwork.RepLazyProperty(PlayerController, "WeekEndTime")
     PlayerController.WinCup = archiveData.WinCup or 0
     PlayerController:SyncWinCupToPawn()
 end

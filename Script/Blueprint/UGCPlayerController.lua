@@ -44,7 +44,14 @@ local UGCPlayerController = {
 --[[---------------------初始化测试-------------------------]] --
 function UGCPlayerController:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self)
+    UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyUGCCommodityResult, self)
     self:InitTest()
+end
+
+--[[----------------------结束时解绑购买结果委托------------------------]]
+function UGCPlayerController:ReceiveEndPlay()
+    UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
+    self.SuperClass.ReceiveEndPlay(self)
 end
 --[[------------------测试送东西----------------------------]] --
 function UGCPlayerController:InitTest()
@@ -77,7 +84,8 @@ end
 
 --[[-----------------------需要同步的属性-----------------------]] --
 function UGCPlayerController:GetReplicatedProperties()
-    return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}, {"WinCup", "Lazy"}
+    return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}, {"WeekEndTime", "Lazy"},
+        {"WinCup", "Lazy"}
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
@@ -149,12 +157,23 @@ end
 
 --[[----------------------打开礼包界面------------------------]]
 function UGCPlayerController:OpenGiftPack(Gift_Pack_ID)
-    if Gift_Pack_ID == L_Enum.ID_Gift.WeekdGift then
-        local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
-        self.WeekEndTime = math.max(self.WeekEndTime or 0, Current_Time) + 7 * 24 * 60 * 60
-    end
     GiftPackManager:OpenGiftPack(Gift_Pack_ID)
-    self:SaveArchive()
+end
+
+--[[----------------------购买周卡成功后更新有效期------------------------]]
+function UGCPlayerController:OnBuyUGCCommodityResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
+    if not bSuccess or PlayerKey ~= self.PlayerKey or ProductID ~= L_Enum.ID_ShopProduct.WeekdGift or
+        CommodityID ~= L_Enum.ID_Gift.WeekdGift then
+        return
+    end
+
+    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    local Week_Card_Duration = 7 * 24 * 60 * 60 -- 单张周卡持续秒数
+    self.WeekEndTime = math.max(self.WeekEndTime or 0, Current_Time) + Week_Card_Duration * Count
+    if self:HasAuthority() then
+        UnrealNetwork.RepLazyProperty(self, "WeekEndTime")
+        self:SaveArchive()
+    end
 end
 
 --[[--------------------通用提示方法1--------------------------]] --
