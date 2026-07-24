@@ -11,7 +11,7 @@ function Item_CanUse_Tmp_Child_25:OnUseV2()
     local Own_Backpack_Component = UGCItemSystemV2.GetOwnBackpackComponent(self) -- 获取所属背包组件
     local Player_Controller = Own_Backpack_Component:GetOwner() -- 获取使用物品的玩家
     local Pass = UGCGameSystem.GameState.Room_Pass -- 获取房间密码
-    L_TipsTool.ShowTips_01("密码是" .. tostring(Pass), Player_Controller)
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Show_Room_Pass_UI, Pass)
 end
 --[[经典背包事件]] --
 --[[

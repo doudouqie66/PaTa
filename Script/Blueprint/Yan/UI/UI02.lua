@@ -23,32 +23,11 @@
 ---@field Image_282 UImage
 ---@field Image_283 UImage
 ---@field Image_284 UImage
--- Edit Below--
----@class UI02_C:UUserWidget
----@field Button_0 UButton
----@field Button_5 UButton
----@field Button_6 UButton
----@field Button_7 UButton
----@field Button_8 UButton
----@field Button_9 UButton
----@field Button_86 UButton
----@field Button_108 UButton
----@field Button_109 UButton
----@field Button_111 UButton
----@field Button_112 UButton
----@field Button_113 UButton
----@field Button_115 UButton
----@field Image_187 UImage
----@field Image_188 UImage
----@field Image_276 UImage
----@field Image_277 UImage
----@field Image_278 UImage
----@field Image_279 UImage
----@field Image_280 UImage
----@field Image_281 UImage
----@field Image_282 UImage
----@field Image_283 UImage
----@field Image_284 UImage
+---@field TextBlock_5 UTextBlock
+---@field TextBlock_6 UTextBlock
+---@field TextBlock_7 UTextBlock
+---@field TextBlock_8 UTextBlock
+---@field TextBlock_9 UTextBlock
 -- Edit Below--
 local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID

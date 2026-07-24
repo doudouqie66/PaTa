@@ -180,6 +180,12 @@ end
 function UGCPlayerController:Tool_Msg_01(str)
     TipsMgr.ShowTips_01(str)
 end
+
+--[[----------------------显示房间密码界面------------------------]]
+function UGCPlayerController:Show_Room_Pass_UI(Room_Pass)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.kj01, true)
+    L_GloTools.UI_Map[L_Enum.Name_ClassPath.kj01]:SetRoomPass(Room_Pass)
+end
 --[[----------------------通知警示区域------------------------]] --
 
 function UGCPlayerController:Mgr_Atten(bool)

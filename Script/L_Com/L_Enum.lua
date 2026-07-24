@@ -15,7 +15,8 @@ L_Enum.Name_ClassPath = {
     UI06 = RootPath .. "Asset/Blueprint/Yan/UI/UI06.UI06_C",
     UI07 = RootPath .. "Asset/Blueprint/Yan/UI/UI07.UI07_C",
     UI08 = RootPath .. "Asset/Blueprint/Yan/UI/UI08.UI08_C",
-    UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C"
+    UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C",
+    kj01 = RootPath .. "Asset/Blueprint/Yan/UI/kj01.kj01_C"
 
 }
 
@@ -54,7 +55,8 @@ L_Enum.Name_RPC = {
     Switch_View = "Switch_View", -- 切换视角
     New_Pass = "New_Pass", -- 重新生成随机密码
     Add_Backpack_Item = "Add_Backpack_Item", -- 添加背包物品
-    Men_State = "Men_State" -- 切换门的状态
+    Men_State = "Men_State", -- 切换门的状态
+    Show_Room_Pass_UI = "Show_Room_Pass_UI" -- 显示房间密码界面
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 
