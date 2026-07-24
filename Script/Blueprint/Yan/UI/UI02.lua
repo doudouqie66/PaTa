@@ -1,6 +1,10 @@
 ---@class UI02_C:UUserWidget
----@field Button_1 UButton
----@field Button_2 UButton
+---@field Button_0 UButton
+---@field Button_5 UButton
+---@field Button_6 UButton
+---@field Button_7 UButton
+---@field Button_8 UButton
+---@field Button_9 UButton
 ---@field Button_86 UButton
 ---@field Button_108 UButton
 ---@field Button_109 UButton
@@ -8,14 +12,25 @@
 ---@field Button_112 UButton
 ---@field Button_113 UButton
 ---@field Button_115 UButton
----@field Image_37 UImage
----@field Image_38 UImage
----@field TextBlock_61 UTextBlock
----@field TextBlock_62 UTextBlock
+---@field Image_187 UImage
+---@field Image_188 UImage
+---@field Image_276 UImage
+---@field Image_277 UImage
+---@field Image_278 UImage
+---@field Image_279 UImage
+---@field Image_280 UImage
+---@field Image_281 UImage
+---@field Image_282 UImage
+---@field Image_283 UImage
+---@field Image_284 UImage
 -- Edit Below--
 ---@class UI02_C:UUserWidget
----@field Button_1 UButton
----@field Button_2 UButton
+---@field Button_0 UButton
+---@field Button_5 UButton
+---@field Button_6 UButton
+---@field Button_7 UButton
+---@field Button_8 UButton
+---@field Button_9 UButton
 ---@field Button_86 UButton
 ---@field Button_108 UButton
 ---@field Button_109 UButton
@@ -23,35 +38,17 @@
 ---@field Button_112 UButton
 ---@field Button_113 UButton
 ---@field Button_115 UButton
----@field Image_37 UImage
----@field Image_38 UImage
----@field TextBlock_61 UTextBlock
--- Edit Below--
----@class UI02_C:UUserWidget
----@field Button_1 UButton
----@field Button_2 UButton
----@field Button_86 UButton
----@field Button_108 UButton
----@field Button_109 UButton
----@field Button_111 UButton
----@field Button_112 UButton
----@field Button_113 UButton
----@field Button_115 UButton
----@field Image_37 UImage
----@field Image_38 UImage
--- Edit Below--
----@class UI02_C:UUserWidget
----@field Button_1 UButton
----@field Button_2 UButton
----@field Button_86 UButton
----@field Button_108 UButton
----@field Button_109 UButton
----@field Button_111 UButton
----@field Button_112 UButton
----@field Button_113 UButton
----@field Button_115 UButton
----@field Image_37 UImage
----@field Image_38 UImage
+---@field Image_187 UImage
+---@field Image_188 UImage
+---@field Image_276 UImage
+---@field Image_277 UImage
+---@field Image_278 UImage
+---@field Image_279 UImage
+---@field Image_280 UImage
+---@field Image_281 UImage
+---@field Image_282 UImage
+---@field Image_283 UImage
+---@field Image_284 UImage
 -- Edit Below--
 local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID
@@ -95,6 +92,12 @@ function UI02:LuaInit()
     self.Button_115.OnClicked:Add(self.Button_115_OnClicked, self);
     self.Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
     self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Add(self.RefreshCurrency, self)
+    self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
+    self.Button_5.OnClicked:Add(self.Button_5_OnClicked, self);
+    self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
+    self.Button_7.OnClicked:Add(self.Button_7_OnClicked, self);
+    self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
+    self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
     self:RefreshCurrency()
 end
@@ -119,12 +122,7 @@ end
 function UI02:Button_112_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI04, true)
 end
---[[--------------------七天签到--------------------------]] --
-
-function UI02:Button_113_OnClicked()
-    -- 打开七天签到界面
-    SignInEventManager:OpenMainUI()
-end
+-- 
 --[[--------------------全服排行--------------------------]] --
 
 function UI02:Button_115_OnClicked()
@@ -132,6 +130,43 @@ function UI02:Button_115_OnClicked()
     RankingListManager:OpenRankingList()
 end
 
--- [Editor Generated Lua] function define End;
+--[[---------------------首充-------------------------]] --
+function UI02:Button_0_OnClicked()
 
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI06)
+end
+
+--[[---------------------第一个物品-------------------------]] --
+function UI02:Button_5_OnClicked()
+    return nil;
+end
+--[[---------------------第二个物品-------------------------]] --
+
+function UI02:Button_6_OnClicked()
+    return nil;
+end
+--[[---------------------第三个物品-------------------------]] --
+
+function UI02:Button_7_OnClicked()
+    return nil;
+end
+--[[---------------------第四个物品-------------------------]] --
+
+function UI02:Button_8_OnClicked()
+    return nil;
+end
+--[[---------------------第五个物品-------------------------]] --
+
+function UI02:Button_9_OnClicked()
+    return nil;
+end
+
+-- [Editor Generated Lua] function define End;
+--[[--------------------奖杯商店--------------------------]] --
+
+function UI02:Button_113_OnClicked()
+    -- 打开奖杯商店
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI05)
+
+end
 return UI02
