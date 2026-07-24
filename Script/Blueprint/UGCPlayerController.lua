@@ -38,7 +38,12 @@ local UGCPlayerController = {
     PlayerMaxHP = 1,
     Return_To_Death_Location = false, -- 是否返回死亡位置
     WeekEndTime = nil,
-    WinCup = 0 -- 获得奖杯数量
+    WinCup = 0, -- 获得奖杯数量
+    Tower_Reward_Has_Started = false, -- 是否进入过计时区域
+    Tower_Reward_Is_Timing = false, -- 当前是否正在区域内计时
+    Tower_Reward_Enter_Time = 0, -- 本次进入区域的时间戳
+    Tower_Reward_Accumulated_Time = 0, -- 已累计的区域内停留秒数
+    Tower_Reward_Claim_Mask = 0 -- 五档奖励领取状态位
 }
 
 --[[---------------------初始化测试-------------------------]] --
@@ -85,14 +90,89 @@ end
 --[[-----------------------需要同步的属性-----------------------]] --
 function UGCPlayerController:GetReplicatedProperties()
     return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}, {"WeekEndTime", "Lazy"},
-        {"WinCup", "Lazy"}
+        {"WinCup", "Lazy"}, {"Tower_Reward_Has_Started", "Lazy"}, {"Tower_Reward_Is_Timing", "Lazy"},
+        {"Tower_Reward_Enter_Time", "Lazy"}, {"Tower_Reward_Accumulated_Time", "Lazy"},
+        {"Tower_Reward_Claim_Mask", "Lazy"}
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
-        L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item
+        L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward
 
+end
+
+--[[----------------------获取塔内累计停留时间------------------------]]
+function UGCPlayerController:GetTowerRewardElapsedTime()
+    local Elapsed_Time = self.Tower_Reward_Accumulated_Time -- 当前累计停留秒数
+
+    if self.Tower_Reward_Is_Timing then
+        local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+        Elapsed_Time = Elapsed_Time + math.max(0, Current_Time - self.Tower_Reward_Enter_Time)
+    end
+
+    return math.floor(Elapsed_Time)
+end
+
+--[[----------------------同步塔内计时状态------------------------]]
+function UGCPlayerController:SyncTowerRewardState()
+    UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Has_Started")
+    UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Is_Timing")
+    UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Enter_Time")
+    UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Accumulated_Time")
+    UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Claim_Mask")
+end
+
+--[[----------------------开始或继续塔内奖励计时------------------------]]
+function UGCPlayerController:StartTowerRewardTimer()
+    if not self:HasAuthority() or self.Tower_Reward_Is_Timing then
+        return
+    end
+
+    self.Tower_Reward_Has_Started = true
+    self.Tower_Reward_Is_Timing = true
+    self.Tower_Reward_Enter_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime())
+    self:SyncTowerRewardState()
+end
+
+--[[----------------------暂停塔内奖励计时------------------------]]
+function UGCPlayerController:PauseTowerRewardTimer()
+    if not self:HasAuthority() or not self.Tower_Reward_Is_Timing then
+        return
+    end
+
+    self.Tower_Reward_Accumulated_Time = self:GetTowerRewardElapsedTime()
+    self.Tower_Reward_Is_Timing = false
+    self.Tower_Reward_Enter_Time = 0
+    self:SyncTowerRewardState()
+end
+
+--[[----------------------领取塔内计时奖励------------------------]]
+function UGCPlayerController:Claim_Tower_Reward(Reward_Index)
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Reward_Time = L_Enum.Tower_Reward.Reward_Times[Reward_Index] -- 当前档位要求秒数
+    local Reward_Item_ID = L_Enum.Tower_Reward.Reward_Item_IDs[Reward_Index] -- 当前档位物品ID
+    if not Reward_Time or not Reward_Item_ID then
+        return
+    end
+
+    local Reward_Flag = 2 ^ (Reward_Index - 1) -- 当前档位领取状态位
+    local Has_Claimed = math.floor(self.Tower_Reward_Claim_Mask / Reward_Flag) % 2 == 1 -- 是否已经领取
+    if Has_Claimed or self:GetTowerRewardElapsedTime() < Reward_Time then
+        return
+    end
+
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
+    if not Virtual_Item_Manager:AddVirtualItem(self, Reward_Item_ID, L_Enum.Tower_Reward.Reward_Item_Count) then
+        return
+    end
+
+    self.Tower_Reward_Claim_Mask = self.Tower_Reward_Claim_Mask + Reward_Flag
+    UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Claim_Mask")
+    L_TipsTool.ShowTips_01("领取奖励成功", self)
 end
 
 --[[----------------------给当前玩家添加背包物品------------------------]]

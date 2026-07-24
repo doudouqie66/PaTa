@@ -56,8 +56,17 @@ L_Enum.Name_RPC = {
     New_Pass = "New_Pass", -- 重新生成随机密码
     Add_Backpack_Item = "Add_Backpack_Item", -- 添加背包物品
     Men_State = "Men_State", -- 切换门的状态
-    Show_Room_Pass_UI = "Show_Room_Pass_UI" -- 显示房间密码界面
+    Show_Room_Pass_UI = "Show_Room_Pass_UI", -- 显示房间密码界面
+    Claim_Tower_Reward = "Claim_Tower_Reward" -- 领取塔内计时奖励
     -- Client_RefUI_Level = "Client_RefUI_Level"
+}
+
+L_Enum.Tower_Reward = {
+    -- Reward_Times = {360, 720, 1080, 1560, 2100}, -- 五档奖励所需累计停留秒数
+    Reward_Times = {1, 2, 3, 4, 2100}, -- 五档奖励所需累计停留秒数
+
+    Reward_Item_IDs = {1017, 1023, 1028, 1013, 1011}, -- 五档奖励虚拟物品ID
+    Reward_Item_Count = 1 -- 每档奖励数量
 }
 
 L_Enum.Name_Event = {
