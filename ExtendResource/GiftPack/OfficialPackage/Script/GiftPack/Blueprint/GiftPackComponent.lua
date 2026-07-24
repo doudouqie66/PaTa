@@ -357,14 +357,8 @@ function GiftPackComponent:OnAddVirtualItem(Result)
     local bSucceeded = Result.bSucceeded;
     local PlayerKey = Result.PlayerKey;
     local RequestMark = Result.RequestMark;
-    local ItemList = Result.ItemList;
     local SelfPlayerKey = PlayerController:GetInt64PlayerKey();
     if bSucceeded and PlayerKey == SelfPlayerKey and RequestMark == self.RequestMark then
-        local AwardList = {};
-        for ItemID, ItemNum in pairs(ItemList) do
-            table.insert(AwardList, {ItemID = ItemID, ItemNum = ItemNum});
-        end
-        self:OpenItemGet(AwardList);
         if self.GiftPackApplyUI then
             self.GiftPackApplyUI:SetVisibility(ESlateVisibility.Collapsed);
         end

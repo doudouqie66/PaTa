@@ -415,11 +415,6 @@ function ShopV2Manager:OnAddVirtualItem(Result)
     if Result.bSucceeded == false then
         return;
     end
-
-    for ItemID, Num in pairs(Result.ItemList) do
-        self:ShowItemGetPopup(ItemID, Num);
-        return;
-    end
 end
 
 function ShopV2Manager:OnBuyProductResult(Result)
