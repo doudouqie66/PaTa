@@ -46,7 +46,8 @@ L_Enum.Name_RPC = {
     Add_WinCup = "Add_WinCup", -- 添加奖杯
     Switch_View = "Switch_View", -- 切换视角
     New_Pass = "New_Pass", -- 重新生成随机密码
-    Add_Backpack_Item = "Add_Backpack_Item" -- 添加背包物品
+    Add_Backpack_Item = "Add_Backpack_Item", -- 添加背包物品
+    UI_Refre_02 = "UI_Refre_02" -- 刷新02的UI
 
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
