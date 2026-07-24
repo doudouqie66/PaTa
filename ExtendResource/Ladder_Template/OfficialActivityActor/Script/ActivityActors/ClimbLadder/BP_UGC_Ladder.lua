@@ -1,4 +1,7 @@
 ---@class BP_UGC_Ladder_C:ActivityBaseActor
+---@field StaticMesh3 UStaticMeshComponent
+---@field StaticMesh2 UStaticMeshComponent
+---@field StaticMesh1 UStaticMeshComponent
 ---@field CanClimbDownBoxCheckArea UOverlapCheckAreaComponent
 ---@field CanClimbUpBoxCheckArea UOverlapCheckAreaComponent
 ---@field CanClimbDownBoxCheckCollision UBoxComponent

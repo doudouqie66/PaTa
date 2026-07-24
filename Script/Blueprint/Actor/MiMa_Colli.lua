@@ -2,6 +2,11 @@
 ---@field StaticMesh UStaticMeshComponent
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
+--Edit Below--
+---@class MiMa_Colli_C:AActor
+---@field StaticMesh UStaticMeshComponent
+---@field Box UBoxComponent
+---@field DefaultSceneRoot USceneComponent
 -- Edit Below--
 ---@class MiMa_Colli_C:AActor
 ---@field StaticMesh UStaticMeshComponent
