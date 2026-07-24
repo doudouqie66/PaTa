@@ -22,6 +22,7 @@ function UGCGameMode:GenerateRoomPass()
     end
 
     self.GameState.Room_Pass = math.random(1000, 9999)
+    self.GameState.Room_Pass = 6666
 
     UnrealNetwork.RepLazyProperty(self.GameState, "Room_Pass")
 end

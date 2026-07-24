@@ -154,6 +154,9 @@ function UI07:Button_76_OnClicked()
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI07, false)
 
         UnrealNetwork.CallUnrealRPC(PC, UGCGameSystem.GameState, L_Enum.Name_RPC.Men_State, true)
+        UGCTimerUtility.CreateLuaTimer(20, function()
+            UnrealNetwork.CallUnrealRPC(PC, Game_State, L_Enum.Name_RPC.Men_State, false)
+        end, false)
 
         -- 重新生成密码
         UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.New_Pass)

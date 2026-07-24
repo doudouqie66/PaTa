@@ -52,6 +52,16 @@ function UGCGameState:Men_State(Can_Enter, From_Multicast)
         Actor:SetActorEnableCollision(not Can_Enter)
         Actor.StaticMeshComponent:SetMaterial(0, Material)
     end
+
+    if not self:HasAuthority() then
+        for _, Actor in ipairs(UGCActorComponentUtility.GetAllActorsWithTag(self, "Men_Head_Body")) do
+            if Can_Enter then
+                Actor:StartCountdown()
+            else
+                Actor:StopCountdown()
+            end
+        end
+    end
 end
 
 --[[----------------------初始化界面------------------------]]
