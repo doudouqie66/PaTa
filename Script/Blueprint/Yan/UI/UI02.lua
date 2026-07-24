@@ -10,6 +10,20 @@
 ---@field Button_115 UButton
 ---@field Image_37 UImage
 ---@field Image_38 UImage
+---@field TextBlock_61 UTextBlock
+-- Edit Below--
+---@class UI02_C:UUserWidget
+---@field Button_1 UButton
+---@field Button_2 UButton
+---@field Button_86 UButton
+---@field Button_108 UButton
+---@field Button_109 UButton
+---@field Button_111 UButton
+---@field Button_112 UButton
+---@field Button_113 UButton
+---@field Button_115 UButton
+---@field Image_37 UImage
+---@field Image_38 UImage
 -- Edit Below--
 ---@class UI02_C:UUserWidget
 ---@field Button_1 UButton
@@ -71,13 +85,15 @@ end
 
 function UI02:Button_112_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI04, true)
-
+    local Game_State = UGCGameSystem.GameState -- 当前房间状态
+    self.TextBlock_61:SetText(tostring(Game_State.Room_Pass))
 end
 --[[--------------------七天签到--------------------------]] --
 
 function UI02:Button_113_OnClicked()
     -- 打开七天签到界面
     SignInEventManager:OpenMainUI()
+
 end
 --[[--------------------全服排行--------------------------]] --
 

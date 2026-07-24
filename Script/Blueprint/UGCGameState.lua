@@ -15,7 +15,14 @@ UGCGameSystem.UGCRequire('Script.Blueprint.Event.EventConfig_BackUp')
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 UGCGameSystem.UGCRequire("ExtendResource.SignInEvent.OfficialPackage.Script.SignInEvent.SignInEventManager")
 UGCGameSystem.UGCRequire("ExtendResource.RankingList.OfficialPackage.Script.RankingList.RankingListManager")
-local UGCGameState = {};
+local UGCGameState = {
+    Room_Pass = 0
+};
+
+--[[----------------------声明房间同步属性------------------------]]
+function UGCGameState:GetReplicatedProperties()
+    return {"Room_Pass", "Lazy"}
+end
 --[[----------------------游戏状态开始时初始化------------------------]]
 function UGCGameState:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self);

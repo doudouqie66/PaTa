@@ -44,7 +44,8 @@ L_Enum.Name_RPC = {
     Show_Respawn_UI = "ShowRespawnUI", -- 显示复活界面RPC名称
     Open_Gift_Pack = "OpenGiftPack", -- 打开礼包界面RPC名称
     Add_WinCup = "Add_WinCup", -- 添加奖杯
-    Switch_View = "Switch_View" -- 切换视角
+    Switch_View = "Switch_View", -- 切换视角
+    New_Pass = "New_Pass" -- 重新生成随机密码
 
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }

@@ -4,7 +4,7 @@
 ---@field RankingListComponent RankingListComponent_C
 ---@field SignInEventComponent SignInEventComponent_C
 ---@field ShopV2Component ShopV2Component_C
---Edit Below--
+-- Edit Below--
 ---@class UGCPlayerController_C:BP_UGCPlayerController_C
 ---@field GiftPackComponent GiftPackComponent_C
 ---@field TaskTemplateComponent TaskTemplateComponent_C
@@ -82,7 +82,16 @@ end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
-        L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View
+        L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
+        L_Enum.Name_RPC.New_Pass
+
+end
+
+--[[----------------------重新生成密码------------------------]]
+function UGCPlayerController:New_Pass()
+    local Game_Mode = UGCGameSystem.GetGameMode() -- 当前游戏模式
+    Game_Mode:GenerateRoomPass()
+
 end
 
 --[[----------------------切换第一和第三人称------------------------]]

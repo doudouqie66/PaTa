@@ -7,7 +7,23 @@ local UGCGameMode = {};
 
 --[[----------------------游戏启动------------------------]] --
 function UGCGameMode:ReceiveBeginPlay()
-    -- EventScheduler.Start()
+    if self:HasAuthority() then
+
+        -- EventScheduler.Start()
+        -- 生成随机密码
+        self:GenerateRoomPass()
+    end
+
+end
+--[[-------------------生成随机密码---------------------------]] --
+function UGCGameMode:GenerateRoomPass()
+    if not self:HasAuthority() then
+        return
+    end
+
+    self.GameState.Room_Pass = math.random(1000, 9999)
+
+    UnrealNetwork.RepLazyProperty(self.GameState, "Room_Pass")
 end
 
 --[[----------------------玩家进入游戏时读取存档，后加入的同步事件状态------------------------]] --
