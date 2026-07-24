@@ -75,7 +75,7 @@ end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
-        L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View()
+        L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View
 end
 
 --[[----------------------切换第一和第三人称------------------------]]
@@ -94,11 +94,9 @@ function UGCPlayerController:Add_WinCup(Add_Count)
         return
     end
     -- 添加排行榜
+    local Ranking_List_Manager = UGCGamePartSystem.GetGamePartGlobalActor("RankingListManager") -- 排行榜管理器
     local Player_UID = UGCGameSystem.GetUIDByPlayerController(self) -- 玩家UID
-    local Ranking_List_ID = 1 -- 奖杯排行榜ID
-    local Add_Score = 1 -- 本次增加的奖杯数
-    RankingListManager:UpdateScore(self, Player_UID, Ranking_List_ID, Add_Score, true)
-
+    Ranking_List_Manager:UpdateScore(self, Player_UID, 1, Add_Count, true)
     self.WinCup = self.WinCup + Add_Count
     self:SyncWinCupToPawn()
     self:SaveArchive()
