@@ -64,9 +64,9 @@ function UGCPlayerController:InitTest()
         if self:HasAuthority() == true then
             local PlayerPawn = self:GetPlayerCharacterSafety()
             -- V2 背包添加物品
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
 
         end
     end)
