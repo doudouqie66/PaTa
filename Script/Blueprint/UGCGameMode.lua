@@ -9,7 +9,7 @@ local UGCGameMode = {};
 function UGCGameMode:ReceiveBeginPlay()
     if self:HasAuthority() then
 
-        -- EventScheduler.Start()
+        EventScheduler.Start()
         -- 生成随机密码
         self:GenerateRoomPass()
     end
