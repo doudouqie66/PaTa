@@ -1,4 +1,6 @@
 ---@class Item_CanUse_Tmp_Child_22_C:Item_CanUse_Tmp_C
+--Edit Below--
+---@class Item_CanUse_Tmp_Child_22_C:Item_CanUse_Tmp_C
 -- Edit Below--
 local Item_CanUse_Tmp_Child_22 = {}
 function Item_CanUse_Tmp_Child_22:OnUseV2()

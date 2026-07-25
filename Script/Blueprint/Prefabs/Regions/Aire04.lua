@@ -66,10 +66,10 @@ end
 --[[----------------------玩家进入盒体时传送回去------------------------]]
 function Aire04:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep,
     SweepResult)
-    self:K2_DestroyActor()
 
     local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor)
     PC:TeleToPoint(1)
+    self:K2_DestroyActor()
 
 end
 

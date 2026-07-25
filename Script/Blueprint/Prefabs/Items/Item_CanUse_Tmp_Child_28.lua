@@ -1,4 +1,6 @@
 ---@class Item_CanUse_Tmp_Child_28_C:Item_CanUse_Tmp_C
+--Edit Below--
+---@class Item_CanUse_Tmp_Child_28_C:Item_CanUse_Tmp_C
 -- Edit Below--
 local Item_CanUse_Tmp_Child_28 = {}
 --[[----------------------通知客户端打开礼包界面------------------------]]
