@@ -2,6 +2,10 @@
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
 -- Edit Below--
+---@class Aire04_C:BP_MagicFieldActorBase_C
+---@field Box UBoxComponent
+---@field StaticMesh UStaticMeshComponent
+-- Edit Below--
 ---@class Aire03_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
@@ -65,10 +69,7 @@ function Aire04:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Oth
     self:K2_DestroyActor()
 
     local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor)
-    if PC == nil then
-        return
-    end
-    UGCPlayerPawnSystem.SetIsDirectlyDie(OtherActor, true)
+    PC:TeleToPoint(1)
 
 end
 
