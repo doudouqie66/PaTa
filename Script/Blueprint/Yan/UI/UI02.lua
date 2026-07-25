@@ -1,5 +1,6 @@
 ---@class UI02_C:UUserWidget
 ---@field Button_0 UButton
+---@field Button_1 UButton
 ---@field Button_5 UButton
 ---@field Button_6 UButton
 ---@field Button_7 UButton
@@ -31,6 +32,40 @@
 ---@field TextBlock_61 UTextBlock
 ---@field TextBlock_62 UTextBlock
 --Edit Below--
+---@class UI02_C:UUserWidget
+---@field Button_0 UButton
+---@field Button_1 UButton
+---@field Button_5 UButton
+---@field Button_6 UButton
+---@field Button_7 UButton
+---@field Button_8 UButton
+---@field Button_9 UButton
+---@field Button_86 UButton
+---@field Button_108 UButton
+---@field Button_109 UButton
+---@field Button_111 UButton
+---@field Button_112 UButton
+---@field Button_113 UButton
+---@field Button_115 UButton
+---@field Image_187 UImage
+---@field Image_188 UImage
+---@field Image_276 UImage
+---@field Image_277 UImage
+---@field Image_278 UImage
+---@field Image_279 UImage
+---@field Image_280 UImage
+---@field Image_281 UImage
+---@field Image_282 UImage
+---@field Image_283 UImage
+---@field Image_284 UImage
+---@field TextBlock_5 UTextBlock
+---@field TextBlock_6 UTextBlock
+---@field TextBlock_7 UTextBlock
+---@field TextBlock_8 UTextBlock
+---@field TextBlock_9 UTextBlock
+---@field TextBlock_61 UTextBlock
+---@field TextBlock_62 UTextBlock
+-- Edit Below--
 ---@class UI02_C:UUserWidget
 ---@field Button_0 UButton
 ---@field Button_5 UButton
@@ -114,6 +149,7 @@ function UI02:LuaInit()
     self.Button_7.OnClicked:Add(self.Button_7_OnClicked, self);
     self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
     self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
+    self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
     self:RefreshCurrency()
     self:RefreshTowerRewards()
@@ -147,8 +183,8 @@ function UI02:RefreshTowerRewards()
             Reward_Texts[Reward_Index]:SetVisibility(ESlateVisibility.Visible)
             Reward_Images[Reward_Index]:SetVisibility(ESlateVisibility.Visible)
             Reward_Buttons[Reward_Index]:SetIsEnabled(Is_Available)
-            Reward_Red_Dots[Reward_Index]:SetVisibility(
-                Is_Available and ESlateVisibility.Visible or ESlateVisibility.Collapsed)
+            Reward_Red_Dots[Reward_Index]:SetVisibility(Is_Available and ESlateVisibility.Visible or
+                                                            ESlateVisibility.Collapsed)
 
             if Is_Available then
                 Reward_Texts[Reward_Index]:SetText("可领取")
@@ -162,8 +198,7 @@ end
 --[[----------------------申请领取塔内计时奖励------------------------]]
 function UI02:ClaimTowerReward(Reward_Index)
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Claim_Tower_Reward,
-        Reward_Index)
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Claim_Tower_Reward, Reward_Index)
 end
 
 --[[----------------------刷新金币和奖杯数量------------------------]]
@@ -223,6 +258,10 @@ end
 
 function UI02:Button_9_OnClicked()
     self:ClaimTowerReward(5)
+end
+--[[--------------------绿洲商店--------------------------]] --
+function UI02:Button_1_OnClicked()
+    ShopV2Manager:OpenMainUI(TabID)
 end
 
 -- [Editor Generated Lua] function define End;
