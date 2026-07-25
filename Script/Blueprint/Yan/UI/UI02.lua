@@ -203,7 +203,7 @@ end
 
 function UI02:Button_2_OnClicked()
     local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    PC:TeleToPoint(2)
+    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Tele_To_Point, 2)
 end
 
 -- [Editor Generated Lua] function define End;
