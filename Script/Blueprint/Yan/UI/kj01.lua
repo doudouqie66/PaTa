@@ -3,7 +3,8 @@
 ---@field Image_16 UImage
 ---@field Image_18 UImage
 ---@field TextBlock_81 UTextBlock
---Edit Below--
+---@field TextBlock_82 UTextBlock
+-- Edit Below--
 ---@class kj01_C:UUserWidget
 ---@field Button_88 UButton
 ---@field Image_16 UImage
@@ -50,7 +51,7 @@ end
 
 --[[----------------------刷新房间密码------------------------]]
 function kj01:SetRoomPass(Room_Pass)
-    self.TextBlock_81:SetText(tostring(Room_Pass))
+    self.TextBlock_82:SetText(tostring(Room_Pass))
 end
 
 -- [Editor Generated Lua] function define End;

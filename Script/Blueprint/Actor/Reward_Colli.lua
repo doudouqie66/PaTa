@@ -1,12 +1,12 @@
 ---@class Reward_Colli_C:AActor
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
---Edit Below--
+-- Edit Below--
 ---@class Reward_Colli_C:AActor
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 local Reward_Colli = {
-    Reward_Wait_Time = 5, -- 礼包每次领取后的等待时间
+    Reward_Wait_Time = 200, -- 礼包每次领取后的等待时间
     Reward_Drop_ID = 3 -- 礼包使用的掉落表编号
 }
 

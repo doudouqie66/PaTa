@@ -98,7 +98,8 @@ end
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
-        L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward
+        L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
+        L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item
 
 end
 
@@ -179,6 +180,78 @@ end
 function UGCPlayerController:Add_Backpack_Item(Item_ID, Item_Count)
     local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager")
     Virtual_Item_Manager:AddVirtualItem(self, Item_ID, Item_Count)
+end
+
+--[[----------------------使用奖杯兑换道具------------------------]]
+function UGCPlayerController:Exchange_Trophy_Item(Item_ID)
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Trophy_Price = L_Enum.Trophy_Shop.Item_Price_Config[Item_ID] -- 兑换所需奖杯数量
+    if not Trophy_Price then
+        return
+    end
+
+    local Trophy_Item_ID = L_Enum.Trophy_Shop.Trophy_Item_ID -- 奖杯物品ID
+    if UGCBackpackSystemV2.GetItemCountV2(self, Trophy_Item_ID) < Trophy_Price then
+        L_TipsTool.ShowTips_01("数量不足", self)
+        return
+    end
+
+    local Removed_Count = UGCBackpackSystemV2.RemoveItemV2(self, Trophy_Item_ID, Trophy_Price) -- 实际扣除奖杯数量
+    if Removed_Count ~= Trophy_Price then
+        if Removed_Count > 0 then
+            UGCBackpackSystemV2.AddItemV2(self, Trophy_Item_ID, Removed_Count)
+        end
+        L_TipsTool.ShowTips_01("数量不足", self)
+        return
+    end
+
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
+    if not Virtual_Item_Manager:AddVirtualItem(self, Item_ID, 1) then
+        UGCBackpackSystemV2.AddItemV2(self, Trophy_Item_ID, Trophy_Price)
+        L_TipsTool.ShowTips_01("兑换失败", self)
+        return
+    end
+
+    L_TipsTool.ShowTips_01("兑换成功", self)
+end
+
+--[[----------------------使用金币购买道具------------------------]]
+function UGCPlayerController:Buy_Gold_Item(Item_ID)
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Gold_Price = L_Enum.Gold_Shop.Item_Price_Config[Item_ID] -- 购买所需金币数量
+    if not Gold_Price then
+        return
+    end
+
+    local Gold_Item_ID = L_Enum.Gold_Shop.Gold_Item_ID -- 金币物品ID
+    if UGCBackpackSystemV2.GetItemCountV2(self, Gold_Item_ID) < Gold_Price then
+        L_TipsTool.ShowTips_01("数量不足", self)
+        return
+    end
+
+    local Removed_Count = UGCBackpackSystemV2.RemoveItemV2(self, Gold_Item_ID, Gold_Price) -- 实际扣除金币数量
+    if Removed_Count ~= Gold_Price then
+        if Removed_Count > 0 then
+            UGCBackpackSystemV2.AddItemV2(self, Gold_Item_ID, Removed_Count)
+        end
+        L_TipsTool.ShowTips_01("数量不足", self)
+        return
+    end
+
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
+    if not Virtual_Item_Manager:AddVirtualItem(self, Item_ID, 1) then
+        UGCBackpackSystemV2.AddItemV2(self, Gold_Item_ID, Gold_Price)
+        L_TipsTool.ShowTips_01("购买失败", self)
+        return
+    end
+
+    L_TipsTool.ShowTips_01("购买成功", self)
 end
 
 --[[----------------------重新生成密码------------------------]]

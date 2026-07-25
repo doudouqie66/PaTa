@@ -57,13 +57,51 @@ L_Enum.Name_RPC = {
     Add_Backpack_Item = "Add_Backpack_Item", -- 添加背包物品
     Men_State = "Men_State", -- 切换门的状态
     Show_Room_Pass_UI = "Show_Room_Pass_UI", -- 显示房间密码界面
-    Claim_Tower_Reward = "Claim_Tower_Reward" -- 领取塔内计时奖励
+    Claim_Tower_Reward = "Claim_Tower_Reward", -- 领取塔内计时奖励
+    Exchange_Trophy_Item = "Exchange_Trophy_Item", -- 奖杯兑换道具RPC名称
+    Buy_Gold_Item = "Buy_Gold_Item" -- 金币购买道具RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 
+L_Enum.Gold_Shop = {
+    Gold_Item_ID = 8310003, -- 金币物品ID
+    Item_Price_Config = {
+        [1023] = 500, -- 香蕉皮
+        [1009] = 500, -- 粑粑
+        [1028] = 800, -- 炸弹
+        [1022] = 10000, -- 无敌药水
+        [1016] = 2000, -- 加速药水
+        [1020] = 3000, -- 跳高药水
+        [1012] = 4500, -- 护盾药水
+        [1025] = 4500, -- 隐身药水
+        [1013] = 4500, -- 喷射钩爪
+        [1011] = 5000, -- 冲天炮
+        [1010] = 7600, -- 冰冻锤
+        [1006] = 7600 -- 大力拳套
+    }
+}
+
+L_Enum.Trophy_Shop = {
+    Trophy_Item_ID = 8310013, -- 奖杯物品ID
+    Item_Price_Config = {
+        [1023] = 5, -- 香蕉皮
+        [1009] = 5, -- 粑粑
+        [1028] = 8, -- 炸弹
+        [1022] = 88, -- 无敌药水
+        [1016] = 10, -- 加速药水
+        [1020] = 20, -- 跳高药水
+        [1012] = 30, -- 护盾药水
+        [1025] = 45, -- 隐身药水
+        [1013] = 45, -- 喷射钩爪
+        [1011] = 50, -- 冲天炮
+        [1010] = 66, -- 冰冻锤
+        [1006] = 68 -- 大力拳套
+    }
+}
+
 L_Enum.Tower_Reward = {
-    -- Reward_Times = {360, 720, 1080, 1560, 2100}, -- 五档奖励所需累计停留秒数
-    Reward_Times = {1, 2, 3, 4, 2100}, -- 五档奖励所需累计停留秒数
+    Reward_Times = {360, 720, 1080, 1560, 2100}, -- 五档奖励所需累计停留秒数
+    -- Reward_Times = {1, 2, 3, 4, 2100}, -- 五档奖励所需累计停留秒数
 
     Reward_Item_IDs = {1017, 1023, 1028, 1013, 1011}, -- 五档奖励虚拟物品ID
     Reward_Item_Count = 1 -- 每档奖励数量
