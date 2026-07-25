@@ -18,7 +18,7 @@
 ---@field ClimbSpeed float
 ---@field UpSphereLocation FVector
 ---@field DownSphereLocation FVector
---Edit Below--
+-- Edit Below--
 local BP_LadderChild = {
     DownLocation = nil,
     UpLocation = nil,
@@ -34,20 +34,20 @@ local BP_LadderChild = {
     BlockTarget = nil,
     bUpEnd = false,
     bDownEnd = false,
-    bDyingTeleportToEndPostion = false,
+    bDyingTeleportToEndPostion = false
 }
 require("common.unrealnetwork")
 -- function BP_LadderChild:PrintVector(Vector)
 --     print_dev("BP_LadderChild:PrintVector(Vector)--X = "..tostring(Vector.X).." Y = "..tostring(Vector.Y).." Z = "..tostring(Vector.Z))
 -- end
 function BP_LadderChild:GetAvailableServerRPCs()
-    return "ServerRPC_JumpToUpState","ServerRPC_JumpToDownState","ServerRPC_JumpToEndState"
+    return "ServerRPC_JumpToUpState", "ServerRPC_JumpToDownState", "ServerRPC_JumpToEndState"
 end
---防止玩家调整梯子缩放导致下梯子时无法跳转到正确位置
+-- 防止玩家调整梯子缩放导致下梯子时无法跳转到正确位置
 function BP_LadderChild:ResetUpLocationAndDownLocation()
-    local MoveDir = UGCMathUtility.GetDirectionUnitVector(self.DownPosition,self.UpPosition)
-    self.UpPosition =  UGCMathUtility.AddVector(self.UpPosition, UGCMathUtility.MultiplyVector(MoveDir, 10000))
-    self.DownPosition =  UGCMathUtility.AddVector(self.DownPosition, UGCMathUtility.MultiplyVector(MoveDir, -10000)) 
+    local MoveDir = UGCMathUtility.GetDirectionUnitVector(self.DownPosition, self.UpPosition)
+    self.UpPosition = UGCMathUtility.AddVector(self.UpPosition, UGCMathUtility.MultiplyVector(MoveDir, 20000))
+    self.DownPosition = UGCMathUtility.AddVector(self.DownPosition, UGCMathUtility.MultiplyVector(MoveDir, -10000))
 end
 function BP_LadderChild:ReceiveBeginPlay()
     BP_LadderChild.SuperClass.ReceiveBeginPlay(self)
@@ -55,13 +55,13 @@ function BP_LadderChild:ReceiveBeginPlay()
     self.OverlapCheckArea.OnOverlapCheckChange:Add(self.OverlapCheckArea_OnOverlapCheckChange, self);
     self.ActivityFakePossess.OnPossess:Add(self.ActivityFakePossess_OnPossess, self);
     self.ActivityFakePossess.OnUnPossess:Add(self.ActivityFakePossess_OnUnPossess, self);
-    self.UpSequence.PlaybackSettings.PlayRate = self.ClimbSpeed/100
-    self.DownSequence.PlaybackSettings.PlayRate = self.ClimbSpeed/100
+    self.UpSequence.PlaybackSettings.PlayRate = self.ClimbSpeed / 100
+    self.DownSequence.PlaybackSettings.PlayRate = self.ClimbSpeed / 100
 end
---]]
+-- ]]
 function BP_LadderChild:PossessWithAttach(PC)
     print_dev("BP_UGC_Ladder:PossessWithAttach")
-    self.ActivityFakePossess:FakePossessWithAttach(PC,self.CH_Base_SK,"None")
+    self.ActivityFakePossess:FakePossessWithAttach(PC, self.CH_Base_SK, "None")
     self.PlayerController = PC
 end
 function BP_LadderChild:ClimbUp()
@@ -73,12 +73,12 @@ function BP_LadderChild:ClimbUp()
         if self:GetCurrentStateName() == "End" then
             return
         end
-        print_dev("BP_LadderChild:ClimbUp--ClimbSpeed = "..tostring(self.ClimbSpeed))
+        print_dev("BP_LadderChild:ClimbUp--ClimbSpeed = " .. tostring(self.ClimbSpeed))
         self.CurrentLocation = self:K2_GetActorLocation()
         self.CustomActorMove:SetPosition(self.CurrentLocation, self.UpPosition)
         self.CustomActorMove:SetMoveSpeed(self.ClimbSpeed)
         self.CustomActorMove:StartMove()
-    end,false)
+    end, false)
 end
 function BP_LadderChild:ClimbDown()
     if self.bDownBlock then
@@ -93,7 +93,7 @@ function BP_LadderChild:ClimbDown()
         self.CustomActorMove:SetPosition(self.CurrentLocation, self.DownPosition)
         self.CustomActorMove:SetMoveSpeed(self.ClimbSpeed)
         self.CustomActorMove:StartMove()
-    end,false)
+    end, false)
 end
 function BP_LadderChild:OnClickExitUI(ClickParams)
     print_dev("BP_LadderChild:OnClickExitUI()")
@@ -106,36 +106,38 @@ function BP_LadderChild:OnClickExitUI(ClickParams)
 end
 function BP_LadderChild:ActivityFakePossess_OnPossess(PC)
     print_dev("BP_UGC_Ladder:OnPossess")
-	return nil
+    return nil
 end
 function BP_LadderChild:OnPlayerAttachedToThisActor_BP(InPlayer)
     print_dev("BP_LadderChild:OnPlayerAttachedToThisActor_BP")
-    self.UpSequence:AddBinding(self.UpSequenceBind.Binding, InPlayer,false)
-    self.DownSequence:AddBinding(self.DownSequenceBind.Binding, InPlayer,false)
-    self.IdleSequence:AddBinding(self.IdleSequenceBind.Binding, InPlayer,false)
+    self.UpSequence:AddBinding(self.UpSequenceBind.Binding, InPlayer, false)
+    self.DownSequence:AddBinding(self.DownSequenceBind.Binding, InPlayer, false)
+    self.IdleSequence:AddBinding(self.IdleSequenceBind.Binding, InPlayer, false)
     self.UpPosition:Copy()
     self.DownPosition:Copy()
     local MoveForwardTag = STExtraGameplayStatics.RequestGameplayTag("Input.Move.MoveForward", true)
-    UGCInputSystem.BindInputMapping(self,MoveForwardTag,ETriggerEvent.Triggered,function(InputValue,ElapsedTime,TriggerTime,InputTag)
-        if not self.CanSwitchState then
-            return
-        end
-        if ElapsedTime > 0 then
-            if self.bUpBlock or self:GetCurrentStateName() == "Up" then
+    UGCInputSystem.BindInputMapping(self, MoveForwardTag, ETriggerEvent.Triggered,
+        function(InputValue, ElapsedTime, TriggerTime, InputTag)
+            if not self.CanSwitchState then
                 return
             end
-            UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(),self, "ServerRPC_JumpToUpState")
-        end
-        if ElapsedTime < 0 then
-            if self.bDownBlock or self:GetCurrentStateName() == "Down" then
-                return
+            if ElapsedTime > 0 then
+                if self.bUpBlock or self:GetCurrentStateName() == "Up" then
+                    return
+                end
+                UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(), self, "ServerRPC_JumpToUpState")
             end
-            UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(),self, "ServerRPC_JumpToDownState")
-        end
-    end)
-    UGCInputSystem.BindInputMapping(self,MoveForwardTag,ETriggerEvent.Completed,function(InputValue,ElapsedTime,TriggerTime,InputTag)
-        UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(),self, "ServerRPC_JumpToEndState")
-    end)
+            if ElapsedTime < 0 then
+                if self.bDownBlock or self:GetCurrentStateName() == "Down" then
+                    return
+                end
+                UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(), self, "ServerRPC_JumpToDownState")
+            end
+        end)
+    UGCInputSystem.BindInputMapping(self, MoveForwardTag, ETriggerEvent.Completed,
+        function(InputValue, ElapsedTime, TriggerTime, InputTag)
+            UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(), self, "ServerRPC_JumpToEndState")
+        end)
 end
 function BP_LadderChild:ServerRPC_JumpToUpState()
     if self.bUpBlock then
@@ -162,7 +164,7 @@ function BP_LadderChild:ActivityFakePossess_OnUnPossess(PC)
     print_dev("BP_UGC_Ladder:OnUnPossess")
     UGCTimerUtility.CreateLuaTimer(0.1, function()
         self:K2_DestroyActor()
-    end,false)
+    end, false)
     if UGCGameSystem.IsServer() then
         local PlayerCharacter = PC:GetPlayerCharacterSafety()
         if not UGCObjectUtility.IsObjectValid(PlayerCharacter) then
@@ -171,30 +173,34 @@ function BP_LadderChild:ActivityFakePossess_OnUnPossess(PC)
         if self:GetCurrentStateName() == "End" then
             print_dev("BP_LadderChild:OnUnPossess--End")
             if self.bUpBlock and self.bUpEnd then
-                if self.bEndOfLadder and self.DeattachPositionUp~=nil then
+                if self.bEndOfLadder and self.DeattachPositionUp ~= nil then
                     if not self.bDyingTeleportToEndPostion then
                         if not PlayerCharacter:HasState(EPawnState.Dying) then
-                            PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionUp, Rotator.New(0, 0, 0), true, false, false)
+                            PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionUp,
+                                Rotator.New(0, 0, 0), true, false, false)
                         else
                             self.OwnerLadder:RemoveInterActivePCList(PC)
                         end
                     else
-                        PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionUp, Rotator.New(0, 0, 0), true, false, false)
+                        PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionUp, Rotator.New(0, 0, 0),
+                            true, false, false)
                         if PlayerCharacter:HasState(EPawnState.Dying) then
                             self.OwnerLadder:RemoveInterActivePCList(PC)
                         end
                     end
                 end
             elseif self.bDownBlock and self.bDownEnd then
-                if self.bEndOfLadder and self.DeattachPositionDown~=nil then
+                if self.bEndOfLadder and self.DeattachPositionDown ~= nil then
                     if not self.bDyingTeleportToEndPostion then
                         if not PlayerCharacter:HasState(EPawnState.Dying) then
-                            PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionDown, Rotator.New(0, 0, 0), true, false, false)
+                            PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionDown,
+                                Rotator.New(0, 0, 0), true, false, false)
                         else
                             self.OwnerLadder:RemoveInterActivePCList(PC)
                         end
                     else
-                        PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionDown, Rotator.New(0, 0, 0), true, false, false)
+                        PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionDown, Rotator.New(0, 0, 0),
+                            true, false, false)
                         if PlayerCharacter:HasState(EPawnState.Dying) then
                             self.OwnerLadder:RemoveInterActivePCList(PC)
                         end
@@ -278,8 +284,9 @@ end
 function BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange(CheckActorArray)
     print_dev("BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange(CheckActorArray)")
     for k, CheckActor in pairs(CheckActorArray.InActorList) do
-        print_dev("BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange(CheckActorArray)--CheckActor = "..KismetSystemLibrary.GetDisplayName(CheckActor))
-        if UGCObjectUtility.IsA(CheckActor,self.SelfClass) then
+        print_dev("BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange(CheckActorArray)--CheckActor = " ..
+                      KismetSystemLibrary.GetDisplayName(CheckActor))
+        if UGCObjectUtility.IsA(CheckActor, self.SelfClass) then
             print_dev("BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange--Stop")
             if self:K2_GetActorLocation().Z < CheckActor:K2_GetActorLocation().Z then
                 self.CustomActorMove:StopMove()
@@ -292,8 +299,9 @@ function BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange(CheckActorArray)
         end
     end
     for k, CheckActor in pairs(CheckActorArray.OutActorList) do
-        if UGCObjectUtility.IsA(CheckActor,self.SelfClass) then
-            print_dev("BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange--Move--"..tostring(self:GetCurrentStateName()))
+        if UGCObjectUtility.IsA(CheckActor, self.SelfClass) then
+            print_dev("BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange--Move--" ..
+                          tostring(self:GetCurrentStateName()))
             if self:K2_GetActorLocation().Z < CheckActor:K2_GetActorLocation().Z then
                 self.bUpBlock = false
             else
@@ -302,7 +310,7 @@ function BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange(CheckActorArray)
             CheckActor.BlockTarget = nil
         end
     end
-	return nil;
+    return nil;
 end
 
 -- [Editor Generated Lua] function define End;
