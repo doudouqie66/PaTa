@@ -1,6 +1,7 @@
 ---@class UI02_C:UUserWidget
 ---@field Button_0 UButton
 ---@field Button_1 UButton
+---@field Button_2 UButton
 ---@field Button_5 UButton
 ---@field Button_6 UButton
 ---@field Button_7 UButton
@@ -31,71 +32,6 @@
 ---@field TextBlock_9 UTextBlock
 ---@field TextBlock_61 UTextBlock
 ---@field TextBlock_62 UTextBlock
---Edit Below--
----@class UI02_C:UUserWidget
----@field Button_0 UButton
----@field Button_1 UButton
----@field Button_5 UButton
----@field Button_6 UButton
----@field Button_7 UButton
----@field Button_8 UButton
----@field Button_9 UButton
----@field Button_86 UButton
----@field Button_108 UButton
----@field Button_109 UButton
----@field Button_111 UButton
----@field Button_112 UButton
----@field Button_113 UButton
----@field Button_115 UButton
----@field Image_187 UImage
----@field Image_188 UImage
----@field Image_276 UImage
----@field Image_277 UImage
----@field Image_278 UImage
----@field Image_279 UImage
----@field Image_280 UImage
----@field Image_281 UImage
----@field Image_282 UImage
----@field Image_283 UImage
----@field Image_284 UImage
----@field TextBlock_5 UTextBlock
----@field TextBlock_6 UTextBlock
----@field TextBlock_7 UTextBlock
----@field TextBlock_8 UTextBlock
----@field TextBlock_9 UTextBlock
----@field TextBlock_61 UTextBlock
----@field TextBlock_62 UTextBlock
--- Edit Below--
----@class UI02_C:UUserWidget
----@field Button_0 UButton
----@field Button_5 UButton
----@field Button_6 UButton
----@field Button_7 UButton
----@field Button_8 UButton
----@field Button_9 UButton
----@field Button_86 UButton
----@field Button_108 UButton
----@field Button_109 UButton
----@field Button_111 UButton
----@field Button_112 UButton
----@field Button_113 UButton
----@field Button_115 UButton
----@field Image_187 UImage
----@field Image_188 UImage
----@field Image_276 UImage
----@field Image_277 UImage
----@field Image_278 UImage
----@field Image_279 UImage
----@field Image_280 UImage
----@field Image_281 UImage
----@field Image_282 UImage
----@field Image_283 UImage
----@field Image_284 UImage
----@field TextBlock_5 UTextBlock
----@field TextBlock_6 UTextBlock
----@field TextBlock_7 UTextBlock
----@field TextBlock_8 UTextBlock
----@field TextBlock_9 UTextBlock
 -- Edit Below--
 local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID
@@ -150,6 +86,7 @@ function UI02:LuaInit()
     self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
     self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
     self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
+    self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
     self:RefreshCurrency()
     self:RefreshTowerRewards()
@@ -262,6 +199,11 @@ end
 --[[--------------------绿洲商店--------------------------]] --
 function UI02:Button_1_OnClicked()
     ShopV2Manager:OpenMainUI(TabID)
+end
+
+function UI02:Button_2_OnClicked()
+    local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    PC:TeleToPoint(2)
 end
 
 -- [Editor Generated Lua] function define End;
