@@ -1,6 +1,7 @@
 ---@class Buff10_C:PersistEffectBuff
 -- Edit Below--
 local Buff10 = {}
+local L_Enum = UGCGameSystem.UGCRequire("Script.L_Com.L_Enum") -- 枚举配置
 
 -- buff启动条件
 --[[
@@ -57,13 +58,17 @@ function Buff10:CanTrigger_BP()
 end
 --]]
 
---[[----------------------根据周卡状态给玩家添加金币------------------------]]
+--[[----------------------根据增益状态给玩家添加金币------------------------]]
 function Buff10:GiveGold(Delta)
     if self:HasAuthority() then
         local Owner_Actor = self:GetOwnerActor() -- Buff所属玩家角色
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Owner_Actor) -- 获取玩家控制器
         local Gold_Count = 4 -- 本次获得的金币数量
         local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+        local Double_Gold_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff09) -- 金币翻倍Buff类
+        if #UGCPersistEffectSystem.GetBuffsByClass(Owner_Actor, Double_Gold_Buff_Class) > 0 then
+            Gold_Count = Gold_Count * 2
+        end
         if Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime then
             Gold_Count = math.floor(Gold_Count * 2)
         end
