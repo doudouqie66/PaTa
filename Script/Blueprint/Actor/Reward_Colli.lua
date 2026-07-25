@@ -1,6 +1,10 @@
 ---@class Reward_Colli_C:AActor
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
+--Edit Below--
+---@class Reward_Colli_C:AActor
+---@field Box UBoxComponent
+---@field DefaultSceneRoot USceneComponent
 -- Edit Below--
 ---@class Reward_Colli_C:AActor
 ---@field Box UBoxComponent
