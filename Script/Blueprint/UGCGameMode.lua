@@ -3,6 +3,8 @@
 ---@class UGCGameMode_C:BP_UGCGameBase_C
 -- Edit Below--
 ---@class UGCGameMode_C:BP_UGCGameBase_C
+-- Edit Below--
+---@class UGCGameMode_C:BP_UGCGameBase_C
 local UGCGameMode = {};
 
 --[[----------------------游戏启动------------------------]] --
@@ -35,6 +37,16 @@ function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
         -- 施加效果
         EventScheduler:_OnStart(activeEvent)
     end
+end
+
+--[[----------------------玩家非怪物致死后自动复活------------------------]]
+function UGCGameMode:UGC_PlayerKilledEvent(Killer, VictimPlayer, VictimPawn, DamageType)
+    if VictimPlayer.Is_Monster_Death then
+        VictimPlayer.Is_Monster_Death = false -- 消耗怪物致死标记
+        return
+    end
+
+    UGCPlayerPawnSystem.RespawnPlayer(VictimPlayer.PlayerKey, 1, false, 0.01)
 end
 
 --[[----------------------复活后返回死亡位置------------------------]]

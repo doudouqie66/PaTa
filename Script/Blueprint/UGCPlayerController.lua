@@ -43,7 +43,8 @@ local UGCPlayerController = {
     Tower_Reward_Is_Timing = false, -- 当前是否正在区域内计时
     Tower_Reward_Enter_Time = 0, -- 本次进入区域的时间戳
     Tower_Reward_Accumulated_Time = 0, -- 已累计的区域内停留秒数
-    Tower_Reward_Claim_Mask = 0 -- 五档奖励领取状态位
+    Tower_Reward_Claim_Mask = 0, -- 五档奖励领取状态位
+    Is_Monster_Death = false -- 是否由怪物内部碰撞体致死
 }
 
 --[[---------------------初始化测试-------------------------]] --
@@ -340,12 +341,27 @@ function UGCPlayerController:Mgr_Atten(bool)
 end
 --[[----------------------请求复活当前玩家------------------------]]
 function UGCPlayerController:RequestRespawn(Return_To_Death_Location)
+    if Return_To_Death_Location then
+        local Return_Scroll_Item_ID = 8310002 -- 返回卷背包物品ID
+        if UGCBackpackSystemV2.GetItemCountV2(self, Return_Scroll_Item_ID) < 1 then
+            UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Respawn_UI)
+            return
+        end
+
+        local Removed_Count = UGCBackpackSystemV2.RemoveItemV2(self, Return_Scroll_Item_ID, 1) -- 实际扣除返回卷数量
+        if Removed_Count ~= 1 then
+            UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Respawn_UI)
+            return
+        end
+    end
+
     self.Return_To_Death_Location = Return_To_Death_Location
     UGCPlayerPawnSystem.RespawnPlayer(self.PlayerKey, 0, false, 0.01)
 end
 --[[----------------------显示复活界面------------------------]]
 function UGCPlayerController:ShowRespawnUI()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI09, true)
+    L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI09]:RefreshReturnScrollCount()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, false)
 
 end

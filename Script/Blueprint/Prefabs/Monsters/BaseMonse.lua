@@ -220,6 +220,7 @@ function BaseMonse:InnerBox_OnComponentBeginOverlap(OverlappedComponent, OtherAc
     end
 
     PC.Death_Location = OtherActor:K2_GetActorLocation() -- 玩家死亡位置
+    PC.Is_Monster_Death = true -- 标记为怪物内部碰撞体致死
     UGCPlayerPawnSystem.SetIsDirectlyDie(OtherActor, true)
     UGCGameSystem.ApplyDamage(OtherActor, Inner_Box_Death_Damage, nil, self, {})
     UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Show_Respawn_UI)
