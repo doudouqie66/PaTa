@@ -6,6 +6,7 @@
 -- Edit Below--
 ---@class UGCGameMode_C:BP_UGCGameBase_C
 local UGCGameMode = {};
+local Max_Room_Player_Count = 10 -- 房间最大玩家数量
 
 --[[----------------------游戏启动------------------------]] --
 function UGCGameMode:ReceiveBeginPlay()
@@ -14,9 +15,33 @@ function UGCGameMode:ReceiveBeginPlay()
         EventScheduler.Start()
         -- 生成随机密码
         self:GenerateRoomPass()
+        UGCGameSystem.OpenPlayerJoin()
+
+        --[[----------------------延迟申请初始补人名额------------------------]]
+        local Apply_Player_Join_Delegate = ObjectExtend.CreateDelegate(self, function()
+            self:ApplyRoomPlayerJoin()
+        end)
+        KismetSystemLibrary.K2_SetTimerDelegateForLua(Apply_Player_Join_Delegate, self, 3, false)
     end
 
 end
+
+--[[----------------------申请将房间玩家补充至人数上限------------------------]]
+function UGCGameMode:ApplyRoomPlayerJoin()
+    local Player_Controllers = UGCGameSystem.GetAllPlayerController(false)
+    if #Player_Controllers == 0 then
+        return
+    end
+
+    local Need_Player_Count = Max_Room_Player_Count - #Player_Controllers -- 当前需要补充的玩家数量
+    if Need_Player_Count <= 0 then
+        return
+    end
+
+    local Team_ID = UGCTeamSystem.GetTeamIDByPlayerKey(Player_Controllers[1].PlayerKey) -- 补人目标队伍ID
+    UGCGameSystem.ApplyPlayerJoinLimitCount({[Team_ID] = Need_Player_Count})
+end
+
 --[[-------------------生成随机密码---------------------------]] --
 function UGCGameMode:GenerateRoomPass()
     if not self:HasAuthority() then
@@ -119,5 +144,8 @@ end
 --[[----------------------玩家离开游戏前保存存档------------------------]]
 function UGCGameMode:UGC_PlayerExitEvent(PlayerController)
     self:SavePlayerArchive(PlayerController)
+
+    local Team_ID = UGCTeamSystem.GetTeamIDByPlayerKey(PlayerController.PlayerKey) -- 离开玩家的队伍ID
+    UGCGameSystem.ApplyPlayerJoinLimitCount({[Team_ID] = 1})
 end
 return UGCGameMode;

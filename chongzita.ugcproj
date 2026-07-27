@@ -9,7 +9,7 @@ ProjectShortPath=/chongzita/
 StartMapName=/chongzita/UGCmap
 MapMode=0
 bIsBigWorld=0
-Version=1.37.10.16424
+Version=1.37.10.16426
 UpdateVersion=10
 GameModePath=/chongzita/Asset/Blueprint/UGCGameMode.UGCGameMode_C
 
@@ -20,9 +20,9 @@ bOpenParticleEditorV1=0
 
 [MatchSetting]
 NumberOfTeams=1
-TeamPlayers=1
+TeamPlayers=10
 bIsAllowStageMatching=1
-TeamSettings="{\"TeamSettings\": [{\"NumberOfTeams\": 1,\"TeamPlayers\": 1}]}"
+TeamSettings="{\"TeamSettings\": [{\"NumberOfTeams\": 1,\"TeamPlayers\": 10},{\"NumberOfTeams\": 1,\"TeamPlayers\": 9},{\"NumberOfTeams\": 1,\"TeamPlayers\": 8},{\"NumberOfTeams\": 1,\"TeamPlayers\": 7},{\"NumberOfTeams\": 1,\"TeamPlayers\": 6},{\"NumberOfTeams\": 1,\"TeamPlayers\": 5},{\"NumberOfTeams\": 1,\"TeamPlayers\": 4},{\"NumberOfTeams\": 1,\"TeamPlayers\": 3},{\"NumberOfTeams\": 1,\"TeamPlayers\": 2},{\"NumberOfTeams\": 1,\"TeamPlayers\": 1}]}"
 bEnableChat=0
 bEnableRoomChat=1
 ChannelName=本局
