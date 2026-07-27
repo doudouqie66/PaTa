@@ -44,7 +44,7 @@ end
 
 function UI08:Button_159_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI08, false)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
 -- [Editor Generated Lua] function define End;

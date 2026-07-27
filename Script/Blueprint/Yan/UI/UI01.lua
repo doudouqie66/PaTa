@@ -8,7 +8,7 @@
 ---@field Image_98 UImage
 ---@field Image_246 UImage
 ---@field ProgressBar_76 UProgressBar
---Edit Below--
+-- Edit Below--
 ---@class UI01_C:UUserWidget
 ---@field Button_75 UButton
 ---@field Image_0 UImage
@@ -65,6 +65,7 @@ end
 function UI01:Button_75_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI01, false)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Fly_Start)
 
 end
 

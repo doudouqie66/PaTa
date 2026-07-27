@@ -66,18 +66,20 @@ function UI09:Button_98_OnClicked()
     local PlayerController = UGCGameSystem.GetLocalPlayerController()
     UnrealNetwork.CallUnrealRPC(PlayerController, PlayerController, L_Enum.Name_RPC.Request_Respawn, false)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI09, false)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 --[[-----------------------返回按钮-----------------------]] --
 function UI09:Button_99_OnClicked()
     local PlayerController = UGCGameSystem.GetLocalPlayerController()
     if UGCBackpackSystemV2.GetItemCountV2(PlayerController, Return_Scroll_Item_ID) < 1 then
         L_GloTools.BuyShopProduct(Return_Scroll_Product_ID)
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
         return
     end
 
     UnrealNetwork.CallUnrealRPC(PlayerController, PlayerController, L_Enum.Name_RPC.Request_Respawn, true)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI09, false)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Fly_Start)
 end
 
 -- [Editor Generated Lua] function define End;

@@ -127,19 +127,26 @@ end
 --[[----------------------关闭商城界面------------------------]]
 function UI03:Button_330_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI03, false)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
 --[[----------------------购买礼包商品------------------------]]
 function UI03:Button_108_OnClicked()
     L_GloTools.BuyShopProduct(L_Enum.ID_ShopProduct.WeekdGift)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 
 --[[----------------------记录购买成功后待开启的礼包------------------------]]
 function UI03:OnBuyUGCCommodityResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
-    if bSuccess and ProductID == L_Enum.ID_ShopProduct.WeekdGift and CommodityID == L_Enum.ID_Gift.WeekdGift then
-        self.Pending_Open_Gift_Pack = true
+    if ProductID ~= L_Enum.ID_ShopProduct.WeekdGift then
+        return
     end
+    if not bSuccess or CommodityID ~= L_Enum.ID_Gift.WeekdGift then
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Error)
+        return
+    end
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Reward_Gold)
+    self.Pending_Open_Gift_Pack = true
 end
 
 --[[----------------------礼包到账后自动开启------------------------]]

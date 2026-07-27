@@ -71,17 +71,20 @@ end
 --[[----------------------关闭密码输入界面------------------------]]
 function UI07:Button_159_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI07, false)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
 --[[----------------------追加密码数字------------------------]]
 function UI07:AppendPassNumber(Number)
     if #self.Input_Pass >= 4 then
         L_TipsTool.ShowTips_01("请先清除")
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Error)
         return
     end
 
     self.Input_Pass = self.Input_Pass .. tostring(Number)
     self.TextBlock_191:SetText(self.Input_Pass)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Keypad)
 end
 
 --[[----------------------数字1按键点击------------------------]]
@@ -138,12 +141,14 @@ end
 function UI07:Button_74_OnClicked()
     self.Input_Pass = ""
     self.TextBlock_191:SetText("")
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 
 --[[----------------------确认按键点击------------------------]]
 function UI07:Button_76_OnClicked()
     if #self.Input_Pass ~= 4 then
         L_TipsTool.ShowTips_01("请输入四位密码")
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Error)
         return
     end
     local PC = UGCGameSystem.GetLocalPlayerController()
@@ -151,6 +156,7 @@ function UI07:Button_76_OnClicked()
     local Game_State = UGCGameSystem.GameState -- 当前房间状态
     if tonumber(self.Input_Pass) == Game_State.Room_Pass then
         L_TipsTool.ShowTips_01("密码正确")
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.Door_Open)
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI07, false)
 
         UnrealNetwork.CallUnrealRPC(PC, UGCGameSystem.GameState, L_Enum.Name_RPC.Men_State, true)
@@ -163,6 +169,7 @@ function UI07:Button_76_OnClicked()
 
     else
         L_TipsTool.ShowTips_01("密码错误")
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Error)
         self.Input_Pass = ""
         self.TextBlock_191:SetText("")
     end

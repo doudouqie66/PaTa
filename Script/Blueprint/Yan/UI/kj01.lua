@@ -47,6 +47,7 @@ end
 --[[----------------------关闭密码界面------------------------]]
 function kj01:Button_88_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.kj01, false)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
 --[[----------------------刷新房间密码------------------------]]

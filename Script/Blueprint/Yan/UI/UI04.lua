@@ -180,7 +180,7 @@ end
 --[[----------------------关闭金币商店界面------------------------]]
 function UI04:Button_330_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI04, false)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
 --[[----------------------申请使用金币购买道具------------------------]]
@@ -189,11 +189,12 @@ function UI04:Request_Gold_Purchase(Item_ID)
     local Gold_Price = Item_Price_Config[Item_ID] -- 购买所需金币数量
 
     if UGCBackpackSystemV2.GetItemCountV2(Player_Controller, L_Enum.Gold_Shop.Gold_Item_ID) < Gold_Price then
-        L_TipsTool.ShowTips_01("数量不足")
+        L_TipsTool.ShowTips_01("数量不足", nil, SoundMgr.SoundName.UI_Error)
         return
     end
 
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Buy_Gold_Item, Item_ID)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 
 --[[----------------------购买香蕉皮------------------------]]

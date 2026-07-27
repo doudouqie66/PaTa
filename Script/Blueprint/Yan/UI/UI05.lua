@@ -132,7 +132,7 @@ end
 --[[----------------------关闭奖杯商店界面------------------------]]
 function UI05:Button_330_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI05, false)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
 --[[----------------------申请使用奖杯兑换道具------------------------]]
@@ -141,11 +141,12 @@ function UI05:Request_Trophy_Exchange(Item_ID)
     local Trophy_Price = Item_Trophy_Price_Config[Item_ID] -- 兑换所需奖杯数量
 
     if UGCBackpackSystemV2.GetItemCountV2(Player_Controller, L_Enum.Trophy_Shop.Trophy_Item_ID) < Trophy_Price then
-        L_TipsTool.ShowTips_01("数量不足")
+        L_TipsTool.ShowTips_01("数量不足", nil, SoundMgr.SoundName.UI_Error)
         return
     end
 
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Exchange_Trophy_Item, Item_ID)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 
 --[[----------------------兑换香蕉皮------------------------]]

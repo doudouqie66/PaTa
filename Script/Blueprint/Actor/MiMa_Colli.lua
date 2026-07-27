@@ -17,14 +17,13 @@ local MiMa_Colli = {}
 --[[----------------------处理鼠标点击物品------------------------]]
 function MiMa_Colli:ReceiveActorOnClicked(Button_Pressed)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI07, true)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 
 --[[----------------------处理手机触摸物品------------------------]]
 function MiMa_Colli:ReceiveActorOnInputTouchBegin(Finger_Index)
-
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI07, true)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 --[[
 function MiMa_Colli:ReceiveBeginPlay()

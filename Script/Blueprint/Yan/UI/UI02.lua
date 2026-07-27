@@ -37,7 +37,8 @@ local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID
 
 local UI02 = {
-    bInitDoOnce = false
+    bInitDoOnce = false,
+    Reward_Available_State = {} -- 奖励上次可领取状态
 }
 
 --[[----------------------构造主城界面------------------------]]
@@ -109,6 +110,7 @@ function UI02:RefreshTowerRewards()
         local Has_Claimed = math.floor(Player_Controller.Tower_Reward_Claim_Mask / Reward_Flag) % 2 == 1 -- 是否已领取
 
         if Has_Claimed then
+            self.Reward_Available_State[Reward_Index] = false
             Reward_Buttons[Reward_Index]:SetVisibility(ESlateVisibility.Collapsed)
             Reward_Texts[Reward_Index]:SetVisibility(ESlateVisibility.Collapsed)
             Reward_Images[Reward_Index]:SetVisibility(ESlateVisibility.Collapsed)
@@ -116,6 +118,10 @@ function UI02:RefreshTowerRewards()
         else
             local Is_Available = Elapsed_Time >= Reward_Time -- 当前档位是否可以领取
             local Remaining_Time = math.max(0, Reward_Time - Elapsed_Time) -- 当前档位剩余秒数
+            if self.Reward_Available_State[Reward_Index] == false and Is_Available then
+                SoundMgr.PlaySound2D(SoundMgr.SoundName.Reward_Ready)
+            end
+            self.Reward_Available_State[Reward_Index] = Is_Available
             Reward_Buttons[Reward_Index]:SetVisibility(ESlateVisibility.Visible)
             Reward_Texts[Reward_Index]:SetVisibility(ESlateVisibility.Visible)
             Reward_Images[Reward_Index]:SetVisibility(ESlateVisibility.Visible)
@@ -148,15 +154,18 @@ end
 function UI02:Button_86_OnClicked()
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Switch_View)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 --[[--------------------超值周卡--------------------------]] --
 function UI02:Button_111_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI03, true)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 --[[--------------------金币商店--------------------------]] --
 
 function UI02:Button_112_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI04, true)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 -- 
 --[[--------------------全服排行--------------------------]] --
@@ -164,12 +173,16 @@ end
 function UI02:Button_115_OnClicked()
     -- 打开排行榜界面
     RankingListManager:OpenRankingList()
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 
 --[[---------------------首充-------------------------]] --
 function UI02:Button_0_OnClicked()
-
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI06)
+    local UI_Path = L_Enum.Name_ClassPath.UI06 -- 首充界面路径
+    local UI_BP = L_GloTools.UI_Map[UI_Path] -- 已创建的首充界面
+    local Is_Opening = UI_BP == nil or not UI_BP:IsVisible() -- 本次是否打开界面
+    L_GloTools.UIMgr(UI_Path)
+    SoundMgr.PlaySound2D(Is_Opening and SoundMgr.SoundName.UI_Switch or SoundMgr.SoundName.Event_Notice)
 end
 
 --[[---------------------第一个物品-------------------------]] --
@@ -199,11 +212,13 @@ end
 --[[--------------------绿洲商店--------------------------]] --
 function UI02:Button_1_OnClicked()
     ShopV2Manager:OpenMainUI(TabID)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 
 function UI02:Button_2_OnClicked()
     local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
     UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Tele_To_Point, 2)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Fly_Start)
 end
 
 -- [Editor Generated Lua] function define End;
@@ -211,7 +226,10 @@ end
 
 function UI02:Button_113_OnClicked()
     -- 打开奖杯商店
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI05)
-
+    local UI_Path = L_Enum.Name_ClassPath.UI05 -- 奖杯商店界面路径
+    local UI_BP = L_GloTools.UI_Map[UI_Path] -- 已创建的奖杯商店界面
+    local Is_Opening = UI_BP == nil or not UI_BP:IsVisible() -- 本次是否打开界面
+    L_GloTools.UIMgr(UI_Path)
+    SoundMgr.PlaySound2D(Is_Opening and SoundMgr.SoundName.UI_Switch or SoundMgr.SoundName.Event_Notice)
 end
 return UI02

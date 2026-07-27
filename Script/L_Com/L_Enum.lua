@@ -62,7 +62,8 @@ L_Enum.Name_RPC = {
     Claim_Tower_Reward = "Claim_Tower_Reward", -- 领取塔内计时奖励
     Exchange_Trophy_Item = "Exchange_Trophy_Item", -- 奖杯兑换道具RPC名称
     Buy_Gold_Item = "Buy_Gold_Item", -- 金币购买道具RPC名称
-    Tele_To_Point = "TeleToPoint" -- 传送到指定出生点RPC名称
+    Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称
+    Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill" -- 切换陷阽物品技能RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 

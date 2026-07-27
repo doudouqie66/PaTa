@@ -73,7 +73,7 @@ function Buff10:GiveGold(Delta)
             Gold_Count = math.floor(Gold_Count * 2)
         end
         UGCBackpackSystemV2.AddItemV2(Owner_Actor, 8310003, Gold_Count)
-        L_TipsTool.ShowTips_01("金币加" .. Gold_Count, Player_Controller)
+        L_TipsTool.ShowTips_01("金币加" .. Gold_Count, Player_Controller, SoundMgr.SoundName.Reward_Gold)
     end
 end
 

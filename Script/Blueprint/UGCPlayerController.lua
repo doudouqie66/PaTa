@@ -94,7 +94,8 @@ function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
         L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
-        L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point
+        L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
+        L_Enum.Name_RPC.Switch_Trap_Item_Skill
 
 end
 
@@ -168,7 +169,7 @@ function UGCPlayerController:Claim_Tower_Reward(Reward_Index)
 
     self.Tower_Reward_Claim_Mask = self.Tower_Reward_Claim_Mask + Reward_Flag
     UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Claim_Mask")
-    L_TipsTool.ShowTips_01("领取奖励成功", self)
+    L_TipsTool.ShowTips_01("领取奖励成功", self, SoundMgr.SoundName.Reward_Ready)
 end
 
 --[[----------------------给当前玩家添加背包物品------------------------]]
@@ -190,7 +191,7 @@ function UGCPlayerController:Exchange_Trophy_Item(Item_ID)
 
     local Trophy_Item_ID = L_Enum.Trophy_Shop.Trophy_Item_ID -- 奖杯物品ID
     if UGCBackpackSystemV2.GetItemCountV2(self, Trophy_Item_ID) < Trophy_Price then
-        L_TipsTool.ShowTips_01("数量不足", self)
+        L_TipsTool.ShowTips_01("数量不足", self, SoundMgr.SoundName.UI_Error)
         return
     end
 
@@ -199,18 +200,18 @@ function UGCPlayerController:Exchange_Trophy_Item(Item_ID)
         if Removed_Count > 0 then
             UGCBackpackSystemV2.AddItemV2(self, Trophy_Item_ID, Removed_Count)
         end
-        L_TipsTool.ShowTips_01("数量不足", self)
+        L_TipsTool.ShowTips_01("数量不足", self, SoundMgr.SoundName.UI_Error)
         return
     end
 
     local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
     if not Virtual_Item_Manager:AddVirtualItem(self, Item_ID, 1) then
         UGCBackpackSystemV2.AddItemV2(self, Trophy_Item_ID, Trophy_Price)
-        L_TipsTool.ShowTips_01("兑换失败", self)
+        L_TipsTool.ShowTips_01("兑换失败", self, SoundMgr.SoundName.UI_Error)
         return
     end
 
-    L_TipsTool.ShowTips_01("兑换成功", self)
+    L_TipsTool.ShowTips_01("兑换成功", self, SoundMgr.SoundName.Reward_Gold)
 end
 
 --[[----------------------使用金币购买道具------------------------]]
@@ -226,7 +227,7 @@ function UGCPlayerController:Buy_Gold_Item(Item_ID)
 
     local Gold_Item_ID = L_Enum.Gold_Shop.Gold_Item_ID -- 金币物品ID
     if UGCBackpackSystemV2.GetItemCountV2(self, Gold_Item_ID) < Gold_Price then
-        L_TipsTool.ShowTips_01("数量不足", self)
+        L_TipsTool.ShowTips_01("数量不足", self, SoundMgr.SoundName.UI_Error)
         return
     end
 
@@ -235,18 +236,18 @@ function UGCPlayerController:Buy_Gold_Item(Item_ID)
         if Removed_Count > 0 then
             UGCBackpackSystemV2.AddItemV2(self, Gold_Item_ID, Removed_Count)
         end
-        L_TipsTool.ShowTips_01("数量不足", self)
+        L_TipsTool.ShowTips_01("数量不足", self, SoundMgr.SoundName.UI_Error)
         return
     end
 
     local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
     if not Virtual_Item_Manager:AddVirtualItem(self, Item_ID, 1) then
         UGCBackpackSystemV2.AddItemV2(self, Gold_Item_ID, Gold_Price)
-        L_TipsTool.ShowTips_01("购买失败", self)
+        L_TipsTool.ShowTips_01("购买失败", self, SoundMgr.SoundName.UI_Error)
         return
     end
 
-    L_TipsTool.ShowTips_01("购买成功", self)
+    L_TipsTool.ShowTips_01("购买成功", self, SoundMgr.SoundName.Reward_Gold)
 end
 
 --[[----------------------重新生成密码------------------------]]
@@ -266,6 +267,84 @@ function UGCPlayerController:Switch_View()
         UGCPlayerPawnSystem.SetIsFPP(Player_Pawn, true, true)
     end
 end
+
+--[[----------------------切换陷阽物品对应的技能槽技能------------------------]]
+function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
+    ugcprint(string.format("[TrapSkillDebug][服务端] RPC进入：物品ID=%s，控制器=%s，HasAuthority=%s",
+        tostring(Item_ID), tostring(self), tostring(self:HasAuthority())))
+    if not self:HasAuthority() then
+        ugcprint("[TrapSkillDebug][服务端] RPC终止：当前控制器没有服务端权限")
+        return
+    end
+
+    local Trap_Skill_Paths = { -- 陷阽物品对应的技能路径
+        [8310021] = UGCGameSystem.GetUGCResourcesFullPath(
+            "Asset/Blueprint/Prefabs/Skills/Skill04.Skill04_C"),
+        [8310007] = UGCGameSystem.GetUGCResourcesFullPath(
+            "Asset/Blueprint/Prefabs/Skills/Skill05.Skill05_C"),
+        [8310026] = UGCGameSystem.GetUGCResourcesFullPath(
+            "Asset/Blueprint/Prefabs/Skills/Skill06.Skill06_C")
+    }
+    local Trap_Skill_Slot = "Skill.Slot.Slot0" -- 陷阱技能共用的技能UI槽位
+    local Selected_Skill_Path = Trap_Skill_Paths[Item_ID] -- 本次选择的技能路径
+    local Is_Clear_Slot = Item_ID == 0 -- 是否只清空陷阱技能槽
+    local Item_Count = Is_Clear_Slot and 0 or UGCBackpackSystemV2.GetItemCountV2(self, Item_ID) -- 服务端背包物品数量
+    ugcprint(string.format("[TrapSkillDebug][服务端] 参数检查：技能路径=%s，技能槽=%s，服务端数量=%s",
+        tostring(Selected_Skill_Path), tostring(Trap_Skill_Slot), tostring(Item_Count)))
+    if not Is_Clear_Slot and (not Selected_Skill_Path or Item_Count <= 0) then
+        ugcprint("[TrapSkillDebug][服务端] RPC终止：物品ID不合法或服务端数量不足")
+        return
+    end
+
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    ugcprint(string.format("[TrapSkillDebug][服务端] 当前玩家角色=%s", tostring(Player_Pawn)))
+    local All_Skills_Before = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, nil) or {} -- 切换前全部技能实例
+    ugcprint(string.format("[TrapSkillDebug][服务端] 切换前玩家技能实例总数=%s", tostring(#All_Skills_Before)))
+    for Skill_Index, Skill_Instance in ipairs(All_Skills_Before) do
+        ugcprint(string.format("[TrapSkillDebug][服务端] 切换前技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
+            tostring(Skill_Index), tostring(Skill_Instance), tostring(Skill_Instance:GetSkillName()),
+            tostring(Skill_Instance:IsSkillEnable())))
+    end
+
+    for Trap_Item_ID, Trap_Skill_Path in pairs(Trap_Skill_Paths) do
+        local Skill_Instances = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, Trap_Skill_Path) or {} -- 已有陷阱技能实例
+        ugcprint(string.format("[TrapSkillDebug][服务端] 清理旧技能：物品ID=%s，技能路径=%s，实例数量=%s",
+            tostring(Trap_Item_ID), tostring(Trap_Skill_Path), tostring(#Skill_Instances)))
+        for _, Skill_Instance in ipairs(Skill_Instances) do
+            local Skill_Name = Skill_Instance:GetSkillName() -- 旧技能名称
+            local Skill_Instance_Text = tostring(Skill_Instance) -- 旧技能实例文本
+            local Remove_Result = UGCPersistEffectSystem.RemoveSkillInstance(Player_Pawn, Skill_Instance) -- 移除结果
+            ugcprint(string.format("[TrapSkillDebug][服务端] 移除旧技能：实例=%s，名称=%s，结果=%s",
+                Skill_Instance_Text, tostring(Skill_Name), tostring(Remove_Result)))
+        end
+    end
+
+    if Is_Clear_Slot then
+        ugcprint("[TrapSkillDebug][服务端] 陷阽物品已全部耗尽，技能槽清理完成")
+    else
+        local Selected_Skill_Instance = UGCPersistEffectSystem.AddSkillByClass(Player_Pawn, Selected_Skill_Path, -1,
+                                            Trap_Skill_Slot) -- 新增并绑定到技能UI槽位的技能实例
+        ugcprint(string.format(
+            "[TrapSkillDebug][服务端] AddSkillByClass完成：物品ID=%s，技能路径=%s，技能槽=%s，实例=%s",
+            tostring(Item_ID), tostring(Selected_Skill_Path), tostring(Trap_Skill_Slot),
+            tostring(Selected_Skill_Instance)))
+        if Selected_Skill_Instance then
+            ugcprint(string.format("[TrapSkillDebug][服务端] 新技能状态：名称=%s，是否启用=%s",
+                tostring(Selected_Skill_Instance:GetSkillName()), tostring(Selected_Skill_Instance:IsSkillEnable())))
+        else
+            ugcprint("[TrapSkillDebug][服务端] 关键异常：AddSkillByClass未返回技能实例")
+        end
+    end
+
+    local All_Skills_After = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, nil) or {} -- 切换后全部技能实例
+    ugcprint(string.format("[TrapSkillDebug][服务端] 切换结束，玩家技能实例总数=%s", tostring(#All_Skills_After)))
+    for Skill_Index, Skill_Instance in ipairs(All_Skills_After) do
+        ugcprint(string.format("[TrapSkillDebug][服务端] 切换后技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
+            tostring(Skill_Index), tostring(Skill_Instance), tostring(Skill_Instance:GetSkillName()),
+            tostring(Skill_Instance:IsSkillEnable())))
+    end
+end
+
 --[[----------------------增加玩家奖杯并保存------------------------]]
 function UGCPlayerController:Add_WinCup(Add_Count)
     if not self:HasAuthority() then
@@ -325,14 +404,18 @@ function UGCPlayerController:OnBuyUGCCommodityResult(bSuccess, PlayerKey, Commod
 end
 
 --[[--------------------通用提示方法1--------------------------]] --
-function UGCPlayerController:Tool_Msg_01(str)
+function UGCPlayerController:Tool_Msg_01(str, Sound_Name)
     TipsMgr.ShowTips_01(str)
+    if Sound_Name then
+        SoundMgr.PlaySound2D(Sound_Name)
+    end
 end
 
 --[[----------------------显示房间密码界面------------------------]]
 function UGCPlayerController:Show_Room_Pass_UI(Room_Pass)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.kj01, true)
     L_GloTools.UI_Map[L_Enum.Name_ClassPath.kj01]:SetRoomPass(Room_Pass)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 --[[----------------------通知警示区域------------------------]] --
 
@@ -363,7 +446,7 @@ function UGCPlayerController:ShowRespawnUI()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI09, true)
     L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI09]:RefreshReturnScrollCount()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, false)
-
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 --[[----------------------测试玩家等级加一------------------------]]
 function UGCPlayerController:AddLevel(AddLevel)

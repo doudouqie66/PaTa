@@ -6,6 +6,7 @@
 --[[----------------------全局提前引用------------------------]] --
 UGCGameSystem.UGCRequire('Script.Common.ue_enum_custom')
 UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
+UGCGameSystem.UGCRequire('Script.L_Com.SoundMgr')
 UGCGameSystem.UGCRequire('Script.L_Com.L_TipsTool')
 UGCGameSystem.UGCRequire('Script.L_Com.TipsMgr')
 UGCGameSystem.UGCRequire('Script.L_Com.L_GloTools')
