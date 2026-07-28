@@ -1,14 +1,12 @@
 ---@class SaveAir_Colli_C:AActor
 ---@field Capsule UCapsuleComponent
 ---@field DefaultSceneRoot USceneComponent
---Edit Below--
+-- Edit Below--
 ---@class SaveAir_Colli_C:AActor
 ---@field Capsule UCapsuleComponent
 ---@field DefaultSceneRoot USceneComponent
 -- Edit Below--
 local SaveAir_Colli = {}
-local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(UGCGameSystem.GetUGCResourcesFullPath(
-    "Asset/Blueprint/Prefabs/Buffs/Buff07.Buff07_C")) -- 安全区Buff类
 
 --[[----------------------初始化并绑定怪物安全区碰撞事件------------------------]]
 function SaveAir_Colli:ReceiveBeginPlay()
@@ -67,6 +65,7 @@ function SaveAir_Colli:Capsule_OnComponentBeginOverlap(OverlappedComponent, Othe
     if Player_Controller == nil then
         return
     end
+    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07) -- 安全区Buff类
 
     OtherActor.Is_In_Monster_Safe_Area = true -- 标记玩家处于怪物安全区
     UGCPersistEffectSystem.AddBuffByClass(OtherActor, Safe_Area_Buff_Class)
@@ -78,6 +77,7 @@ function SaveAir_Colli:Capsule_OnComponentEndOverlap(OverlappedComponent, OtherA
     if Player_Controller == nil then
         return
     end
+    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07) -- 安全区Buff类
 
     OtherActor.Is_In_Monster_Safe_Area = false -- 标记玩家离开怪物安全区
     UGCPersistEffectSystem.RemoveBuffByClass(OtherActor, Safe_Area_Buff_Class)

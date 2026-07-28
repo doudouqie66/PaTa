@@ -277,14 +277,16 @@ function UI02:Button_115_OnClicked()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 
---[[----------------------根据永久限购记录刷新首充按钮------------------------]]
+--[[----------------------根据累计购买记录刷新首充按钮------------------------]]
 function UI02:RefreshStarterGiftButton()
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    local Purchased_Times = ShopV2Manager:GetLimitPurchasedTimes(
+    local Purchased_Times = ShopV2Manager:GetPurchasedTimes(
         L_Enum.ID_ShopProduct.StarterGift,
         Player_Controller
     ) -- 首充商品已购买次数
-    self.Button_0:SetVisibility(Purchased_Times > 0 and ESlateVisibility.Collapsed or ESlateVisibility.Visible)
+    local Starter_Gift_Visibility = Purchased_Times > 0 and ESlateVisibility.Collapsed or ESlateVisibility.Visible -- 首充入口显示状态
+    self.Button_0:SetVisibility(Starter_Gift_Visibility)
+    self.Image_187:SetVisibility(Starter_Gift_Visibility)
 end
 
 --[[----------------------首充购买成功后隐藏入口按钮------------------------]]
@@ -296,6 +298,7 @@ function UI02:OnBuyStarterGiftResult(bSuccess, PlayerKey, CommodityID, Count, UI
     end
 
     self.Button_0:SetVisibility(ESlateVisibility.Collapsed)
+    self.Image_187:SetVisibility(ESlateVisibility.Collapsed)
 end
 
 --[[---------------------首充-------------------------]] --
