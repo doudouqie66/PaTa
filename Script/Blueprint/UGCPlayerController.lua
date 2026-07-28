@@ -50,7 +50,7 @@ function UGCPlayerController:InitTest()
             -- V2 背包添加物品
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310000, 1)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310034, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310037, 1)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310038, 1)

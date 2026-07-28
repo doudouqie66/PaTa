@@ -41,7 +41,7 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
---Edit Below--
+-- Edit Below--
 ---@class UI04_C:UUserWidget
 ---@field Button_0 UButton
 ---@field Button_1 UButton
@@ -163,18 +163,19 @@ function UI04:LuaInit()
     -- [Editor Generated Lua] BindingEvent Begin:
     self.Button_330.OnClicked:Add(self.Button_330_OnClicked, self);
     self.Button_203.OnClicked:Add(self.Button_203_OnClicked, self);
-	self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
-	self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
-	self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
-	self.Button_4.OnClicked:Add(self.Button_4_OnClicked, self);
-	self.Button_5.OnClicked:Add(self.Button_5_OnClicked, self);
-	self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
-	self.Button_7.OnClicked:Add(self.Button_7_OnClicked, self);
-	self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
-	self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
-	self.Button_10.OnClicked:Add(self.Button_10_OnClicked, self);
-	self.Button_11.OnClicked:Add(self.Button_11_OnClicked, self);
-	-- [Editor Generated Lua] BindingEvent End;
+    self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
+    self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
+    self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
+    self.Button_4.OnClicked:Add(self.Button_4_OnClicked, self);
+    self.Button_5.OnClicked:Add(self.Button_5_OnClicked, self);
+    self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
+    self.Button_7.OnClicked:Add(self.Button_7_OnClicked, self);
+    self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
+    self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
+    self.Button_10.OnClicked:Add(self.Button_10_OnClicked, self);
+    self.Button_11.OnClicked:Add(self.Button_11_OnClicked, self);
+    self.Button_54.OnClicked:Add(self.Button_54_OnClicked, self);
+    -- [Editor Generated Lua] BindingEvent End;
 end
 
 --[[----------------------关闭金币商店界面------------------------]]
@@ -255,6 +256,12 @@ end
 --[[----------------------购买大力拳套------------------------]]
 function UI04:Button_11_OnClicked()
     self:Request_Gold_Purchase(1006)
+end
+
+--[[---------------------购买金币宝箱-------------------------]] --
+function UI04:Button_54_OnClicked()
+    self:Request_Gold_Purchase(1026)
+
 end
 
 -- [Editor Generated Lua] function define End;

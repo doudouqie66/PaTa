@@ -57,7 +57,8 @@
 -- Edit Below--
 local UI06 = {
     bInitDoOnce = false,
-    Pending_Open_Gift_Pack = false
+    Pending_Open_Gift_Pack = false,
+    Opening_Starter_Gift_Pack = false -- 是否正在开启首充礼包
 
 }
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
@@ -129,13 +130,19 @@ end
 function UI06:OnItemNumUpdated()
     if self.Pending_Open_Gift_Pack and GiftPackManager:GetItemNum(L_Enum.ID_Gift.StarterGift) > 0 then
         self.Pending_Open_Gift_Pack = false
+        self.Opening_Starter_Gift_Pack = true
         UGCGameSystem.GetLocalPlayerController():OpenGiftPack(L_Enum.ID_Gift.StarterGift)
     end
 end
 
---[[----------------------礼包开启后检测新手礼包状态------------------------]]
+--[[----------------------首充礼包开启后关闭首充界面------------------------]]
 function UI06:OnOpenGiftPackage()
-    self:RefreshWeekGiftPurchased(UGCGameSystem.GetLocalPlayerController())
+    if not self.Opening_Starter_Gift_Pack then
+        return
+    end
+
+    self.Opening_Starter_Gift_Pack = false
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI06, false)
 end
 
 --[[----------------------刷新新手礼包已开通状态------------------------]]

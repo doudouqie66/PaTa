@@ -100,6 +100,8 @@ function UI02:Destruct()
     if self.Virtual_Item_Manager then
         self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Remove(self.RefreshCurrency, self)
     end
+    UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyStarterGiftResult, self)
+    UGCCommoditySystem.UGCProductsChangedDelegate:Remove(self.RefreshStarterGiftButton, self)
     if self.Tower_Reward_UI_Timer then
         UGCTimerUtility.RemoveLuaTimer(self.Tower_Reward_UI_Timer)
         self.Tower_Reward_UI_Timer = nil
@@ -140,9 +142,12 @@ function UI02:LuaInit()
     self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
     self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
     self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
+    UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyStarterGiftResult, self)
+    UGCCommoditySystem.UGCProductsChangedDelegate:Add(self.RefreshStarterGiftButton, self)
     -- [Editor Generated Lua] BindingEvent End;
     self:RefreshCurrency()
     self:RefreshTowerRewards()
+    self:RefreshStarterGiftButton()
     self.ScaleBox_43:SetRenderTransformPivot(UGCMathUtility.MakeVector2D(0.5, 0.5))
     self.ScaleBox_43:SetVisibility(ESlateVisibility.Collapsed)
     self.Tower_Reward_UI_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
@@ -270,6 +275,27 @@ function UI02:Button_115_OnClicked()
     -- 打开排行榜界面
     RankingListManager:OpenRankingList()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
+end
+
+--[[----------------------根据永久限购记录刷新首充按钮------------------------]]
+function UI02:RefreshStarterGiftButton()
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    local Purchased_Times = ShopV2Manager:GetLimitPurchasedTimes(
+        L_Enum.ID_ShopProduct.StarterGift,
+        Player_Controller
+    ) -- 首充商品已购买次数
+    self.Button_0:SetVisibility(Purchased_Times > 0 and ESlateVisibility.Collapsed or ESlateVisibility.Visible)
+end
+
+--[[----------------------首充购买成功后隐藏入口按钮------------------------]]
+function UI02:OnBuyStarterGiftResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    if not bSuccess or PlayerKey ~= Player_Controller.PlayerKey or
+        CommodityID ~= L_Enum.ID_Gift.StarterGift or ProductID ~= L_Enum.ID_ShopProduct.StarterGift then
+        return
+    end
+
+    self.Button_0:SetVisibility(ESlateVisibility.Collapsed)
 end
 
 --[[---------------------首充-------------------------]] --
