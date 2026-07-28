@@ -41,6 +41,14 @@ function L_GloTools.UIMgr(str, bVisible)
     end
 end
 
+--[[----------------------播放事件倒计时------------------------]]
+function L_GloTools.StartEventCountdown(Countdown_Duration)
+    local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI02] -- 已创建的主城界面
+    if UI_BP and UI_BP:IsVisible() then
+        UI_BP:StartEventCountdown(Countdown_Duration)
+    end
+end
+
 --[[----------------------购买商城商品------------------------]]
 function L_GloTools.BuyShopProduct(Product_ID, Buy_Count)
     Buy_Count = Buy_Count or 1 -- 购买数量

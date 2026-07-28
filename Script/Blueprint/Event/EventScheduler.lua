@@ -47,7 +47,9 @@ end
 --[[----------------------倒计时提醒------------------------]] --
 function EventScheduler:_OnWarn(event)
     for _, PlayerController in ipairs(UGCGameSystem.GetAllPlayerController(false)) do
-        L_TipsTool.ShowTips_01(tostring(event.name), PlayerController)
+        -- L_TipsTool.ShowTips_01(tostring(event.name), PlayerController)
+        UnrealNetwork.CallUnrealRPC(PlayerController, PlayerController, L_Enum.Name_RPC.Event_Countdown,
+            event.warnDuration)
     end
 
 end

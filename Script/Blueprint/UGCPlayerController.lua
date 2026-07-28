@@ -507,6 +507,11 @@ function UGCPlayerController:Tool_Msg_01(str, Sound_Name)
     end
 end
 
+--[[----------------------播放事件倒计时------------------------]]
+function UGCPlayerController:Event_Countdown(Countdown_Duration)
+    L_GloTools.StartEventCountdown(Countdown_Duration)
+end
+
 --[[----------------------显示房间密码界面------------------------]]
 function UGCPlayerController:Show_Room_Pass_UI(Room_Pass)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.kj01, true)

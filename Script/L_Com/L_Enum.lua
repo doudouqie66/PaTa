@@ -65,7 +65,8 @@ L_Enum.Name_RPC = {
     Buy_Gold_Item = "Buy_Gold_Item", -- 金币购买道具RPC名称
     Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称
     Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill", -- 切换陷阽物品技能RPC名称
-    Set_Jetpack_Flying = "Set_Jetpack_Flying" -- 设置冲天炮飞行状态RPC名称
+    Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置冲天炮飞行状态RPC名称
+    Event_Countdown = "Event_Countdown" -- 事件倒计时RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 
