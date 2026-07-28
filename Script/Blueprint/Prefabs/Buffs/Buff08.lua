@@ -2,10 +2,7 @@
 --Edit Below--
 local Buff08 = {}
 
-local Fly_Movement_Mode = 5 -- 飞行移动模式
-local Falling_Movement_Mode = 3 -- 下落移动模式
-local Fly_State_Tag = "PawnState.Movement.Flying" -- 飞行状态标签
-local Fly_Max_Speed = 450 -- 飞行最大速度
+local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
  
 -- buff启动条件
 --[[
@@ -14,37 +11,22 @@ function Buff08:CanApply_BP(OwnerActor)
 end
 --]]
 
---[[----------------------Buff挂载时开启飞行------------------------]]
+--[[----------------------Buff挂载时启用魔毯飞行------------------------]]
 function Buff08:OnApply_BP(OwnerActor)
-    self.Original_Fly_Max_Speed = OwnerActor.CharacterMovement.MaxFlySpeed -- 原始飞行最大速度
-    OwnerActor.CharacterMovement.MaxFlySpeed = Fly_Max_Speed
     if self:HasAuthority() then
-        self.Has_Entered_Fly_State = UGCPersistEffectSystem.EnterDynamicState(OwnerActor, Fly_State_Tag) -- 是否成功进入飞行状态
-        OwnerActor.CharacterMovement:SetMovementMode(Fly_Movement_Mode, 0)
-        ugcprint("Buff08服务端开启飞行，状态结果=" .. tostring(self.Has_Entered_Fly_State) ..
-            "，移动模式=" .. tostring(OwnerActor.CharacterMovement.MovementMode))
-    elseif self:IsAutonomous(true) then
-        local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-        if Player_Controller.MainUI_BP then
-            Player_Controller.MainUI_BP:SetFlyControlsEnabled(true)
-        end
+        local Player_Controller = OwnerActor:GetController() -- Buff所属玩家控制器
+        self.Original_Flying_Item_ID = Player_Controller.Flying_Item_ID -- Buff前飞行物ID
+        Player_Controller:Update_Flying_Item(Magic_Carpet_Item_ID, true)
     end
 end
 
---[[----------------------Buff移除时关闭飞行------------------------]]
+--[[----------------------Buff移除时关闭魔毯飞行------------------------]]
 function Buff08:OnUnApply_BP(OwnerActor, Reason)
-    OwnerActor.CharacterMovement.MaxFlySpeed = self.Original_Fly_Max_Speed
     if self:HasAuthority() then
-        if self.Has_Entered_Fly_State then
-            UGCPersistEffectSystem.LeaveDynamicState(OwnerActor, Fly_State_Tag)
-        end
-        if OwnerActor.CharacterMovement.MovementMode == Fly_Movement_Mode then
-            OwnerActor.CharacterMovement:SetMovementMode(Falling_Movement_Mode, 0)
-        end
-    elseif self:IsAutonomous(true) then
-        local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-        if Player_Controller.MainUI_BP then
-            Player_Controller.MainUI_BP:SetFlyControlsEnabled(false)
+        local Player_Controller = OwnerActor:GetController() -- Buff所属玩家控制器
+        Player_Controller:Update_Flying_Item(Magic_Carpet_Item_ID, false)
+        if self.Original_Flying_Item_ID ~= 0 then
+            Player_Controller:Update_Flying_Item(self.Original_Flying_Item_ID, true)
         end
     end
 end
