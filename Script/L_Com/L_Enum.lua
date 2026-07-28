@@ -18,7 +18,8 @@ L_Enum.Name_ClassPath = {
     UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C",
     UI10 = RootPath .. "Asset/Blueprint/Yan/UI/UI10.UI10_C",
 
-    kj01 = RootPath .. "Asset/Blueprint/Yan/UI/kj01.kj01_C"
+    kj01 = RootPath .. "Asset/Blueprint/Yan/UI/kj01.kj01_C",
+    UI_Fly = RootPath .. "Asset/Blueprint/Yan/UI/UI_Fly.UI_Fly_C"
 
 }
 
@@ -63,7 +64,8 @@ L_Enum.Name_RPC = {
     Exchange_Trophy_Item = "Exchange_Trophy_Item", -- 奖杯兑换道具RPC名称
     Buy_Gold_Item = "Buy_Gold_Item", -- 金币购买道具RPC名称
     Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称
-    Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill" -- 切换陷阽物品技能RPC名称
+    Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill", -- 切换陷阽物品技能RPC名称
+    Set_Jetpack_Flying = "Set_Jetpack_Flying" -- 设置冲天炮飞行状态RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 

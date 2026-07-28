@@ -44,8 +44,18 @@ local UGCPlayerController = {
     Tower_Reward_Enter_Time = 0, -- 本次进入区域的时间戳
     Tower_Reward_Accumulated_Time = 0, -- 已累计的区域内停留秒数
     Tower_Reward_Claim_Mask = 0, -- 五档奖励领取状态位
-    Is_Monster_Death = false -- 是否由怪物内部碰撞体致死
+    Is_Monster_Death = false, -- 是否由怪物内部碰撞体致死
+    Flying_Item_ID = 0 -- 当前装备的飞行物ID
 }
+
+local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
+local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
+local Flying_Item_Slot_Name = "EquipmentSlot.Custom.Jetpack" -- 飞行物装备槽位
+local Fly_Movement_Mode = 5 -- 飞行移动模式
+local Falling_Movement_Mode = 3 -- 下落移动模式
+local Fly_State_Tag = "PawnState.Movement.Flying" -- 飞行状态标签
+local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
+local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
 
 --[[---------------------初始化测试-------------------------]] --
 function UGCPlayerController:ReceiveBeginPlay()
@@ -87,7 +97,7 @@ function UGCPlayerController:GetReplicatedProperties()
     return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}, {"WeekEndTime", "Lazy"},
         {"WinCup", "Lazy"}, {"Tower_Reward_Has_Started", "Lazy"}, {"Tower_Reward_Is_Timing", "Lazy"},
         {"Tower_Reward_Enter_Time", "Lazy"}, {"Tower_Reward_Accumulated_Time", "Lazy"},
-        {"Tower_Reward_Claim_Mask", "Lazy"}
+        {"Tower_Reward_Claim_Mask", "Lazy"}, {"Flying_Item_ID", "Lazy"}
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
@@ -95,8 +105,94 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
         L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
         L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
-        L_Enum.Name_RPC.Switch_Trap_Item_Skill
+        L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying
 
+end
+
+--[[----------------------设置飞行移动模式------------------------]]
+function UGCPlayerController:Set_Flying_Movement_Enabled(Is_Enabled)
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    if not Is_Enabled then
+        if not Player_Pawn.Flying_Item_Movement_Enabled then
+            return
+        end
+        Player_Pawn.Flying_Item_Movement_Enabled = false
+        local Should_Set_Falling = true -- 是否切换到下落模式
+        if Player_Pawn.Flying_Item_Has_Entered_State then
+            Should_Set_Falling = UGCPersistEffectSystem.LeaveDynamicState(Player_Pawn, Fly_State_Tag)
+            Player_Pawn.Flying_Item_Has_Entered_State = false
+        end
+        if Should_Set_Falling and Player_Pawn.CharacterMovement.MovementMode == Fly_Movement_Mode then
+            Player_Pawn.CharacterMovement:SetMovementMode(Falling_Movement_Mode, 0)
+        end
+        return
+    end
+
+    if Player_Pawn.Flying_Item_Movement_Enabled then
+        return
+    end
+    Player_Pawn.Flying_Item_Movement_Enabled = true
+    Player_Pawn.Flying_Item_Has_Entered_State = UGCPersistEffectSystem.EnterDynamicState(Player_Pawn, Fly_State_Tag)
+    Player_Pawn.CharacterMovement:SetMovementMode(Fly_Movement_Mode, 0)
+end
+
+--[[----------------------设置冲天炮飞行状态------------------------]]
+function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
+    if not self:HasAuthority() or self.Flying_Item_ID ~= Jetpack_Item_ID then
+        return
+    end
+
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    local Equipped_Item = UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备飞行物
+    local Can_Fly = Equipped_Item.TypeSpecificID == Jetpack_Item_ID -- 是否允许冲天炮飞行
+    self:Set_Flying_Movement_Enabled(Is_Flying and Can_Fly)
+    ugcprint(string.format("[Jetpack] 服务端启动检查：装备物品ID=%s，允许飞行=%s",
+        tostring(Equipped_Item.TypeSpecificID), tostring(Is_Flying and Can_Fly)))
+end
+
+--[[----------------------应用服务端魔毯移动参数------------------------]]
+function UGCPlayerController:Apply_Magic_Carpet_Movement()
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    local Character_Movement = Player_Pawn.CharacterMovement -- 角色移动组件
+    Player_Pawn.Magic_Carpet_Original_Max_Fly_Speed = Character_Movement.MaxFlySpeed
+    Player_Pawn.Magic_Carpet_Original_Braking_Deceleration = Character_Movement.BrakingDecelerationFlying
+    Character_Movement.MaxFlySpeed = Magic_Carpet_Max_Fly_Speed
+    Character_Movement.BrakingDecelerationFlying = Magic_Carpet_Braking_Deceleration
+end
+
+--[[----------------------恢复服务端角色移动参数------------------------]]
+function UGCPlayerController:Restore_Magic_Carpet_Movement()
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    if not Player_Pawn.Magic_Carpet_Original_Max_Fly_Speed then
+        return
+    end
+
+    local Character_Movement = Player_Pawn.CharacterMovement -- 角色移动组件
+    Character_Movement.MaxFlySpeed = Player_Pawn.Magic_Carpet_Original_Max_Fly_Speed
+    Character_Movement.BrakingDecelerationFlying = Player_Pawn.Magic_Carpet_Original_Braking_Deceleration
+    Player_Pawn.Magic_Carpet_Original_Max_Fly_Speed = nil
+    Player_Pawn.Magic_Carpet_Original_Braking_Deceleration = nil
+end
+
+--[[----------------------同步当前装备的飞行物------------------------]]
+function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped)
+    if not self:HasAuthority() then
+        return
+    end
+
+    if not Is_Equipped and self.Flying_Item_ID ~= Item_ID then
+        return
+    end
+
+    self:Set_Flying_Movement_Enabled(false)
+    self:Restore_Magic_Carpet_Movement()
+    self.Flying_Item_ID = Is_Equipped and Item_ID or 0
+    if self.Flying_Item_ID == Magic_Carpet_Item_ID then
+        self:Apply_Magic_Carpet_Movement()
+        self:Set_Flying_Movement_Enabled(true)
+    end
+    UnrealNetwork.RepLazyProperty(self, "Flying_Item_ID")
+    ugcprint(string.format("[FlyingItem] 装备状态同步：物品ID=%s", tostring(self.Flying_Item_ID)))
 end
 
 --[[----------------------获取塔内累计停留时间------------------------]]
@@ -488,6 +584,17 @@ function UGCPlayerController:OnRep_PlayerGameLevel()
     --     self.MainUI_BP:RefreshPlayerGameLevel(self.PlayerGameLevel)
     -- end
     L_TipsTool.ShowTips_01(tostring(self.PlayerGameLevel))
+end
+
+--[[----------------------刷新飞行物控制界面------------------------]]
+function UGCPlayerController:OnRep_Flying_Item_ID()
+    local UI_Path = L_Enum.Name_ClassPath.UI_Fly -- 飞行物控制界面路径
+    L_GloTools.UIMgr(UI_Path, self.Flying_Item_ID ~= 0)
+
+    local Fly_UI = L_GloTools.UI_Map[UI_Path] -- 已创建的飞行物控制界面
+    if Fly_UI then
+        Fly_UI:SetFlyingItem(self.Flying_Item_ID)
+    end
 end
 
 --[[-----------------------下面是通用方法-----------------------]] --
