@@ -1,5 +1,5 @@
 ---@class SaveAir_Colli_C:AActor
----@field Capsule UCapsuleComponent
+---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 -- Edit Below--
 ---@class SaveAir_Colli_C:AActor
@@ -14,9 +14,8 @@ function SaveAir_Colli:ReceiveBeginPlay()
     if not self:HasAuthority() then
         return
     end
-
-    self.Capsule.OnComponentBeginOverlap:Add(self.Capsule_OnComponentBeginOverlap, self);
-    self.Capsule.OnComponentEndOverlap:Add(self.Capsule_OnComponentEndOverlap, self);
+    self.Box.OnComponentBeginOverlap:Add(self.Box_OnComponentBeginOverlap, self);
+	self.Box.OnComponentEndOverlap:Add(self.Box_OnComponentEndOverlap, self);
 end
 
 --[[
@@ -55,12 +54,14 @@ function SaveAir_Colli:LuaInit()
 
     -- [Editor Generated Lua] BindingEvent Begin:
 
-    -- [Editor Generated Lua] BindingEvent End;
+
+	-- [Editor Generated Lua] BindingEvent End;
 end
 
+
 --[[----------------------玩家进入区域时开启怪物碰撞保护------------------------]]
-function SaveAir_Colli:Capsule_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex,
-    bFromSweep, SweepResult)
+
+function SaveAir_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult)
     local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 进入区域的玩家控制器
     if Player_Controller == nil then
         return
@@ -70,10 +71,10 @@ function SaveAir_Colli:Capsule_OnComponentBeginOverlap(OverlappedComponent, Othe
     OtherActor.Is_In_Monster_Safe_Area = true -- 标记玩家处于怪物安全区
     UGCPersistEffectSystem.AddBuffByClass(OtherActor, Safe_Area_Buff_Class)
 end
-
 --[[----------------------玩家离开区域时关闭怪物碰撞保护------------------------]]
-function SaveAir_Colli:Capsule_OnComponentEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex)
-    local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 离开区域的玩家控制器
+
+function SaveAir_Colli:Box_OnComponentEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex)
+	   local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 离开区域的玩家控制器
     if Player_Controller == nil then
         return
     end
@@ -81,6 +82,7 @@ function SaveAir_Colli:Capsule_OnComponentEndOverlap(OverlappedComponent, OtherA
 
     OtherActor.Is_In_Monster_Safe_Area = false -- 标记玩家离开怪物安全区
     UGCPersistEffectSystem.RemoveBuffByClass(OtherActor, Safe_Area_Buff_Class)
+
 end
 
 -- [Editor Generated Lua] function define End;
