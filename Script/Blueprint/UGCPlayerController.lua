@@ -356,10 +356,7 @@ end
 
 --[[----------------------切换陷阽物品对应的技能槽技能------------------------]]
 function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
-    ugcprint(string.format("[TrapSkillDebug][服务端] RPC进入：物品ID=%s，控制器=%s，HasAuthority=%s",
-        tostring(Item_ID), tostring(self), tostring(self:HasAuthority())))
     if not self:HasAuthority() then
-        ugcprint("[TrapSkillDebug][服务端] RPC终止：当前控制器没有服务端权限")
         return
     end
 
@@ -372,65 +369,21 @@ function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
     local Selected_Skill_Path = Trap_Skill_Paths[Item_ID] -- 本次选择的技能路径
     local Is_Clear_Slot = Item_ID == 0 -- 是否只清空陷阱技能槽
     local Item_Count = Is_Clear_Slot and 0 or UGCBackpackSystemV2.GetItemCountV2(self, Item_ID) -- 服务端背包物品数量
-    ugcprint(string.format(
-        "[TrapSkillDebug][服务端] 参数检查：技能路径=%s，技能槽=%s，服务端数量=%s",
-        tostring(Selected_Skill_Path), tostring(Trap_Skill_Slot), tostring(Item_Count)))
     if not Is_Clear_Slot and (not Selected_Skill_Path or Item_Count <= 0) then
-        ugcprint("[TrapSkillDebug][服务端] RPC终止：物品ID不合法或服务端数量不足")
         return
     end
 
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
-    ugcprint(string.format("[TrapSkillDebug][服务端] 当前玩家角色=%s", tostring(Player_Pawn)))
-    local All_Skills_Before = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, nil) or {} -- 切换前全部技能实例
-    ugcprint(string.format("[TrapSkillDebug][服务端] 切换前玩家技能实例总数=%s",
-        tostring(#All_Skills_Before)))
-    for Skill_Index, Skill_Instance in ipairs(All_Skills_Before) do
-        ugcprint(string.format(
-            "[TrapSkillDebug][服务端] 切换前技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
-            tostring(Skill_Index), tostring(Skill_Instance), tostring(Skill_Instance:GetSkillName()),
-            tostring(Skill_Instance:IsSkillEnable())))
-    end
-
-    for Trap_Item_ID, Trap_Skill_Path in pairs(Trap_Skill_Paths) do
+    for _, Trap_Skill_Path in pairs(Trap_Skill_Paths) do
         local Skill_Instances = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, Trap_Skill_Path) or {} -- 已有陷阱技能实例
-        ugcprint(string.format(
-            "[TrapSkillDebug][服务端] 清理旧技能：物品ID=%s，技能路径=%s，实例数量=%s",
-            tostring(Trap_Item_ID), tostring(Trap_Skill_Path), tostring(#Skill_Instances)))
         for _, Skill_Instance in ipairs(Skill_Instances) do
-            local Skill_Name = Skill_Instance:GetSkillName() -- 旧技能名称
-            local Skill_Instance_Text = tostring(Skill_Instance) -- 旧技能实例文本
-            local Remove_Result = UGCPersistEffectSystem.RemoveSkillInstance(Player_Pawn, Skill_Instance) -- 移除结果
-            ugcprint(string.format("[TrapSkillDebug][服务端] 移除旧技能：实例=%s，名称=%s，结果=%s",
-                Skill_Instance_Text, tostring(Skill_Name), tostring(Remove_Result)))
+            UGCPersistEffectSystem.RemoveSkillInstance(Player_Pawn, Skill_Instance)
         end
     end
 
-    if Is_Clear_Slot then
-        ugcprint("[TrapSkillDebug][服务端] 陷阽物品已全部耗尽，技能槽清理完成")
-    else
-        local Selected_Skill_Instance = UGCPersistEffectSystem.AddSkillByClass(Player_Pawn, Selected_Skill_Path, -1,
+    if not Is_Clear_Slot then
+        UGCPersistEffectSystem.AddSkillByClass(Player_Pawn, Selected_Skill_Path, -1,
             Trap_Skill_Slot) -- 新增并绑定到技能UI槽位的技能实例
-        ugcprint(string.format(
-            "[TrapSkillDebug][服务端] AddSkillByClass完成：物品ID=%s，技能路径=%s，技能槽=%s，实例=%s",
-            tostring(Item_ID), tostring(Selected_Skill_Path), tostring(Trap_Skill_Slot),
-            tostring(Selected_Skill_Instance)))
-        if Selected_Skill_Instance then
-            ugcprint(string.format("[TrapSkillDebug][服务端] 新技能状态：名称=%s，是否启用=%s",
-                tostring(Selected_Skill_Instance:GetSkillName()), tostring(Selected_Skill_Instance:IsSkillEnable())))
-        else
-            ugcprint("[TrapSkillDebug][服务端] 关键异常：AddSkillByClass未返回技能实例")
-        end
-    end
-
-    local All_Skills_After = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, nil) or {} -- 切换后全部技能实例
-    ugcprint(string.format("[TrapSkillDebug][服务端] 切换结束，玩家技能实例总数=%s",
-        tostring(#All_Skills_After)))
-    for Skill_Index, Skill_Instance in ipairs(All_Skills_After) do
-        ugcprint(string.format(
-            "[TrapSkillDebug][服务端] 切换后技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
-            tostring(Skill_Index), tostring(Skill_Instance), tostring(Skill_Instance:GetSkillName()),
-            tostring(Skill_Instance:IsSkillEnable())))
     end
 end
 

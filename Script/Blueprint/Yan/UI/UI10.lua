@@ -158,13 +158,9 @@ function UI10:RefreshTrapItems()
         end
 
         if Next_Trap_Index then
-            ugcprint(string.format("[TrapSkillDebug][客户端] 当前道具已耗尽，自动切换下一个技能：原索引=%s，新索引=%s",
-                tostring(Previous_Trap_Index), tostring(Next_Trap_Index)))
             self:SelectTrapItem(Next_Trap_Index)
         else
             self.Selected_Trap_Index = nil
-            ugcprint(string.format("[TrapSkillDebug][客户端] 当前道具已耗尽且没有剩余陷阽物品，清空技能槽：原索引=%s",
-                tostring(Previous_Trap_Index)))
             UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller,
                 L_Enum.Name_RPC.Switch_Trap_Item_Skill, 0)
         end
@@ -176,13 +172,8 @@ function UI10:SelectTrapItem(Trap_Index)
     local Trap_Config = self:GetTrapItemConfig()[Trap_Index] -- 当前陷阱配置
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 当前玩家控制器
     local Item_Count = UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Trap_Config.Item_ID) -- 当前道具数量
-    ugcprint(string.format("[TrapSkillDebug][客户端] 点击按钮：索引=%s，物品ID=%s，商品ID=%s，数量=%s，控制器=%s",
-        tostring(Trap_Index), tostring(Trap_Config.Item_ID), tostring(Trap_Config.Product_ID), tostring(Item_Count),
-        tostring(Player_Controller)))
 
     if Item_Count <= 0 then
-        ugcprint(string.format("[TrapSkillDebug][客户端] 数量不足，打开购买界面：商品ID=%s",
-            tostring(Trap_Config.Product_ID)))
         L_GloTools.BuyShopProduct(Trap_Config.Product_ID)
         return false
     end
@@ -190,11 +181,8 @@ function UI10:SelectTrapItem(Trap_Index)
     self.Selected_Trap_Index = Trap_Index
     self.Trap_Red_Dot_Read[Trap_Index] = true
     Trap_Config.Red_Dot:SetVisibility(ESlateVisibility.Collapsed)
-    ugcprint(string.format("[TrapSkillDebug][客户端] 数量充足，准备发送切换技能RPC：RPC=%s，物品ID=%s",
-        tostring(L_Enum.Name_RPC.Switch_Trap_Item_Skill), tostring(Trap_Config.Item_ID)))
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Switch_Trap_Item_Skill,
         Trap_Config.Item_ID)
-    ugcprint("[TrapSkillDebug][客户端] 切换技能RPC调用已执行")
     return true
 end
 
