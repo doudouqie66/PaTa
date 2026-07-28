@@ -182,6 +182,11 @@ function BaseMonse:OutBox_OnComponentBeginOverlap(OverlappedComponent, OtherActo
     if PC == nil then
         return
     end
+
+    if OtherActor.Is_In_Monster_Safe_Area then
+        return
+    end
+
     -- 通知进入警示区域
     UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, true)
     --[[---------------------开始震动-------------------------]] --
@@ -216,6 +221,10 @@ function BaseMonse:InnerBox_OnComponentBeginOverlap(OverlappedComponent, OtherAc
 
     local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor)
     if PC == nil then
+        return
+    end
+
+    if OtherActor.Is_In_Monster_Safe_Area then
         return
     end
 
