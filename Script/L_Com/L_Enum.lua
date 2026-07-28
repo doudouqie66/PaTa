@@ -89,7 +89,7 @@ L_Enum.Gold_Shop = {
 }
 
 L_Enum.Trophy_Shop = {
-    Trophy_Item_ID = 8310013, -- 奖杯物品ID
+    Trophy_Item_ID = 8310012, -- 奖杯物品ID
     Item_Price_Config = {
         [1023] = 5, -- 香蕉皮
         [1009] = 5, -- 粑粑

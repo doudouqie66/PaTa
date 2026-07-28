@@ -5,33 +5,6 @@
 ---@field SignInEventComponent SignInEventComponent_C
 ---@field ShopV2Component ShopV2Component_C
 -- Edit Below--
----@class UGCPlayerController_C:BP_UGCPlayerController_C
----@field GiftPackComponent GiftPackComponent_C
----@field TaskTemplateComponent TaskTemplateComponent_C
----@field RankingListComponent RankingListComponent_C
----@field SignInEventComponent SignInEventComponent_C
----@field ShopV2Component ShopV2Component_C
--- Edit Below--
----@class UGCPlayerController_C:BP_UGCPlayerController_C
----@field GiftPackComponent GiftPackComponent_C
----@field TaskTemplateComponent TaskTemplateComponent_C
----@field RankingListComponent RankingListComponent_C
----@field SignInEventComponent SignInEventComponent_C
----@field ShopV2Component ShopV2Component_C
--- Edit Below--
----@class UGCPlayerController_C:BP_UGCPlayerController_C
----@field GiftPackComponent GiftPackComponent_C
----@field TaskTemplateComponent TaskTemplateComponent_C
----@field RankingListComponent RankingListComponent_C
----@field SignInEventComponent SignInEventComponent_C
----@field ShopV2Component ShopV2Component_C
--- Edit Below--
----@class UGCPlayerController_C:BP_UGCPlayerController_C
----@field TaskTemplateComponent TaskTemplateComponent_C
----@field RankingListComponent RankingListComponent_C
----@field SignInEventComponent SignInEventComponent_C
----@field ShopV2Component ShopV2Component_C
--- Edit Below--
 local UGCPlayerController = {
     PlayerGameLevel = 1,
     PlayerAttack = 1,
@@ -75,9 +48,26 @@ function UGCPlayerController:InitTest()
         if self:HasAuthority() == true then
             local PlayerPawn = self:GetPlayerCharacterSafety()
             -- V2 背包添加物品
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310000, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310034, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310037, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310038, 1)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310002, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310014, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310016, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310018, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310020, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310021, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310023, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310024, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310026, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310027, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310007, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310010, 10)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310003, 6666)
+            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310012, 6666)
 
         end
     end)
@@ -374,18 +364,16 @@ function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
     end
 
     local Trap_Skill_Paths = { -- 陷阽物品对应的技能路径
-        [8310021] = UGCGameSystem.GetUGCResourcesFullPath(
-            "Asset/Blueprint/Prefabs/Skills/Skill04.Skill04_C"),
-        [8310007] = UGCGameSystem.GetUGCResourcesFullPath(
-            "Asset/Blueprint/Prefabs/Skills/Skill05.Skill05_C"),
-        [8310026] = UGCGameSystem.GetUGCResourcesFullPath(
-            "Asset/Blueprint/Prefabs/Skills/Skill06.Skill06_C")
+        [8310021] = UGCGameSystem.GetUGCResourcesFullPath("Asset/Blueprint/Prefabs/Skills/Skill04.Skill04_C"),
+        [8310007] = UGCGameSystem.GetUGCResourcesFullPath("Asset/Blueprint/Prefabs/Skills/Skill05.Skill05_C"),
+        [8310026] = UGCGameSystem.GetUGCResourcesFullPath("Asset/Blueprint/Prefabs/Skills/Skill06.Skill06_C")
     }
     local Trap_Skill_Slot = "Skill.Slot.Slot0" -- 陷阱技能共用的技能UI槽位
     local Selected_Skill_Path = Trap_Skill_Paths[Item_ID] -- 本次选择的技能路径
     local Is_Clear_Slot = Item_ID == 0 -- 是否只清空陷阱技能槽
     local Item_Count = Is_Clear_Slot and 0 or UGCBackpackSystemV2.GetItemCountV2(self, Item_ID) -- 服务端背包物品数量
-    ugcprint(string.format("[TrapSkillDebug][服务端] 参数检查：技能路径=%s，技能槽=%s，服务端数量=%s",
+    ugcprint(string.format(
+        "[TrapSkillDebug][服务端] 参数检查：技能路径=%s，技能槽=%s，服务端数量=%s",
         tostring(Selected_Skill_Path), tostring(Trap_Skill_Slot), tostring(Item_Count)))
     if not Is_Clear_Slot and (not Selected_Skill_Path or Item_Count <= 0) then
         ugcprint("[TrapSkillDebug][服务端] RPC终止：物品ID不合法或服务端数量不足")
@@ -395,16 +383,19 @@ function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
     ugcprint(string.format("[TrapSkillDebug][服务端] 当前玩家角色=%s", tostring(Player_Pawn)))
     local All_Skills_Before = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, nil) or {} -- 切换前全部技能实例
-    ugcprint(string.format("[TrapSkillDebug][服务端] 切换前玩家技能实例总数=%s", tostring(#All_Skills_Before)))
+    ugcprint(string.format("[TrapSkillDebug][服务端] 切换前玩家技能实例总数=%s",
+        tostring(#All_Skills_Before)))
     for Skill_Index, Skill_Instance in ipairs(All_Skills_Before) do
-        ugcprint(string.format("[TrapSkillDebug][服务端] 切换前技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
+        ugcprint(string.format(
+            "[TrapSkillDebug][服务端] 切换前技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
             tostring(Skill_Index), tostring(Skill_Instance), tostring(Skill_Instance:GetSkillName()),
             tostring(Skill_Instance:IsSkillEnable())))
     end
 
     for Trap_Item_ID, Trap_Skill_Path in pairs(Trap_Skill_Paths) do
         local Skill_Instances = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, Trap_Skill_Path) or {} -- 已有陷阱技能实例
-        ugcprint(string.format("[TrapSkillDebug][服务端] 清理旧技能：物品ID=%s，技能路径=%s，实例数量=%s",
+        ugcprint(string.format(
+            "[TrapSkillDebug][服务端] 清理旧技能：物品ID=%s，技能路径=%s，实例数量=%s",
             tostring(Trap_Item_ID), tostring(Trap_Skill_Path), tostring(#Skill_Instances)))
         for _, Skill_Instance in ipairs(Skill_Instances) do
             local Skill_Name = Skill_Instance:GetSkillName() -- 旧技能名称
@@ -419,7 +410,7 @@ function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
         ugcprint("[TrapSkillDebug][服务端] 陷阽物品已全部耗尽，技能槽清理完成")
     else
         local Selected_Skill_Instance = UGCPersistEffectSystem.AddSkillByClass(Player_Pawn, Selected_Skill_Path, -1,
-                                            Trap_Skill_Slot) -- 新增并绑定到技能UI槽位的技能实例
+            Trap_Skill_Slot) -- 新增并绑定到技能UI槽位的技能实例
         ugcprint(string.format(
             "[TrapSkillDebug][服务端] AddSkillByClass完成：物品ID=%s，技能路径=%s，技能槽=%s，实例=%s",
             tostring(Item_ID), tostring(Selected_Skill_Path), tostring(Trap_Skill_Slot),
@@ -433,9 +424,11 @@ function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
     end
 
     local All_Skills_After = UGCPersistEffectSystem.GetSkillsByClass(Player_Pawn, nil) or {} -- 切换后全部技能实例
-    ugcprint(string.format("[TrapSkillDebug][服务端] 切换结束，玩家技能实例总数=%s", tostring(#All_Skills_After)))
+    ugcprint(string.format("[TrapSkillDebug][服务端] 切换结束，玩家技能实例总数=%s",
+        tostring(#All_Skills_After)))
     for Skill_Index, Skill_Instance in ipairs(All_Skills_After) do
-        ugcprint(string.format("[TrapSkillDebug][服务端] 切换后技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
+        ugcprint(string.format(
+            "[TrapSkillDebug][服务端] 切换后技能：序号=%s，实例=%s，名称=%s，是否启用=%s",
             tostring(Skill_Index), tostring(Skill_Instance), tostring(Skill_Instance:GetSkillName()),
             tostring(Skill_Instance:IsSkillEnable())))
     end
