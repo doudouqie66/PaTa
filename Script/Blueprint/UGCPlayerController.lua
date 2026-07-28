@@ -471,9 +471,15 @@ function UGCPlayerController:Mgr_Atten(bool)
 end
 --[[----------------------请求复活当前玩家------------------------]]
 function UGCPlayerController:RequestRespawn(Return_To_Death_Location)
+    local Current_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    if Current_Pawn and not UGCPlayerPawnSystem.HasPawnState(Current_Pawn, EPawnState.Dead) then
+        return
+    end
+
     if Return_To_Death_Location then
         local Return_Scroll_Item_ID = 8310002 -- 返回卷背包物品ID
-        if UGCBackpackSystemV2.GetItemCountV2(self, Return_Scroll_Item_ID) < 1 then
+        local Return_Scroll_Count = UGCBackpackSystemV2.GetItemCountV2(self, Return_Scroll_Item_ID) -- 返回卷数量
+        if Return_Scroll_Count < 1 then
             UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Respawn_UI)
             return
         end

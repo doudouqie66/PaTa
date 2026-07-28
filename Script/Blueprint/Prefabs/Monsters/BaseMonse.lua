@@ -228,11 +228,18 @@ function BaseMonse:InnerBox_OnComponentBeginOverlap(OverlappedComponent, OtherAc
         return
     end
 
+    local Buff04_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff04) -- 无敌Buff类
+    if #UGCPersistEffectSystem.GetBuffsByClass(OtherActor, Buff04_Class) > 0 then
+        return
+    end
+
     PC.Death_Location = OtherActor:K2_GetActorLocation() -- 玩家死亡位置
     PC.Is_Monster_Death = true -- 标记为怪物内部碰撞体致死
     UGCPlayerPawnSystem.SetIsDirectlyDie(OtherActor, true)
     UGCGameSystem.ApplyDamage(OtherActor, Inner_Box_Death_Damage, nil, self, {})
-    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Show_Respawn_UI)
+    if PC.Is_Monster_Death then
+        PC.Is_Monster_Death = false -- 伤害未致死时重置怪物致死标记
+    end
 
 end
 

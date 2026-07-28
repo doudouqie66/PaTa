@@ -68,6 +68,7 @@ end
 function UGCGameMode:UGC_PlayerKilledEvent(Killer, VictimPlayer, VictimPawn, DamageType)
     if VictimPlayer.Is_Monster_Death then
         VictimPlayer.Is_Monster_Death = false -- 消耗怪物致死标记
+        UnrealNetwork.CallUnrealRPC(VictimPlayer, VictimPlayer, L_Enum.Name_RPC.Show_Respawn_UI)
         return
     end
 
@@ -77,11 +78,11 @@ end
 --[[----------------------复活后返回死亡位置------------------------]]
 function UGCGameMode:UGC_PlayerRespawnEvent(RespawnedController)
     RespawnedController:SyncWinCupToPawn()
+    local PlayerPawn = RespawnedController:GetPlayerCharacterSafety() -- 复活后的玩家角色
     if not RespawnedController.Return_To_Death_Location or RespawnedController.Death_Location == nil then
         return
     end
 
-    local PlayerPawn = RespawnedController:GetPlayerCharacterSafety()
     if PlayerPawn then
         PlayerPawn:K2_SetActorLocation(RespawnedController.Death_Location)
     end

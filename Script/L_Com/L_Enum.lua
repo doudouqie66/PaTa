@@ -38,6 +38,7 @@ L_Enum.Name_BuffPath = {
     Debuff04 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/DeBuff04.DeBuff04_C",
 
     Buff02 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff02.Buff02_C",
+    Buff04 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff04.Buff04_C",
     Buff05 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff05.Buff05_C",
     Buff07 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff07.Buff07_C",
     Buff08 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff08.Buff08_C",
