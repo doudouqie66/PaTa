@@ -177,8 +177,10 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped)
     self:Set_Flying_Movement_Enabled(false)
     self:Restore_Magic_Carpet_Movement()
     self.Flying_Item_ID = Is_Equipped and Item_ID or 0
-    if self.Flying_Item_ID == Magic_Carpet_Item_ID then
+    if self.Flying_Item_ID == Jetpack_Item_ID or self.Flying_Item_ID == Magic_Carpet_Item_ID then
         self:Apply_Magic_Carpet_Movement()
+    end
+    if self.Flying_Item_ID == Magic_Carpet_Item_ID then
         self:Set_Flying_Movement_Enabled(true)
     end
     UnrealNetwork.RepLazyProperty(self, "Flying_Item_ID")

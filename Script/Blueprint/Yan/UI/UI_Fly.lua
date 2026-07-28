@@ -104,7 +104,7 @@ function UI_Fly:SetFlyingItem(Flying_Item_ID)
     self.Magic_Carpet_Vertical_Input_Value = 0
     local Is_Jetpack = Flying_Item_ID == Jetpack_Item_ID -- 是否装备冲天炮
     local Is_Magic_Carpet = Flying_Item_ID == Magic_Carpet_Item_ID -- 是否装备魔毯
-    if Is_Magic_Carpet then
+    if Is_Jetpack or Is_Magic_Carpet then
         self:ApplyMagicCarpetMovement()
     else
         self:RestoreMagicCarpetMovement()
