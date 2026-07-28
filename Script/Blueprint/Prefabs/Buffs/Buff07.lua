@@ -1,15 +1,30 @@
 ---@class Buff07_C:PersistEffectBuff
--- Edit Below--
+--Edit Below--
 local Buff07 = {}
 
--- buff开始
---[[----------------------Buff挂载时开启Debuff无效------------------------]]
+--[[----------------------Buff挂载时开启控制和陷阱免疫------------------------]]
 function Buff07:OnApply_BP(OwnerActor)
+    if self:HasAuthority() then
+        OwnerActor.Control_Immune_Buff_Count = (OwnerActor.Control_Immune_Buff_Count or 0) + 1 -- 控制免疫Buff数量
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.Debuff.Dizzy", true, true)
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.OnStun", true, true)
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.HitFly", true, true)
+        self.Hit_Back_Resist_Operation_ID = UGCAttributeSystem.AddGameAttributeOperation(OwnerActor, "HitBackResist",
+            EAttrOperator.Plus, 1) -- 击退抗性修改ID
+    end
 end
 
--- buff结束
---[[----------------------Buff移除时关闭Debuff无效------------------------]]
+--[[----------------------Buff移除时关闭控制和陷阱免疫------------------------]]
 function Buff07:OnUnApply_BP(OwnerActor, Reason)
+    if self:HasAuthority() then
+        OwnerActor.Control_Immune_Buff_Count = math.max((OwnerActor.Control_Immune_Buff_Count or 1) - 1, 0) -- 剩余控制免疫Buff数量
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.Debuff.Dizzy", false, false)
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.OnStun", false, false)
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.HitFly", false, false)
+        if self.Hit_Back_Resist_Operation_ID then
+            UGCAttributeSystem.RemoveGameAttributeOperation(OwnerActor, self.Hit_Back_Resist_Operation_ID)
+        end
+    end
 end
 -- buff启动条件
 --[[

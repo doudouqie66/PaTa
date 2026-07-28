@@ -62,6 +62,11 @@ end
 --[[----------------------玩家进入盒体时添加减益------------------------]]
 function Aire03:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep,
     SweepResult)
+    if (OtherActor.Control_Immune_Buff_Count or 0) > 0 then
+        self:K2_DestroyActor()
+        return
+    end
+
     local Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Debuff01) -- Buff类
     local Buff_Instance = UGCPersistEffectSystem.AddBuffByClass(OtherActor, Buff_Class) -- 添加的Buff实例
     self:K2_DestroyActor()
