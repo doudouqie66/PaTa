@@ -25,7 +25,7 @@ L_Enum.Name_ClassPath = {
 
 --[[----------------------材质的路径-----------------------]] --
 L_Enum.Name_Material = {
-    Men_YuanLai = '/Game/UGC/Materials/MasterMaterialInst/UI_Effect/DX_FX_11_Inst.DX_FX_11_Inst',
+    Men_YuanLai = '/Game/Arts_Timeliness/CG005_Concert/Arts_Prop/LightStick/M_Prop_LightStick_Colorful',
     Men_CanEnter = '/Game/UMG/UI_Effect/Materials/DX_FlowLight_09.DX_FlowLight_09'
 
 }
