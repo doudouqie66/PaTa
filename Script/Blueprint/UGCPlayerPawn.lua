@@ -1,6 +1,10 @@
 ---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
 ---@field HeadTop_UI_Component_Back UWidgetComponent
 ---@field HeadTop_UI_Component UWidgetComponent
+--Edit Below--
+---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
+---@field HeadTop_UI_Component_Back UWidgetComponent
+---@field HeadTop_UI_Component UWidgetComponent
 -- Edit Below--
 local UGCPlayerPawn = {
     WinCup = 0 -- 当前显示的奖杯数量
