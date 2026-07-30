@@ -78,11 +78,7 @@ end
 
 --[[--------------------测试--------------------------]] --
 function MainUI:TestInit()
-    local RankListBtnClass = UE.LoadClass(UGCMapInfoLib.GetRootLongPackagePath() ..
-                                              "ExtendResource/RankingList/OfficialPackage/Asset/RankingList/Blueprint/WBP_RankingListBtn.WBP_RankingListBtn_C");
-    local PlayerController = STExtraGameplayStatics.GetFirstPlayerController(self);
-    local RankListBtn = UserWidget.NewWidgetObjectBP(PlayerController, RankListBtnClass);
-    RankListBtn:AddToViewport(1000);
+
 end
 
 --[[----------------------设置飞行控制按钮显示状态------------------------]]
