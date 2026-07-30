@@ -466,10 +466,13 @@ function UGCPlayerController:Show_Room_Pass_UI(Room_Pass)
     L_GloTools.UI_Map[L_Enum.Name_ClassPath.kj01]:SetRoomPass(Room_Pass)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
---[[----------------------通知警示区域------------------------]] --
+--[[----------------------显示警示并播放怪物音效------------------------]] --
 
-function UGCPlayerController:Mgr_Atten(bool)
+function UGCPlayerController:Mgr_Atten(bool, Monster_Actor)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, bool)
+    if bool and Monster_Actor then
+        SoundMgr.PlaySoundAttachActor(SoundMgr.SoundName.Attention, Monster_Actor)
+    end
 end
 --[[----------------------请求复活当前玩家------------------------]]
 function UGCPlayerController:RequestRespawn(Return_To_Death_Location)

@@ -17,6 +17,7 @@ SoundMgr.SoundName = {
     Trap_Explosion = "Trap_Explosion", -- 炸弹陷阱爆炸
     Freeze_Start = "Freeze_Start", -- 冰冻效果生效
     Freeze_Break = "Freeze_Break", -- 冰冻效果破碎
+    Attention = "Attention", -- 怪物靠近警示
     Monster_Voice = "Monster_Voice", -- 怪物声音
     Hit_Punch = "Hit_Punch", -- 拳击命中
     Fly_Start = "Fly_Start" -- 飞行效果生效
@@ -36,6 +37,7 @@ SoundMgr.SoundPath = {
     Trap_Explosion = RootPath .. "Asset/WwiseEvent/TrapExplosion.TrapExplosion", -- 炸弹陷阱爆炸
     Freeze_Start = RootPath .. "Asset/WwiseEvent/FreezeStart.FreezeStart", -- 冰冻效果生效
     Freeze_Break = RootPath .. "Asset/WwiseEvent/FreezeBreak.FreezeBreak", -- 冰冻效果破碎
+    Attention = RootPath .. "Asset/WwiseEvent/Attention.Attention", -- 怪物靠近警示
     Monster_Voice = RootPath .. "Asset/WwiseEvent/MonsterVoice.MonsterVoice", -- 怪物声音
     Hit_Punch = RootPath .. "Asset/WwiseEvent/HitPunch.HitPunch", -- 拳击命中
     Fly_Start = RootPath .. "Asset/WwiseEvent/FlyStart.FlyStart" -- 飞行效果生效
@@ -65,6 +67,32 @@ function SoundMgr.PlaySound2D(Sound_Name)
     end
 
     return UGCSoundManagerSystem.PlaySound2D(Sound_Asset)
+end
+
+--[[----------------------依附Actor播放3D音效------------------------]]
+function SoundMgr.PlaySoundAttachActor(Sound_Name, Attached_Actor)
+    if UGCGameSystem.IsServer() then
+        return
+    end
+
+    local Sound_Path = SoundMgr.SoundPath[Sound_Name] -- 音效资源路径
+    if not Sound_Path then
+        ugcprint("SoundMgr找不到音效配置：" .. tostring(Sound_Name))
+        return
+    end
+
+    local Sound_Asset = Sound_Cache[Sound_Name] -- 已加载的音效资源
+    if not Sound_Asset then
+        Sound_Asset = UE.LoadObject(Sound_Path)
+        Sound_Cache[Sound_Name] = Sound_Asset
+    end
+
+    if not Sound_Asset then
+        ugcprint("SoundMgr加载音效失败：" .. Sound_Path)
+        return
+    end
+
+    return UGCSoundManagerSystem.PlaySoundAttachActor(Sound_Asset, Attached_Actor, true)
 end
 
 return SoundMgr

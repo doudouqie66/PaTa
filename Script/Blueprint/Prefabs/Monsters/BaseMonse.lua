@@ -188,7 +188,7 @@ function BaseMonse:OutBox_OnComponentBeginOverlap(OverlappedComponent, OtherActo
     end
 
     -- 通知进入警示区域
-    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, true)
+    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, true, self)
     --[[---------------------开始震动-------------------------]] --
     UGCGameSystem.ClientPlayCameraShake(PC, SHAKE_TYPE_RANDOM, SHAKE_SCALE, SHAKE_DURATION)
 
