@@ -14,7 +14,7 @@ function L_GloTools.UIMgr(str, bVisible)
         local UI_Class = UE.LoadClass(str);
         local PlayerController = UGCGameSystem.GetLocalPlayerController()
         UI_BP = UserWidget.NewWidgetObjectBP(PlayerController, UI_Class);
-        if str == L_Enum.Name_ClassPath.UI01 then
+        if str == L_Enum.Name_ClassPath.UI01 or str == L_Enum.Name_ClassPath.UI07 then
             UI_BP:AddToViewport(9999999);
         else
             UI_BP:AddToViewport(1);
