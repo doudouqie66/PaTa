@@ -1,4 +1,5 @@
 ---@class ManName_UI_C:UUserWidget
+---@field Image_72 UImage
 ---@field TextBlock_0 UTextBlock
 --Edit Below--
 local ManName_UI = { bInitDoOnce = false } 

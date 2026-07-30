@@ -1,4 +1,5 @@
 ---@class UI_Ad_C:UUserWidget
+---@field Image_54 UImage
 ---@field TextBlock_0 UTextBlock
 --Edit Below--
 local UI_Ad = { bInitDoOnce = false } 
