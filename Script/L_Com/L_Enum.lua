@@ -33,8 +33,7 @@ L_Enum.Name_Material = {
 
 --[[----------------------蒙太奇资源路径------------------------]]
 L_Enum.Name_AnimMontagePath = {
-    Run_Area_Sprint = RootPath ..
-        "Asset/Blueprint/Animation/Run_Area_Sprint_Montage.Run_Area_Sprint_Montage" -- 区域跑步动作
+    Run_Area_Sprint = RootPath .. "Asset/Blueprint/Animation/Run_Area_Sprint_Montage.Run_Area_Sprint_Montage" -- 区域跑步动作
 }
 
 --[[----------------------Buff名字------------------------]] --
@@ -51,8 +50,8 @@ L_Enum.Name_BuffPath = {
     Buff07 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff07.Buff07_C",
     Buff08 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff08.Buff08_C",
     Buff09 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff09.Buff09_C",
-    Buff10 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff10.Buff10_C"
-
+    Buff10 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff10.Buff10_C",
+    Buff07_2 = RootPath .. "Asset/Blueprint/Prefabs/Buffs/Buff07_2.Buff07_2_C"
 }
 
 --[[------------------CTRl那里的RPC方法名字----------------------------]] --

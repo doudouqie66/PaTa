@@ -1,11 +1,11 @@
 ---@class SaveAir_Colli_C:AActor
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
--- Edit Below--
+--Edit Below--
 ---@class SaveAir_Colli_C:AActor
 ---@field Capsule UCapsuleComponent
 ---@field DefaultSceneRoot USceneComponent
--- Edit Below--
+--Edit Below--
 local SaveAir_Colli = {}
 
 --[[----------------------初始化并绑定怪物安全区碰撞事件------------------------]]
@@ -15,7 +15,7 @@ function SaveAir_Colli:ReceiveBeginPlay()
         return
     end
     self.Box.OnComponentBeginOverlap:Add(self.Box_OnComponentBeginOverlap, self);
-	self.Box.OnComponentEndOverlap:Add(self.Box_OnComponentEndOverlap, self);
+    self.Box.OnComponentEndOverlap:Add(self.Box_OnComponentEndOverlap, self);
 end
 
 --[[
@@ -54,19 +54,18 @@ function SaveAir_Colli:LuaInit()
 
     -- [Editor Generated Lua] BindingEvent Begin:
 
-
-	-- [Editor Generated Lua] BindingEvent End;
+    -- [Editor Generated Lua] BindingEvent End;
 end
-
 
 --[[----------------------玩家进入区域时开启怪物碰撞保护------------------------]]
 
-function SaveAir_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult)
+function SaveAir_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex,
+    bFromSweep, SweepResult)
     local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 进入区域的玩家控制器
     if Player_Controller == nil then
         return
     end
-    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07) -- 安全区Buff类
+    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07_2) -- 安全区Buff类
 
     OtherActor.Is_In_Monster_Safe_Area = true -- 标记玩家处于怪物安全区
     UGCPersistEffectSystem.AddBuffByClass(OtherActor, Safe_Area_Buff_Class)
@@ -74,11 +73,11 @@ end
 --[[----------------------玩家离开区域时关闭怪物碰撞保护------------------------]]
 
 function SaveAir_Colli:Box_OnComponentEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex)
-	   local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 离开区域的玩家控制器
+    local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 离开区域的玩家控制器
     if Player_Controller == nil then
         return
     end
-    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07) -- 安全区Buff类
+    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07_2) -- 安全区Buff类
 
     OtherActor.Is_In_Monster_Safe_Area = false -- 标记玩家离开怪物安全区
     UGCPersistEffectSystem.RemoveBuffByClass(OtherActor, Safe_Area_Buff_Class)
