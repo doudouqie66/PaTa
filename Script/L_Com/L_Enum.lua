@@ -18,6 +18,7 @@ L_Enum.Name_ClassPath = {
     UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C",
     UI10 = RootPath .. "Asset/Blueprint/Yan/UI/UI10.UI10_C",
     UI_Black = RootPath .. "Asset/Blueprint/UI/UI_Black.UI_Black_C",
+    UI_CountDownAttnetion = RootPath .. "Asset/Blueprint/UI/UI_CountDownAttnetion.UI_CountDownAttnetion_C",
     kj01 = RootPath .. "Asset/Blueprint/Yan/UI/kj01.kj01_C",
     UI_Fly = RootPath .. "Asset/Blueprint/Yan/UI/UI_Fly.UI_Fly_C"
 

@@ -36,49 +36,8 @@
 ---@field TextBlock_62 UTextBlock
 ---@field TextBlock_287 UTextBlock
 --Edit Below--
----@class UI02_C:UUserWidget
----@field Button_0 UButton
----@field Button_1 UButton
----@field Button_2 UButton
----@field Button_5 UButton
----@field Button_6 UButton
----@field Button_7 UButton
----@field Button_8 UButton
----@field Button_9 UButton
----@field Button_86 UButton
----@field Button_108 UButton
----@field Button_109 UButton
----@field Button_111 UButton
----@field Button_112 UButton
----@field Button_113 UButton
----@field Button_115 UButton
----@field Button_151 UButton
----@field Image_187 UImage
----@field Image_188 UImage
----@field Image_276 UImage
----@field Image_277 UImage
----@field Image_278 UImage
----@field Image_279 UImage
----@field Image_280 UImage
----@field Image_281 UImage
----@field Image_282 UImage
----@field Image_283 UImage
----@field Image_284 UImage
----@field ScaleBox_43 UScaleBox
----@field TextBlock_5 UTextBlock
----@field TextBlock_6 UTextBlock
----@field TextBlock_7 UTextBlock
----@field TextBlock_8 UTextBlock
----@field TextBlock_9 UTextBlock
----@field TextBlock_61 UTextBlock
----@field TextBlock_62 UTextBlock
----@field TextBlock_287 UTextBlock
--- Edit Below--
 local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID
-local Event_Countdown_Start_Scale = 1.5 -- 事件倒计时起始缩放
-local Event_Countdown_End_Scale = 1.0 -- 事件倒计时结束缩放
-local Event_Countdown_Animation_Duration = 0.45 -- 单个数字缩放时长
 
 local UI02 = {
     bInitDoOnce = false,
@@ -105,14 +64,6 @@ function UI02:Destruct()
     if self.Tower_Reward_UI_Timer then
         UGCTimerUtility.RemoveLuaTimer(self.Tower_Reward_UI_Timer)
         self.Tower_Reward_UI_Timer = nil
-    end
-    if self.Event_Countdown_Timer then
-        UGCTimerUtility.RemoveLuaTimer(self.Event_Countdown_Timer)
-        self.Event_Countdown_Timer = nil
-    end
-    if self.Event_Countdown_Tween and UGCTweenSystem.IsTweenValid(self.Event_Countdown_Tween) then
-        UGCTweenSystem.KillTween(self.Event_Countdown_Tween)
-        self.Event_Countdown_Tween = nil
     end
 end
 
@@ -148,52 +99,8 @@ function UI02:LuaInit()
     self:RefreshCurrency()
     self:RefreshTowerRewards()
     self:RefreshStarterGiftButton()
-    self.ScaleBox_43:SetRenderTransformPivot(UGCMathUtility.MakeVector2D(0.5, 0.5))
-    self.ScaleBox_43:SetVisibility(ESlateVisibility.Collapsed)
     self.Tower_Reward_UI_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
         self:RefreshTowerRewards()
-    end, true)
-end
-
---[[----------------------播放当前事件倒计时数字动画------------------------]]
-function UI02:PlayEventCountdownNumber()
-    if self.Event_Countdown_Tween and UGCTweenSystem.IsTweenValid(self.Event_Countdown_Tween) then
-        UGCTweenSystem.KillTween(self.Event_Countdown_Tween)
-    end
-
-    self.TextBlock_287:SetText(tostring(self.Event_Countdown_Remaining))
-    self.ScaleBox_43:SetRenderScale(UGCMathUtility.MakeVector2D(Event_Countdown_Start_Scale,
-        Event_Countdown_Start_Scale))
-    self.Event_Countdown_Tween = UGCTweenSystem.TweenFloatValue(
-        Event_Countdown_Start_Scale,
-        Event_Countdown_End_Scale,
-        Event_Countdown_Animation_Duration,
-        EEasingType.QuadOut,
-        function(_, Scale)
-            self.ScaleBox_43:SetRenderScale(UGCMathUtility.MakeVector2D(Scale, Scale))
-        end,
-        UGCTweenSystem.MakeConfig(0, 0, false, 0)
-    )
-end
-
---[[----------------------开始事件倒计时------------------------]]
-function UI02:StartEventCountdown(Countdown_Duration)
-    if self.Event_Countdown_Timer then
-        UGCTimerUtility.RemoveLuaTimer(self.Event_Countdown_Timer)
-    end
-
-    self.Event_Countdown_Remaining = math.floor(Countdown_Duration)
-    self.ScaleBox_43:SetVisibility(ESlateVisibility.Visible)
-    self:PlayEventCountdownNumber()
-    self.Event_Countdown_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
-        self.Event_Countdown_Remaining = self.Event_Countdown_Remaining - 1
-        if self.Event_Countdown_Remaining <= 0 then
-            UGCTimerUtility.RemoveLuaTimer(self.Event_Countdown_Timer)
-            self.Event_Countdown_Timer = nil
-            self.ScaleBox_43:SetVisibility(ESlateVisibility.Collapsed)
-            return
-        end
-        self:PlayEventCountdownNumber()
     end, true)
 end
 
@@ -280,10 +187,7 @@ end
 --[[----------------------根据累计购买记录刷新首充按钮------------------------]]
 function UI02:RefreshStarterGiftButton()
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    local Purchased_Times = ShopV2Manager:GetPurchasedTimes(
-        L_Enum.ID_ShopProduct.StarterGift,
-        Player_Controller
-    ) -- 首充商品已购买次数
+    local Purchased_Times = ShopV2Manager:GetPurchasedTimes(L_Enum.ID_ShopProduct.StarterGift, Player_Controller) -- 首充商品已购买次数
     local Starter_Gift_Visibility = Purchased_Times > 0 and ESlateVisibility.Collapsed or ESlateVisibility.Visible -- 首充入口显示状态
     self.Button_0:SetVisibility(Starter_Gift_Visibility)
     self.Image_187:SetVisibility(Starter_Gift_Visibility)
@@ -292,8 +196,8 @@ end
 --[[----------------------首充购买成功后隐藏入口按钮------------------------]]
 function UI02:OnBuyStarterGiftResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    if not bSuccess or PlayerKey ~= Player_Controller.PlayerKey or
-        CommodityID ~= L_Enum.ID_Gift.StarterGift or ProductID ~= L_Enum.ID_ShopProduct.StarterGift then
+    if not bSuccess or PlayerKey ~= Player_Controller.PlayerKey or CommodityID ~= L_Enum.ID_Gift.StarterGift or
+        ProductID ~= L_Enum.ID_ShopProduct.StarterGift then
         return
     end
 

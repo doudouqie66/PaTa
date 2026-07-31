@@ -33,6 +33,7 @@ function EntertTower_Colli:Box_OnComponentBeginOverlap(Overlapped_Component, Oth
         return
     end
 
+    EventScheduler:RegisterTowerPlayer(Other_Actor)
     Player_Controller:StartTowerRewardTimer()
 end
 
@@ -44,6 +45,7 @@ function EntertTower_Colli:Box_OnComponentEndOverlap(Overlapped_Component, Other
         return
     end
 
+    EventScheduler:UnregisterTowerPlayer(Other_Actor)
     Player_Controller:PauseTowerRewardTimer()
 end
 

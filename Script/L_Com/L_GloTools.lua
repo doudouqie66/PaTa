@@ -42,11 +42,10 @@ function L_GloTools.UIMgr(str, bVisible)
 end
 
 --[[----------------------播放事件倒计时------------------------]]
-function L_GloTools.StartEventCountdown(Countdown_Duration)
-    local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI02] -- 已创建的主城界面
-    if UI_BP and UI_BP:IsVisible() then
-        UI_BP:StartEventCountdown(Countdown_Duration)
-    end
+function L_GloTools.StartEventCountdown(Countdown_Duration, Event_Name)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_CountDownAttnetion, true)
+    local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_CountDownAttnetion] -- 倒计时提示界面
+    UI_BP:StartEventCountdown(Countdown_Duration, Event_Name)
 end
 
 --[[----------------------购买商城商品------------------------]]

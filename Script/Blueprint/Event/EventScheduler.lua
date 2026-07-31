@@ -1,5 +1,6 @@
 EventScheduler = EventScheduler or {}
 local L_Enum = UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
+EventScheduler.Tower_Players = EventScheduler.Tower_Players or {} -- 当前在塔内的玩家
 
 --[[---------------------启动事件循环-------------------------]] --
 function EventScheduler.Start()
@@ -49,77 +50,65 @@ function EventScheduler:_OnWarn(event)
     for _, PlayerController in ipairs(UGCGameSystem.GetAllPlayerController(false)) do
         -- L_TipsTool.ShowTips_01(tostring(event.name), PlayerController)
         UnrealNetwork.CallUnrealRPC(PlayerController, PlayerController, L_Enum.Name_RPC.Event_Countdown,
-            event.warnDuration)
+            event.warnDuration, event.name)
     end
 
 end
 
 --[[---------------------事件生效中-------------------------]] --
 function EventScheduler:_OnStart(event)
-    if event.name == L_Enum.Name_Event.SpeedLow then
-        -- 开启移动减速效果
-        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff01, event)
-    elseif event.name == L_Enum.Name_Event.DoubleGold then
-        -- 开启金币翻倍效果
-        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Buff09, event)
-    elseif event.name == L_Enum.Name_Event.AllSpeedUp then
-        -- 开启全体移动加速效果
-        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Buff05, event)
-    elseif event.name == L_Enum.Name_Event.MonsterStop then
+    if event.name == L_Enum.Name_Event.MonsterStop then
         -- 开启怪物静止效果
         EventScheduler:_AddBuffToAllMonsters(L_Enum.Name_BuffPath.Buff02, event)
-    elseif event.name == L_Enum.Name_Event.FullScreenNight then
-        -- 开启全屏黑夜效果
-        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff02, event)
-    elseif event.name == L_Enum.Name_Event.AllFly then
-        -- 开启全体飞行效果
-        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Buff08, event)
-    elseif event.name == L_Enum.Name_Event.ReverseMove then
-        -- 开启移动反向效果
-        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff04, event)
-    elseif event.name == L_Enum.Name_Event.ShortNight then
-        -- 开启短时间黑夜效果
-        EventScheduler:_AddBuffToAllPlayers(L_Enum.Name_BuffPath.Debuff03, event)
-
+        return
     end
 
+    local Buff_Path = EventScheduler:_GetPlayerEventBuffPath(event) -- 当前事件对应的玩家Buff路径
+    if Buff_Path then
+        EventScheduler:_AddBuffToTowerPlayers(Buff_Path, event)
+    end
 end
 
 --[[--------------------事件结束，解除效果--------------------------]] --
 function EventScheduler:_OnEnd(event)
-    if event.name == L_Enum.Name_Event.SpeedLow then
-        -- 解除移动减速效果
-        -- EventScheduler:_RemoveBuffFromAllPlayers(L_Enum.Name_BuffPath.Debuff01)
-    elseif event.name == L_Enum.Name_Event.DoubleGold then
-        -- 解除金币翻倍效果
-    elseif event.name == L_Enum.Name_Event.AllSpeedUp then
-        -- 解除全体移动加速效果
-    elseif event.name == L_Enum.Name_Event.MonsterStop then
-        -- 解除怪物静止效果
-    elseif event.name == L_Enum.Name_Event.FullScreenNight then
-        -- 解除全屏黑夜效果
-    elseif event.name == L_Enum.Name_Event.AllFly then
-        -- 解除全体飞行效果
-    elseif event.name == L_Enum.Name_Event.ReverseMove then
-        -- 解除移动反向效果
-    elseif event.name == L_Enum.Name_Event.ShortNight then
-        -- 解除短时间黑夜效果
+    local Buff_Path = EventScheduler:_GetPlayerEventBuffPath(event) -- 当前事件对应的玩家Buff路径
+    if Buff_Path then
+        EventScheduler:_RemoveBuffFromTowerPlayers(Buff_Path)
     end
 end
 
---[[----------------------给全体玩家添加事件Buff------------------------]]
-function EventScheduler:_AddBuffToAllPlayers(Buff_Path, Active_Event)
-    local Buff_Class = UGCObjectUtility.LoadClass(Buff_Path) -- Buff类
-    for _, Player_Pawn in ipairs(UGCGameSystem.GetAllPlayerPawn()) do
-        UGCPersistEffectSystem.AddBuffByClass(Player_Pawn, Buff_Class, nil, Active_Event.eventDuration, 1)
+--[[----------------------获取玩家事件对应的Buff路径------------------------]]
+function EventScheduler:_GetPlayerEventBuffPath(Event)
+    if Event.name == L_Enum.Name_Event.SpeedLow then
+        return L_Enum.Name_BuffPath.Debuff01
+    elseif Event.name == L_Enum.Name_Event.DoubleGold then
+        return L_Enum.Name_BuffPath.Buff09
+    elseif Event.name == L_Enum.Name_Event.AllSpeedUp then
+        return L_Enum.Name_BuffPath.Buff05
+    elseif Event.name == L_Enum.Name_Event.FullScreenNight then
+        return L_Enum.Name_BuffPath.Debuff02
+    elseif Event.name == L_Enum.Name_Event.AllFly then
+        return L_Enum.Name_BuffPath.Buff08
+    elseif Event.name == L_Enum.Name_Event.ReverseMove then
+        return L_Enum.Name_BuffPath.Debuff04
+    elseif Event.name == L_Enum.Name_Event.ShortNight then
+        return L_Enum.Name_BuffPath.Debuff03
     end
 end
 
---[[----------------------移除全体玩家的Buff------------------------]]
-function EventScheduler:_RemoveBuffFromAllPlayers(Buff_Path)
-    local Buff_Class = UGCObjectUtility.LoadClass(Buff_Path) -- Buff类
-    for _, Player_Pawn in ipairs(UGCGameSystem.GetAllPlayerPawn()) do
-        UGCPersistEffectSystem.RemoveBuffByClass(Player_Pawn, Buff_Class, -1)
+--[[----------------------给塔内玩家添加事件Buff------------------------]]
+function EventScheduler:_AddBuffToTowerPlayers(Buff_Path, Active_Event)
+    for Player_Pawn in pairs(EventScheduler.Tower_Players) do
+        EventScheduler:_AddBuffToOnePlayers(Player_Pawn, Buff_Path, Active_Event.eventDuration)
+        EventScheduler.Tower_Players[Player_Pawn] = Buff_Path
+    end
+end
+
+--[[----------------------移除塔内玩家的事件Buff------------------------]]
+function EventScheduler:_RemoveBuffFromTowerPlayers(Buff_Path)
+    for Player_Pawn in pairs(EventScheduler.Tower_Players) do
+        EventScheduler:_RemoveBuffFromOnePlayers(Player_Pawn, Buff_Path)
+        EventScheduler.Tower_Players[Player_Pawn] = false
     end
 end
 
@@ -131,14 +120,36 @@ function EventScheduler:_AddBuffToAllMonsters(Buff_Path, Active_Event)
     end
 end
 
+--[[----------------------登记进入塔内的玩家并添加当前事件Buff------------------------]]
+function EventScheduler:RegisterTowerPlayer(Pawn)
+    EventScheduler.Tower_Players[Pawn] = false
+    local Active_Event = EventScheduler.GetActiveEvent() -- 当前生效事件
+    if Active_Event then
+        local Buff_Path = EventScheduler:_GetPlayerEventBuffPath(Active_Event) -- 当前事件对应的玩家Buff路径
+        if Buff_Path then
+            EventScheduler:_AddBuffToOnePlayers(Pawn, Buff_Path, Active_Event.eventDuration)
+            EventScheduler.Tower_Players[Pawn] = Buff_Path
+        end
+    end
+end
+
+--[[----------------------注销离开塔内的玩家并移除当前事件Buff------------------------]]
+function EventScheduler:UnregisterTowerPlayer(Pawn)
+    local Buff_Path = EventScheduler.Tower_Players[Pawn] -- 区域给该玩家施加的Buff路径
+    EventScheduler.Tower_Players[Pawn] = nil
+    if Buff_Path then
+        EventScheduler:_RemoveBuffFromOnePlayers(Pawn, Buff_Path)
+    end
+end
+
 --[[----------------------给单个玩家添加事件Buff------------------------]]
-function EventScheduler:_AddBuffToOnePlayers(Pawn, Buff_Path)
+function EventScheduler:_AddBuffToOnePlayers(Pawn, Buff_Path, Duration)
     local Buff_Class = UGCObjectUtility.LoadClass(Buff_Path) -- Buff类
     local Buff_Instances = UGCPersistEffectSystem.GetBuffsByClass(Pawn, Buff_Class) -- 已有Buff实例
     if #Buff_Instances > 0 then
         return
     end
-    UGCPersistEffectSystem.AddBuffByClass(Pawn, Buff_Class, nil, -1, 1)
+    UGCPersistEffectSystem.AddBuffByClass(Pawn, Buff_Class, nil, Duration or -1, 1)
 end
 
 --[[----------------------移除单个玩家的事件Buff------------------------]]

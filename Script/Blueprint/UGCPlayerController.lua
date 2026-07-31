@@ -456,8 +456,8 @@ function UGCPlayerController:Tool_Msg_01(str, Sound_Name)
 end
 
 --[[----------------------播放事件倒计时------------------------]]
-function UGCPlayerController:Event_Countdown(Countdown_Duration)
-    L_GloTools.StartEventCountdown(Countdown_Duration)
+function UGCPlayerController:Event_Countdown(Countdown_Duration, Event_Name)
+    L_GloTools.StartEventCountdown(Countdown_Duration, Event_Name)
 end
 
 --[[----------------------显示房间密码界面------------------------]]
