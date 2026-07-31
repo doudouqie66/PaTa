@@ -64,4 +64,33 @@ function L_GloTools.AddBackpackItem(Item_ID, Item_Count)
         Item_Count)
 end
 
+--[[----------------------在当前客户端播放或停止角色蒙太奇------------------------]]
+function L_GloTools.SetPawnAnimMontage(Player_Pawn, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
+    Play_Rate = Play_Rate or 1.0
+    Start_Section_Name = Start_Section_Name or "Default"
+
+    local Anim_Montage = UE.LoadObject(Anim_Montage_Path) -- 蒙太奇资源
+    if Is_Playing then
+        Player_Pawn:PlayAnimMontage(Anim_Montage, Play_Rate, Start_Section_Name, true, true, true)
+    else
+        Player_Pawn:StopAnimMontage(Anim_Montage)
+    end
+end
+
+--[[----------------------广播播放或停止指定玩家蒙太奇------------------------]]
+function L_GloTools.SetAnimMontage(Player_Controller, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
+    Play_Rate = Play_Rate or 1.0
+    Start_Section_Name = Start_Section_Name or "Default"
+
+    if UGCGameSystem.IsServer() then
+        local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
+        UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Anim_Montage,
+            Player_Controller.PlayerKey, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
+        return
+    end
+
+    local Player_Pawn = UGCGameSystem.GetPlayerPawnByPlayerController(Player_Controller) -- 当前玩家角色
+    L_GloTools.SetPawnAnimMontage(Player_Pawn, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
+end
+
 return L_GloTools

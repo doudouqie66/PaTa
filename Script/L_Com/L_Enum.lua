@@ -30,6 +30,13 @@ L_Enum.Name_Material = {
     Men_CanEnter = '/Game/UMG/UI_Effect/Materials/DX_FlowLight_09.DX_FlowLight_09'
 
 }
+
+--[[----------------------蒙太奇资源路径------------------------]]
+L_Enum.Name_AnimMontagePath = {
+    Run_Area_Sprint = RootPath ..
+        "Asset/Blueprint/Animation/Run_Area_Sprint_Montage.Run_Area_Sprint_Montage" -- 区域跑步动作
+}
+
 --[[----------------------Buff名字------------------------]] --
 
 L_Enum.Name_BuffPath = {
@@ -69,7 +76,8 @@ L_Enum.Name_RPC = {
     Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称
     Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill", -- 切换陷阽物品技能RPC名称
     Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置冲天炮飞行状态RPC名称
-    Event_Countdown = "Event_Countdown" -- 事件倒计时RPC名称
+    Event_Countdown = "Event_Countdown", -- 事件倒计时RPC名称
+    Set_Anim_Montage = "MulticastRPC_SetAnimMontage" -- 广播播放或停止蒙太奇RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 

@@ -66,6 +66,17 @@ function UGCGameState:Men_State(Can_Enter, From_Multicast)
     end
 end
 
+--[[----------------------广播播放或停止玩家蒙太奇------------------------]]
+function UGCGameState:MulticastRPC_SetAnimMontage(Player_Key, Anim_Montage_Path, Is_Playing, Play_Rate,
+                                                  Start_Section_Name)
+    if self:HasAuthority() then
+        return
+    end
+
+    local Player_Pawn = UGCGameSystem.GetPlayerPawnByPlayerKey(Player_Key) -- 播放动画的玩家
+    L_GloTools.SetPawnAnimMontage(Player_Pawn, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
+end
+
 --[[----------------------初始化界面------------------------]]
 function UGCGameState:InitUI()
     if self:HasAuthority() == true then

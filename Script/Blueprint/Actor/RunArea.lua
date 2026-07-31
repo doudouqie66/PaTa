@@ -2,10 +2,6 @@
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 --Edit Below--
----@class RunArea_C:AActor
----@field Box UBoxComponent
----@field DefaultSceneRoot USceneComponent
--- Edit Below--
 local RunArea = {}
 
 --[[----------------------初始化并绑定区域碰撞事件------------------------]]
@@ -65,12 +61,19 @@ function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Ot
 
     L_TipsTool.ShowTips_01("进入区域")
     EventScheduler:_AddBuffToOnePlayers(OtherActor, L_Enum.Name_BuffPath.Buff10)
+    L_GloTools.SetAnimMontage(Player_Controller, L_Enum.Name_AnimMontagePath.Run_Area_Sprint, true)
 end
 
 --[[----------------------玩家离开区域时移除金币Buff------------------------]]
 function RunArea:Box_OnComponentEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex)
+    local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 触碰玩家控制器
+    if Player_Controller == nil then
+        return
+    end
+
     L_TipsTool.ShowTips_01("离开区域")
     EventScheduler:_RemoveBuffFromOnePlayers(OtherActor, L_Enum.Name_BuffPath.Buff10)
+    L_GloTools.SetAnimMontage(Player_Controller, L_Enum.Name_AnimMontagePath.Run_Area_Sprint, false)
 end
 
 -- [Editor Generated Lua] function define End;

@@ -1,5 +1,4 @@
 ---@class Actor_Touch_C:AActor
----@field StaticMesh UStaticMeshComponent
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 ---@field TargetPoint int32
