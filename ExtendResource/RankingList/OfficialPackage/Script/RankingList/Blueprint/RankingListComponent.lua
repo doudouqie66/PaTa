@@ -403,6 +403,7 @@ end
 --生效范围：客户端
 function RankingListComponent:PreLoadUI()
     local PlayerController = self:GetOwner();
+    local Show_Ranking_List_Button = false -- 是否显示模板自带的排行榜入口按钮
     Common.LoadObjectWithSoftPathAsync(self.RankingListMainUIPath, function(Object)
         if self ~= nil and Object ~= nil then
             self.RankingListMainUI = UserWidget.NewWidgetObjectBP(PlayerController, Object);
@@ -431,19 +432,21 @@ function RankingListComponent:PreLoadUI()
             self.RankingListItemGetUI:SetVisibility(ESlateVisibility.Collapsed);
         end
     end)
-    Common.LoadObjectWithSoftPathAsync(self.RankingListBtnUIPath, function(Object)
-        if self ~= nil and Object ~= nil then
-            self.RankingListBtn = UserWidget.NewWidgetObjectBP(PlayerController, Object);
-            self.RankingListBtn:AddToViewport(1000);
-            self.RankingListBtn:InitUI();
-            local RankList = RankingListManager:GetLegalRankListTableData();
-            if RankList and next(RankList) ~= nil then
-                self.RankingListBtn:SetVisibility(ESlateVisibility.SelfHitTestInvisible);
-            else
-                self.RankingListBtn:SetVisibility(ESlateVisibility.Collapsed);
+    if Show_Ranking_List_Button then
+        Common.LoadObjectWithSoftPathAsync(self.RankingListBtnUIPath, function(Object)
+            if self ~= nil and Object ~= nil then
+                self.RankingListBtn = UserWidget.NewWidgetObjectBP(PlayerController, Object);
+                self.RankingListBtn:AddToViewport(1000);
+                self.RankingListBtn:InitUI();
+                local RankList = RankingListManager:GetLegalRankListTableData();
+                if RankList and next(RankList) ~= nil then
+                    self.RankingListBtn:SetVisibility(ESlateVisibility.SelfHitTestInvisible);
+                else
+                    self.RankingListBtn:SetVisibility(ESlateVisibility.Collapsed);
+                end
             end
-        end
-    end)
+        end)
+    end
 end
 
 --打开排行榜主界面

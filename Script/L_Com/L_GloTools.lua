@@ -14,10 +14,12 @@ function L_GloTools.UIMgr(str, bVisible)
         local UI_Class = UE.LoadClass(str);
         local PlayerController = UGCGameSystem.GetLocalPlayerController()
         UI_BP = UserWidget.NewWidgetObjectBP(PlayerController, UI_Class);
-        if str == L_Enum.Name_ClassPath.UI01 or str == L_Enum.Name_ClassPath.UI07 then
+        if str == L_Enum.Name_ClassPath.UI01 or str == L_Enum.Name_ClassPath.kj01 then
             UI_BP:AddToViewport(9999999);
+
         else
             UI_BP:AddToViewport(1);
+
         end
         L_GloTools.UI_Map[str] = UI_BP
         L_GloTools.UI_Visibility_Map[str] = UI_BP:GetVisibility()
@@ -84,8 +86,8 @@ function L_GloTools.SetAnimMontage(Player_Controller, Anim_Montage_Path, Is_Play
 
     if UGCGameSystem.IsServer() then
         local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
-        UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Anim_Montage,
-            Player_Controller.PlayerKey, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
+        UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Anim_Montage, Player_Controller.PlayerKey,
+            Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
         return
     end
 
@@ -100,8 +102,11 @@ function L_GloTools.PlayParticleAtLocation(World_Context, Particle_Path, Locatio
         return
     end
 
-    return UGCGameSystem.SpawnEmitterAtLocation(World_Context, Particle_System, Location, Rotation or {},
-        Scale or { X = 1, Y = 1, Z = 1 }, true)
+    return UGCGameSystem.SpawnEmitterAtLocation(World_Context, Particle_System, Location, Rotation or {}, Scale or {
+        X = 1,
+        Y = 1,
+        Z = 1
+    }, true)
 end
 
 return L_GloTools
