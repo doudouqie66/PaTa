@@ -13,13 +13,12 @@ local Reward_Colli = {
 --[[----------------------初始化礼包碰撞与计时------------------------]]
 function Reward_Colli:ReceiveBeginPlay()
     Reward_Colli.SuperClass.ReceiveBeginPlay(self)
-    self:StartRewardCountdown(self.Reward_Wait_Time)
-    if not self:HasAuthority() then
-        return
+    if self:HasAuthority() then
+        self.Box.OnComponentBeginOverlap:Add(self.Box_OnComponentBeginOverlap, self)
+        self:StartRewardTimer(true)
     end
 
-    self.Box.OnComponentBeginOverlap:Add(self.Box_OnComponentBeginOverlap, self)
-    self:StartRewardTimer(true)
+    self:StartRewardCountdown(UGCGameSystem.GameState.Reward_End_Time)
 end
 
 --[[----------------------清理礼包计时器------------------------]]
@@ -47,19 +46,20 @@ end
 function Reward_Colli:StartRewardTimer(Is_Begin_Play)
     self.Reward_Is_Available = false
     local Game_State = UGCGameSystem.GameState -- 当前游戏状态
-    Game_State.Reward_End_Time = Game_State:GetServerWorldTimeSeconds() + self.Reward_Wait_Time
+    local Reward_End_Time = Game_State:GetServerWorldTimeSeconds() + self.Reward_Wait_Time -- 礼包倒计时结束时间
+    Game_State.Reward_End_Time = Reward_End_Time
     self.Reward_Timer = UGCTimerUtility.CreateLuaTimer(self.Reward_Wait_Time, function()
         self.Reward_Timer = nil
         self.Reward_Is_Available = true
     end, false)
 
     if not Is_Begin_Play then
-        UnrealNetwork.CallUnrealRPC_Multicast(self, "StartRewardCountdown", self.Reward_Wait_Time)
+        UnrealNetwork.CallUnrealRPC_Multicast(self, "StartRewardCountdown", Reward_End_Time)
     end
 end
 
 --[[----------------------刷新礼包等待倒计时------------------------]]
-function Reward_Colli:StartRewardCountdown(Countdown_Seconds)
+function Reward_Colli:StartRewardCountdown(Countdown_End_Time)
     if self.Reward_Countdown_Timer then
         UGCTimerUtility.RemoveLuaTimer(self.Reward_Countdown_Timer)
         self.Reward_Countdown_Timer = nil
@@ -71,14 +71,11 @@ function Reward_Colli:StartRewardCountdown(Countdown_Seconds)
     end
 
     local Game_State = UGCGameSystem.GameState -- 当前游戏状态
-    self.Reward_Remaining_Seconds = Countdown_Seconds -- 礼包剩余等待秒数
-    if Game_State.Reward_End_Time > 0 then
-        self.Reward_Remaining_Seconds = math.max(0,
-            math.ceil(Game_State.Reward_End_Time - Game_State:GetServerWorldTimeSeconds()))
-    end
+    self.Reward_Countdown_End_Time = math.max(Countdown_End_Time or 0, Game_State.Reward_End_Time or 0) -- 礼包倒计时结束时间
+    self.Reward_Remaining_Seconds = math.max(0, math.ceil(
+        self.Reward_Countdown_End_Time - Game_State:GetServerWorldTimeSeconds())) -- 礼包剩余等待秒数
     if self.Reward_Remaining_Seconds > 0 then
-        Reward_Countdown_UI.TextBlock_3:SetText(
-            string.format("距离奖励还有%d秒", self.Reward_Remaining_Seconds))
+        Reward_Countdown_UI.TextBlock_3:SetText(string.format("距离奖励还有%d秒", self.Reward_Remaining_Seconds))
     else
         Reward_Countdown_UI.TextBlock_3:SetText("可以领奖")
     end
@@ -86,15 +83,14 @@ function Reward_Colli:StartRewardCountdown(Countdown_Seconds)
 
     self.Reward_Countdown_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
         local Previous_Remaining_Seconds = self.Reward_Remaining_Seconds -- 刷新前的剩余秒数
-        if Game_State.Reward_End_Time > 0 then
-            self.Reward_Remaining_Seconds = math.max(0,
-                math.ceil(Game_State.Reward_End_Time - Game_State:GetServerWorldTimeSeconds()))
-        else
-            self.Reward_Remaining_Seconds = self.Reward_Remaining_Seconds - 1
+        if (Game_State.Reward_End_Time or 0) > self.Reward_Countdown_End_Time then
+            self.Reward_Countdown_End_Time = Game_State.Reward_End_Time
         end
+        self.Reward_Remaining_Seconds = math.max(0, math.ceil(
+            self.Reward_Countdown_End_Time - Game_State:GetServerWorldTimeSeconds()))
         if self.Reward_Remaining_Seconds > 0 then
-            Reward_Countdown_UI.TextBlock_3:SetText(
-                string.format("距离奖励还有%d秒", self.Reward_Remaining_Seconds))
+            Reward_Countdown_UI.TextBlock_3:SetText(string.format("距离奖励还有%d秒",
+                self.Reward_Remaining_Seconds))
         else
             Reward_Countdown_UI.TextBlock_3:SetText("可以领奖")
         end
@@ -102,11 +98,13 @@ function Reward_Colli:StartRewardCountdown(Countdown_Seconds)
 
         if self.Reward_Remaining_Seconds <= 0 then
             if Previous_Remaining_Seconds > 0 then
-                L_GloTools.PlayParticleAtLocation(self, L_Enum.Name_Particle.P_Fireworks_01,
-                    self:K2_GetActorLocation(), self:K2_GetActorRotation())
+                L_GloTools.PlayParticleAtLocation(self, L_Enum.Name_Particle.P_Fireworks_01, self:K2_GetActorLocation(),
+                    self:K2_GetActorRotation())
             end
-            UGCTimerUtility.RemoveLuaTimer(self.Reward_Countdown_Timer)
-            self.Reward_Countdown_Timer = nil
+            if self.Reward_Countdown_End_Time > 0 then
+                UGCTimerUtility.RemoveLuaTimer(self.Reward_Countdown_Timer)
+                self.Reward_Countdown_Timer = nil
+            end
         end
     end, true)
 end
