@@ -1,6 +1,7 @@
 ---@class RunArea_C:AActor
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
+---@field Type int32
 --Edit Below--
 local RunArea = {}
 
@@ -59,6 +60,7 @@ function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Ot
         return
     end
 
+    Player_Controller.Run_Area_Type = self.Type -- 当前金币区域类型
     L_TipsTool.ShowTips_01("进入区域")
     EventScheduler:_AddBuffToOnePlayers(OtherActor, L_Enum.Name_BuffPath.Buff10)
     L_GloTools.SetAnimMontage(Player_Controller, L_Enum.Name_AnimMontagePath.Run_Area_Sprint, true)
@@ -73,6 +75,7 @@ function RunArea:Box_OnComponentEndOverlap(OverlappedComponent, OtherActor, Othe
 
     L_TipsTool.ShowTips_01("离开区域")
     EventScheduler:_RemoveBuffFromOnePlayers(OtherActor, L_Enum.Name_BuffPath.Buff10)
+    Player_Controller.Run_Area_Type = 0 -- 清除当前金币区域类型
     L_GloTools.SetAnimMontage(Player_Controller, L_Enum.Name_AnimMontagePath.Run_Area_Sprint, false)
 end
 

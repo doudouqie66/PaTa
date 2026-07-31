@@ -67,11 +67,16 @@ function Buff10:GiveGold(Delta)
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Owner_Actor) -- 获取玩家控制器
         local Gold_Count = 4 -- 本次获得的金币数量
         local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+        local Is_Week_Card_Member = Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime -- 是否为周卡会员
+        if Player_Controller.Run_Area_Type == 2 and not Is_Week_Card_Member then
+            L_TipsTool.ShowTips_01("您不是周卡会员", Player_Controller, SoundMgr.SoundName.UI_Error)
+            return
+        end
         local Double_Gold_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff09) -- 金币翻倍Buff类
         if #UGCPersistEffectSystem.GetBuffsByClass(Owner_Actor, Double_Gold_Buff_Class) > 0 then
             Gold_Count = Gold_Count * 2
         end
-        if Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime then
+        if Is_Week_Card_Member then
             Gold_Count = math.floor(Gold_Count * 2)
         end
         UGCBackpackSystemV2.AddItemV2(Owner_Actor, 8310003, Gold_Count)
