@@ -66,6 +66,19 @@ function UI_CountDownAttnetion:StartEventCountdown(Countdown_Duration, Event_Nam
     end, true)
 end
 
+--[[----------------------停止并隐藏事件倒计时------------------------]]
+function UI_CountDownAttnetion:StopEventCountdown()
+    if self.Event_Countdown_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Event_Countdown_Timer)
+        self.Event_Countdown_Timer = nil
+    end
+    if self.Event_Countdown_Tween and UGCTweenSystem.IsTweenValid(self.Event_Countdown_Tween) then
+        UGCTweenSystem.KillTween(self.Event_Countdown_Tween)
+        self.Event_Countdown_Tween = nil
+    end
+    self:SetVisibility(ESlateVisibility.Collapsed)
+end
+
 --[[----------------------销毁事件倒计时界面------------------------]]
 function UI_CountDownAttnetion:Destruct()
     if self.Event_Countdown_Timer then

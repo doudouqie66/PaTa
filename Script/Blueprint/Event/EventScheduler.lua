@@ -29,6 +29,19 @@ function EventScheduler.GetActiveEvent()
     end
     return nil
 end
+
+--[[----------------------获取当前预警事件和剩余倒计时------------------------]]
+function EventScheduler.GetWarningEvent()
+    local Cycle_Time = (EventScheduler.Elapsed - 1) % EventConfig.CycleDuration + 1 -- 当前周期秒数
+    for _, Event in ipairs(EventConfig.CycleEvents) do
+        local Event_Start = Event.warnStartTime + Event.warnDuration -- 当前事件开始时间
+        if Cycle_Time >= Event.warnStartTime and Cycle_Time < Event_Start then
+            return Event, Event_Start - Cycle_Time
+        end
+    end
+    return nil
+end
+
 --[[---------------------检测当前是否有活跃事件，方便后面玩家-------------------------]] --
 function EventScheduler:_CheckEvent(elapsed)
     --[[--------------------周期取秒数，一轮结束后从头开始--------------------------]] --
@@ -47,10 +60,12 @@ function EventScheduler:_CheckEvent(elapsed)
 end
 --[[----------------------倒计时提醒------------------------]] --
 function EventScheduler:_OnWarn(event)
-    for _, PlayerController in ipairs(UGCGameSystem.GetAllPlayerController(false)) do
-        -- L_TipsTool.ShowTips_01(tostring(event.name), PlayerController)
-        UnrealNetwork.CallUnrealRPC(PlayerController, PlayerController, L_Enum.Name_RPC.Event_Countdown,
-            event.warnDuration, event.name)
+    for Player_Pawn in pairs(EventScheduler.Tower_Players) do
+        local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Player_Pawn) -- 塔内玩家控制器
+        if Player_Controller then
+            UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown,
+                event.warnDuration, event.name)
+        end
     end
 
 end
@@ -123,6 +138,13 @@ end
 --[[----------------------登记进入塔内的玩家并添加当前事件Buff------------------------]]
 function EventScheduler:RegisterTowerPlayer(Pawn)
     EventScheduler.Tower_Players[Pawn] = false
+    local Warning_Event, Countdown_Remaining = EventScheduler.GetWarningEvent() -- 当前预警事件和剩余秒数
+    if Warning_Event then
+        local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Pawn) -- 进入区域的玩家控制器
+        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown,
+            Countdown_Remaining, Warning_Event.name)
+    end
+
     local Active_Event = EventScheduler.GetActiveEvent() -- 当前生效事件
     if Active_Event then
         local Buff_Path = EventScheduler:_GetPlayerEventBuffPath(Active_Event) -- 当前事件对应的玩家Buff路径
@@ -137,6 +159,8 @@ end
 function EventScheduler:UnregisterTowerPlayer(Pawn)
     local Buff_Path = EventScheduler.Tower_Players[Pawn] -- 区域给该玩家施加的Buff路径
     EventScheduler.Tower_Players[Pawn] = nil
+    local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Pawn) -- 离开区域的玩家控制器
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown, 0, "")
     if Buff_Path then
         EventScheduler:_RemoveBuffFromOnePlayers(Pawn, Buff_Path)
     end
