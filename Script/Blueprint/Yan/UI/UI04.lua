@@ -41,7 +41,7 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
--- Edit Below--
+--Edit Below--
 ---@class UI04_C:UUserWidget
 ---@field Button_0 UButton
 ---@field Button_1 UButton
@@ -85,7 +85,7 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
--- Edit Below--
+--Edit Below--
 ---@class UI04_C:UUserWidget
 ---@field Button_0 UButton
 ---@field Button_1 UButton
@@ -129,7 +129,7 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
--- Edit Below--
+--Edit Below--
 local Item_Price_Config = L_Enum.Gold_Shop.Item_Price_Config -- 金币购买价格配置
 
 local UI04 = {
@@ -260,7 +260,7 @@ end
 
 --[[---------------------购买金币宝箱-------------------------]] --
 function UI04:Button_54_OnClicked()
-    self:Request_Gold_Purchase(1026)
+    L_GloTools.BuyShopProduct(9000025)
 
 end
 

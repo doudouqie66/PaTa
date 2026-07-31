@@ -1,4 +1,5 @@
 ---@class BaseMonse_C:BP_UGC_GenericMobPawn_Base_C
+---@field CustomParticleSystem UCustomParticleSystemComponent
 ---@field InnerBox UBoxComponent
 ---@field OutBox UBoxComponent
 ---@field HitBox UCapsuleComponent
