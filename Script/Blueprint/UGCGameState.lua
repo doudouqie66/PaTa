@@ -1,8 +1,7 @@
 ---@class UGCGameState_C:BP_UGCGameState_C
 ---@field EventElapsed int32
--- Edit Below--
----@class UGCGameState_C:BP_UGCGameState_C
--- Edit Below--
+---@field Reward_End_Time float
+--Edit Below--
 --[[----------------------全局提前引用------------------------]] --
 UGCGameSystem.UGCRequire('Script.Common.ue_enum_custom')
 UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
@@ -18,7 +17,8 @@ UGCGameSystem.UGCRequire("ExtendResource.SignInEvent.OfficialPackage.Script.Sign
 UGCGameSystem.UGCRequire("ExtendResource.RankingList.OfficialPackage.Script.RankingList.RankingListManager")
 UGCGameSystem.UGCRequire("ExtendResource.ShopV2.OfficialPackage.Script.ShopV2.ShopV2Manager")
 local UGCGameState = {
-    Room_Pass = 0
+    Room_Pass = 0,
+    Reward_End_Time = 0 -- 礼包可再次领取的服务器时间
 };
 
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
@@ -29,7 +29,7 @@ end
 
 --[[----------------------声明房间同步属性------------------------]]
 function UGCGameState:GetReplicatedProperties()
-    return {"Room_Pass", "Lazy"}
+    return {"Room_Pass", "Lazy"}, {"Reward_End_Time", "Lazy"}
 end
 --[[----------------------游戏状态开始时初始化------------------------]]
 function UGCGameState:ReceiveBeginPlay()
@@ -68,7 +68,7 @@ end
 
 --[[----------------------广播播放或停止玩家蒙太奇------------------------]]
 function UGCGameState:MulticastRPC_SetAnimMontage(Player_Key, Anim_Montage_Path, Is_Playing, Play_Rate,
-                                                  Start_Section_Name)
+    Start_Section_Name)
     if self:HasAuthority() then
         return
     end
