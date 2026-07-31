@@ -38,13 +38,13 @@ function UGCGameState:ReceiveBeginPlay()
 end
 
 --[[--------------------改变门状态--------------------------]] --
-function UGCGameState:Men_State(Can_Enter, From_Multicast)
+function UGCGameState:Men_State(Can_Enter, From_Multicast, Open_Player_Name)
     if self:HasAuthority() and not From_Multicast then
         for _, Actor in ipairs(UGCActorComponentUtility.GetAllActorsWithTag(self, "Men")) do
             Actor:SetActorEnableCollision(not Can_Enter)
         end
 
-        UnrealNetwork.CallUnrealRPC_Multicast(self, L_Enum.Name_RPC.Men_State, Can_Enter, true)
+        UnrealNetwork.CallUnrealRPC_Multicast(self, L_Enum.Name_RPC.Men_State, Can_Enter, true, Open_Player_Name)
         return
     end
 
@@ -56,6 +56,10 @@ function UGCGameState:Men_State(Can_Enter, From_Multicast)
     end
 
     if not self:HasAuthority() then
+        if Can_Enter and Open_Player_Name then
+            L_TipsTool.ShowTips_01(Open_Player_Name .. "打开了密道")
+        end
+
         for _, Actor in ipairs(UGCActorComponentUtility.GetAllActorsWithTag(self, "Men_Head_Body")) do
             if Can_Enter then
                 Actor:StartCountdown()

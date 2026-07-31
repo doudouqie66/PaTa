@@ -155,11 +155,10 @@ function UI07:Button_76_OnClicked()
 
     local Game_State = UGCGameSystem.GameState -- 当前房间状态
     if tonumber(self.Input_Pass) == Game_State.Room_Pass then
-        L_TipsTool.ShowTips_01("密码正确")
         SoundMgr.PlaySound2D(SoundMgr.SoundName.Door_Open)
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI07, false)
 
-        UnrealNetwork.CallUnrealRPC(PC, UGCGameSystem.GameState, L_Enum.Name_RPC.Men_State, true)
+        UnrealNetwork.CallUnrealRPC(PC, UGCGameSystem.GameState, L_Enum.Name_RPC.Men_State, true, false, PC.PlayerName)
         UGCTimerUtility.CreateLuaTimer(20, function()
             UnrealNetwork.CallUnrealRPC(PC, Game_State, L_Enum.Name_RPC.Men_State, false)
         end, false)

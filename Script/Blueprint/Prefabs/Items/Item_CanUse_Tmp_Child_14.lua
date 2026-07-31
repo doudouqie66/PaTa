@@ -1,4 +1,6 @@
 ---@class Item_CanUse_Tmp_Child_14_C:Item_CanUse_Tmp_C
+--Edit Below--
+---@class Item_CanUse_Tmp_Child_14_C:Item_CanUse_Tmp_C
 -- Edit Below--
 local Item_CanUse_Tmp_Child_14 = {}
 --[[----------------------使用物品时随机发放道具------------------------]]
