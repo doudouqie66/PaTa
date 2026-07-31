@@ -1,14 +1,28 @@
 ---@class DeBuff03_C:PersistEffectBuff
 --Edit Below--
 local DeBuff03 = {}
- 
+
 -- buff启动条件
 --[[
 function DeBuff03:CanApply_BP(OwnerActor)
 -- return true
 end
 --]]
+-- buff开始
+--[[----------------------Debuff生效时打开黑色界面------------------------]]
+function DeBuff03:OnApply_BP(OwnerActor)
+    if self:IsAutonomous() then
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Black, true)
+    end
+end
 
+-- buff结束
+--[[----------------------Debuff失效时关闭黑色界面------------------------]]
+function DeBuff03:OnUnApply_BP(OwnerActor, Reason)
+    if self:IsAutonomous() then
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Black, false)
+    end
+end
 -- buff开始
 --[[
 function DeBuff03:OnApply_BP(OwnerActor)

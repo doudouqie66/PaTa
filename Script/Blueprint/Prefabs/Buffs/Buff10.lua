@@ -1,4 +1,6 @@
 ---@class Buff10_C:PersistEffectBuff
+--Edit Below--
+---@class Buff10_C:PersistEffectBuff
 -- Edit Below--
 local Buff10 = {}
 local L_Enum = UGCGameSystem.UGCRequire("Script.L_Com.L_Enum") -- 枚举配置
