@@ -3,6 +3,8 @@
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 --Edit Below--
+local L_Enum = UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
+local L_GloTools = UGCGameSystem.UGCRequire('Script.L_Com.L_GloTools')
 local Reward_Colli = {
     Reward_Wait_Time = 200, -- 礼包每次领取后的等待时间
     Reward_Drop_ID = 3 -- 礼包使用的掉落表编号
@@ -74,20 +76,35 @@ function Reward_Colli:StartRewardCountdown(Countdown_Seconds)
         self.Reward_Remaining_Seconds = math.max(0,
             math.ceil(Game_State.Reward_End_Time - Game_State:GetServerWorldTimeSeconds()))
     end
-    Reward_Countdown_UI.TextBlock_3:SetText(tostring(self.Reward_Remaining_Seconds))
+    if self.Reward_Remaining_Seconds > 0 then
+        Reward_Countdown_UI.TextBlock_3:SetText(
+            string.format("距离奖励还有%d秒", self.Reward_Remaining_Seconds))
+    else
+        Reward_Countdown_UI.TextBlock_3:SetText("可以领奖")
+    end
     self.Widget:RequestRedraw()
 
     self.Reward_Countdown_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
+        local Previous_Remaining_Seconds = self.Reward_Remaining_Seconds -- 刷新前的剩余秒数
         if Game_State.Reward_End_Time > 0 then
             self.Reward_Remaining_Seconds = math.max(0,
                 math.ceil(Game_State.Reward_End_Time - Game_State:GetServerWorldTimeSeconds()))
         else
             self.Reward_Remaining_Seconds = self.Reward_Remaining_Seconds - 1
         end
-        Reward_Countdown_UI.TextBlock_3:SetText(tostring(self.Reward_Remaining_Seconds))
+        if self.Reward_Remaining_Seconds > 0 then
+            Reward_Countdown_UI.TextBlock_3:SetText(
+                string.format("距离奖励还有%d秒", self.Reward_Remaining_Seconds))
+        else
+            Reward_Countdown_UI.TextBlock_3:SetText("可以领奖")
+        end
         self.Widget:RequestRedraw()
 
         if self.Reward_Remaining_Seconds <= 0 then
+            if Previous_Remaining_Seconds > 0 then
+                L_GloTools.PlayParticleAtLocation(self, L_Enum.Name_Particle.P_Fireworks_01,
+                    self:K2_GetActorLocation(), self:K2_GetActorRotation())
+            end
             UGCTimerUtility.RemoveLuaTimer(self.Reward_Countdown_Timer)
             self.Reward_Countdown_Timer = nil
         end

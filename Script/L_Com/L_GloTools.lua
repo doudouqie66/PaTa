@@ -93,4 +93,15 @@ function L_GloTools.SetAnimMontage(Player_Controller, Anim_Montage_Path, Is_Play
     L_GloTools.SetPawnAnimMontage(Player_Pawn, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
 end
 
+--[[----------------------在指定位置播放一次性粒子特效------------------------]]
+function L_GloTools.PlayParticleAtLocation(World_Context, Particle_Path, Location, Rotation, Scale)
+    local Particle_System = UE.LoadObject(Particle_Path) -- 粒子特效资源
+    if not Particle_System then
+        return
+    end
+
+    return UGCGameSystem.SpawnEmitterAtLocation(World_Context, Particle_System, Location, Rotation or {},
+        Scale or { X = 1, Y = 1, Z = 1 }, true)
+end
+
 return L_GloTools

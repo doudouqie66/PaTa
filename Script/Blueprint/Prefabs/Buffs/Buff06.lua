@@ -1,4 +1,6 @@
 ---@class Buff06_C:PersistEffectBuff
+--Edit Below--
+---@class Buff06_C:PersistEffectBuff
 -- Edit Below--
 ---@class Buff06_C:PersistEffectBuff
 -- Edit Below--

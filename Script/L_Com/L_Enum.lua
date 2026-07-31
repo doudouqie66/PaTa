@@ -31,6 +31,11 @@ L_Enum.Name_Material = {
 
 }
 
+--[[----------------------特效的路径-----------------------]] --
+L_Enum.Name_Particle = {
+    P_Fireworks_01 = '/Game/Arts_Effect/ParticleSystems/Share/P_Fireworks_01.P_Fireworks_01'
+}
+
 --[[----------------------蒙太奇资源路径------------------------]]
 L_Enum.Name_AnimMontagePath = {
     Run_Area_Sprint = RootPath .. "Asset/Blueprint/Animation/Run_Area_Sprint_Montage.Run_Area_Sprint_Montage" -- 区域跑步动作
