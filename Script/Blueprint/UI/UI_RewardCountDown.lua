@@ -1,5 +1,4 @@
 ---@class UI_RewardCountDown_C:UUserWidget
----@field Image_54 UImage
 ---@field TextBlock_3 UTextBlock
 --Edit Below--
 local UI_RewardCountDown = { bInitDoOnce = false } 
