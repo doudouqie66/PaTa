@@ -12,9 +12,14 @@
 -- Edit Below--
 local Cup_Colli = {}
 
+--[[----------------------初始化奖杯碰撞------------------------]]
 function Cup_Colli:ReceiveBeginPlay()
     Cup_Colli.SuperClass.ReceiveBeginPlay(self)
-    self.Box.OnComponentBeginOverlap:Add(self.Box_OnComponentBeginOverlap, self);
+    if not self:HasAuthority() then
+        return
+    end
+
+    self.Box.OnComponentBeginOverlap:Add(self.Box_OnComponentBeginOverlap, self)
 
 end
 
@@ -43,6 +48,7 @@ end
 --]]
 
 -- [Editor Generated Lua] function define Begin:
+--[[----------------------初始化编辑器生成逻辑------------------------]]
 function Cup_Colli:LuaInit()
     if self.bInitDoOnce then
         return;
@@ -59,8 +65,17 @@ end
 function Cup_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep,
     SweepResult)
     local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 触碰玩家控制器
+    if not PC then
+        return
+    end
 
-    -- 通知房间玩家谁登顶
+    local Climb_Time = PC:FinishTowerClimbTimer() -- 本次爬塔耗时秒数
+    if Climb_Time then
+        local Notice_Text = string.format("%s成功登顶，用时%d秒！", PC.PlayerName, Climb_Time) -- 登顶通知内容
+        for _, Player_Controller in ipairs(UGCGameSystem.GetAllPlayerController(false)) do
+            L_TipsTool.ShowTips_01(Notice_Text, Player_Controller, SoundMgr.SoundName.Event_Notice)
+        end
+    end
 
     -- 发放奖励
     PC:Add_WinCup(1)

@@ -81,6 +81,15 @@ function UGCGameState:MulticastRPC_SetAnimMontage(Player_Key, Anim_Montage_Path,
     L_GloTools.SetPawnAnimMontage(Player_Pawn, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
 end
 
+--[[----------------------向所有玩家显示小提示------------------------]]
+function UGCGameState:MulticastRPC_ShowTips(text, Sound_Name)
+    if self:HasAuthority() then
+        return
+    end
+
+    L_TipsTool.ShowTips_01(text, nil, Sound_Name)
+end
+
 --[[----------------------初始化界面------------------------]]
 function UGCGameState:InitUI()
     if self:HasAuthority() == true then

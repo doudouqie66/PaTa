@@ -83,7 +83,8 @@ L_Enum.Name_RPC = {
     Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill", -- 切换陷阽物品技能RPC名称
     Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置冲天炮飞行状态RPC名称
     Event_Countdown = "Event_Countdown", -- 事件倒计时RPC名称
-    Set_Anim_Montage = "MulticastRPC_SetAnimMontage" -- 广播播放或停止蒙太奇RPC名称
+    Set_Anim_Montage = "MulticastRPC_SetAnimMontage", -- 广播播放或停止蒙太奇RPC名称
+    Broadcast_Tips = "MulticastRPC_ShowTips" -- 广播提示RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 
@@ -124,11 +125,15 @@ L_Enum.Trophy_Shop = {
 }
 
 L_Enum.Tower_Reward = {
-    -- Reward_Times = {360, 720, 1080, 1560, 2100}, -- 五档奖励所需累计停留秒数
-    Reward_Times = {30, 60, 90, 120, 150}, -- 五档奖励所需累计停留秒数
+    Reward_Times = {360, 720, 1080, 1560, 2100}, -- 五档奖励所需累计停留秒数
+    -- Reward_Times = {30, 60, 90, 120, 150}, -- 五档奖励所需累计停留秒数
 
     Reward_Item_IDs = {1017, 1023, 1028, 1013, 1011}, -- 五档奖励虚拟物品ID
     Reward_Item_Count = 1 -- 每档奖励数量
+}
+
+L_Enum.Ranking_List = {
+    Tower_Climb_Time_ID = 2 -- 最短爬塔时间排行榜ID
 }
 
 L_Enum.Name_Event = {

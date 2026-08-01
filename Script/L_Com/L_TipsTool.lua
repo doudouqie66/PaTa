@@ -24,6 +24,20 @@ function L_TipsTool.ShowTips_01(text, PlayerController, Sound_Name)
     end
 end
 
+--[[----------------------向所有玩家显示小提示------------------------]]
+function L_TipsTool.ShowTips_Broadcast(text, Sound_Name)
+    if not UGCGameSystem.IsServer() then
+        return
+    end
+
+    if Sound_Name then
+        UnrealNetwork.CallUnrealRPC_Multicast(UGCGameSystem.GameState, L_Enum.Name_RPC.Broadcast_Tips, text,
+            Sound_Name)
+    else
+        UnrealNetwork.CallUnrealRPC_Multicast(UGCGameSystem.GameState, L_Enum.Name_RPC.Broadcast_Tips, text)
+    end
+end
+
 --[[---------------------官方Api-------------------------]] --
 function L_TipsTool.ShowOfficialTips(str)
     UGCWidgetManagerSystem.ShowTipsUI(str)

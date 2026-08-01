@@ -17,6 +17,7 @@ local UGCPlayerController = {
     Tower_Reward_Enter_Time = 0, -- 本次进入区域的时间戳
     Tower_Reward_Accumulated_Time = 0, -- 已累计的区域内停留秒数
     Tower_Reward_Claim_Mask = 0, -- 五档奖励领取状态位
+    Tower_Climb_Enter_Time = 0, -- 本次爬塔进入时间戳
     Is_Monster_Death = false, -- 是否由怪物内部碰撞体致死
     Flying_Item_ID = 0 -- 当前装备的飞行物ID
 }
@@ -217,6 +218,37 @@ function UGCPlayerController:StartTowerRewardTimer()
     self.Tower_Reward_Is_Timing = true
     self.Tower_Reward_Enter_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime())
     self:SyncTowerRewardState()
+end
+
+--[[----------------------更新本次爬塔进入时间戳------------------------]]
+function UGCPlayerController:StartTowerClimbTimer()
+    if not self:HasAuthority() then
+        return
+    end
+
+    self.Tower_Climb_Enter_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime())
+    L_TipsTool.ShowTips_01("开始计时", self, SoundMgr.SoundName.Event_Notice)
+end
+
+--[[----------------------结算本次爬塔耗时并更新排行榜------------------------]]
+function UGCPlayerController:FinishTowerClimbTimer()
+    if not self:HasAuthority() or self.Tower_Climb_Enter_Time <= 0 then
+        return
+    end
+
+    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    local Climb_Time = math.max(1, math.floor(Current_Time - self.Tower_Climb_Enter_Time)) -- 本次爬塔耗时秒数
+    self.Tower_Climb_Enter_Time = 0
+
+    local Ranking_List_Manager = UGCGamePartSystem.GetGamePartGlobalActor("RankingListManager") -- 排行榜管理器
+    local Player_UID = UGCGameSystem.GetUIDByPlayerController(self) -- 玩家UID
+    local Rank_ID = L_Enum.Ranking_List.Tower_Climb_Time_ID -- 最短爬塔时间排行榜ID
+    local Player_Rank_Data = Ranking_List_Manager:GetPlayerRankData(Player_UID, Rank_ID, 0) -- 当前最短爬塔成绩
+    if not Player_Rank_Data or Player_Rank_Data.Score <= 0 or Climb_Time < Player_Rank_Data.Score then
+        Ranking_List_Manager:UpdateScore(self, Player_UID, Rank_ID, Climb_Time, false)
+    end
+
+    return Climb_Time
 end
 
 --[[----------------------暂停塔内奖励计时------------------------]]
