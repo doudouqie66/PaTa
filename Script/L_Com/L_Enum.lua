@@ -38,7 +38,9 @@ L_Enum.Name_Particle = {
 
 --[[----------------------蒙太奇资源路径------------------------]]
 L_Enum.Name_AnimMontagePath = {
-    Run_Area_Sprint = RootPath .. "Asset/Blueprint/Animation/Run_Area_Sprint_Montage.Run_Area_Sprint_Montage" -- 区域跑步动作
+    Run_Area_Sprint = RootPath .. "Asset/Blueprint/Animation/Run_Area_Sprint_Montage.Run_Area_Sprint_Montage", -- 区域跑步动作
+    CTP_Fly = "/Game/Arts_Timeliness/CG005_Hero/Arts_Player/Anim/AgileSoldier/AgileSoldier_Umarmed_Fly_Montage.AgileSoldier_Umarmed_Fly_Montage" -- 冲天炮动作
+
 }
 
 --[[----------------------Buff名字------------------------]] --

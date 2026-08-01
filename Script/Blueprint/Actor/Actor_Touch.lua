@@ -3,12 +3,6 @@
 ---@field DefaultSceneRoot USceneComponent
 ---@field TargetPoint int32
 --Edit Below--
----@class Actor_Touch_C:AActor
----@field StaticMesh UStaticMeshComponent
----@field Box UBoxComponent
----@field DefaultSceneRoot USceneComponent
----@field TargetPoint int32
--- Edit Below--
 local Actor_Touch = {}
 --[[----------------------处理鼠标点击物品------------------------]]
 function Actor_Touch:ReceiveActorOnClicked(Button_Pressed)

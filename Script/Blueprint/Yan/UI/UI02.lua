@@ -1,7 +1,6 @@
 ---@class UI02_C:UUserWidget
 ---@field Button_0 UButton
 ---@field Button_1 UButton
----@field Button_2 UButton
 ---@field Button_5 UButton
 ---@field Button_6 UButton
 ---@field Button_7 UButton
@@ -92,7 +91,6 @@ function UI02:LuaInit()
     self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
     self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
     self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
-    self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyStarterGiftResult, self)
     UGCCommoditySystem.UGCProductsChangedDelegate:Add(self.RefreshStarterGiftButton, self)
     -- [Editor Generated Lua] BindingEvent End;
@@ -242,12 +240,6 @@ end
 function UI02:Button_1_OnClicked()
     ShopV2Manager:OpenMainUI(TabID)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
-end
-
-function UI02:Button_2_OnClicked()
-    local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Tele_To_Point, 2)
-    SoundMgr.PlaySound2D(SoundMgr.SoundName.Fly_Start)
 end
 
 -- [Editor Generated Lua] function define End;
