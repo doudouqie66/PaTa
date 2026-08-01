@@ -4,7 +4,7 @@
 ---@field RankingListComponent RankingListComponent_C
 ---@field SignInEventComponent SignInEventComponent_C
 ---@field ShopV2Component ShopV2Component_C
--- Edit Below--
+--Edit Below--
 local UGCPlayerController = {
     PlayerGameLevel = 1,
     PlayerAttack = 1,
@@ -136,8 +136,7 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     local Equipped_Item = UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备飞行物
     local Can_Fly = Equipped_Item.TypeSpecificID == Jetpack_Item_ID -- 是否允许冲天炮飞行
     self:Set_Flying_Movement_Enabled(Is_Flying and Can_Fly)
-    ugcprint(string.format("[Jetpack] 服务端启动检查：装备物品ID=%s，允许飞行=%s",
-        tostring(Equipped_Item.TypeSpecificID), tostring(Is_Flying and Can_Fly)))
+    L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, Is_Flying and Can_Fly, 0.5)
 end
 
 --[[----------------------应用服务端魔毯移动参数------------------------]]
@@ -384,8 +383,7 @@ function UGCPlayerController:Switch_Trap_Item_Skill(Item_ID)
     end
 
     if not Is_Clear_Slot then
-        UGCPersistEffectSystem.AddSkillByClass(Player_Pawn, Selected_Skill_Path, -1,
-            Trap_Skill_Slot) -- 新增并绑定到技能UI槽位的技能实例
+        UGCPersistEffectSystem.AddSkillByClass(Player_Pawn, Selected_Skill_Path, -1, Trap_Skill_Slot) -- 新增并绑定到技能UI槽位的技能实例
     end
 end
 
