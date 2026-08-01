@@ -1,6 +1,7 @@
 ---@class UI09_C:UUserWidget
 ---@field Button_98 UButton
 ---@field Button_99 UButton
+---@field Image_0 UImage
 ---@field Image_91 UImage
 ---@field Image_180 UImage
 ---@field Image_181 UImage
