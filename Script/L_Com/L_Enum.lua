@@ -19,6 +19,7 @@ L_Enum.Name_ClassPath = {
     UI10 = RootPath .. "Asset/Blueprint/Yan/UI/UI10.UI10_C",
     UI_Black = RootPath .. "Asset/Blueprint/UI/UI_Black.UI_Black_C",
     UI_CountDownAttnetion = RootPath .. "Asset/Blueprint/UI/UI_CountDownAttnetion.UI_CountDownAttnetion_C",
+    BP_Jetpack_AttachActor = RootPath .. "Asset/Blueprint/Actor/BP_Jetpack_AttachActor.BP_Jetpack_AttachActor_C", -- 冲天炮附加Actor
     kj01 = RootPath .. "Asset/Blueprint/Yan/UI/kj01.kj01_C",
     UI_Fly = RootPath .. "Asset/Blueprint/Yan/UI/UI_Fly.UI_Fly_C"
 
@@ -33,7 +34,9 @@ L_Enum.Name_Material = {
 
 --[[----------------------特效的路径-----------------------]] --
 L_Enum.Name_Particle = {
-    P_Fireworks_01 = '/Game/Arts_Effect/ParticleSystems/Share/P_Fireworks_01.P_Fireworks_01'
+    P_Fireworks_01 = '/Game/Arts_Effect/ParticleSystems/Share/P_Fireworks_01.P_Fireworks_01',
+    Jetpack_Smoke = '/Game/Arts_Effect/ParticleSystems/Share/P_SC_jump_smoke_B001_02.P_SC_jump_smoke_B001_02', -- 冲天炮上升烟雾
+    Jetpack_Spark = '/Game/Actor_Timeliness/CG030/CG030_TangDao/Arts_Effect/Particle/P_030_HuoXing_01.P_030_HuoXing_01' -- 冲天炮上升火星
 }
 
 --[[----------------------蒙太奇资源路径------------------------]]
@@ -84,6 +87,7 @@ L_Enum.Name_RPC = {
     Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置冲天炮飞行状态RPC名称
     Event_Countdown = "Event_Countdown", -- 事件倒计时RPC名称
     Set_Anim_Montage = "MulticastRPC_SetAnimMontage", -- 广播播放或停止蒙太奇RPC名称
+    Set_Jetpack_Particles = "MulticastRPC_SetJetpackParticles", -- 广播播放或停止冲天炮粒子RPC名称
     Broadcast_Tips = "MulticastRPC_ShowTips" -- 广播提示RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }

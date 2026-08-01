@@ -1,4 +1,5 @@
 ---@class BP_MoTan_AttachActor_C:AActor
+---@field CustomParticleSystem UCustomParticleSystemComponent
 ---@field StaticMesh UStaticMeshComponent
 ---@field DefaultSceneRoot USceneComponent
 --Edit Below--

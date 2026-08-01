@@ -81,6 +81,16 @@ function UGCGameState:MulticastRPC_SetAnimMontage(Player_Key, Anim_Montage_Path,
     L_GloTools.SetPawnAnimMontage(Player_Pawn, Anim_Montage_Path, Is_Playing, Play_Rate, Start_Section_Name)
 end
 
+--[[----------------------广播播放或停止冲天炮上升特效------------------------]]
+function UGCGameState:MulticastRPC_SetJetpackParticles(Player_Key, Is_Playing)
+    if self:HasAuthority() then
+        return
+    end
+
+    local Player_Pawn = UGCGameSystem.GetPlayerPawnByPlayerKey(Player_Key) -- 播放特效的玩家
+    L_GloTools.SetJetpackParticles(Player_Pawn, Is_Playing)
+end
+
 --[[----------------------向所有玩家显示小提示------------------------]]
 function UGCGameState:MulticastRPC_ShowTips(text, Sound_Name)
     if self:HasAuthority() then

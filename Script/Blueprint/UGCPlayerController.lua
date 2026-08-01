@@ -136,8 +136,12 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
     local Equipped_Item = UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备飞行物
     local Can_Fly = Equipped_Item.TypeSpecificID == Jetpack_Item_ID -- 是否允许冲天炮飞行
-    self:Set_Flying_Movement_Enabled(Is_Flying and Can_Fly)
-    L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, Is_Flying and Can_Fly, 0.5)
+    local Should_Fly = Is_Flying and Can_Fly -- 冲天炮实际飞行状态
+    self:Set_Flying_Movement_Enabled(Should_Fly)
+    L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, Should_Fly, 0.5)
+    local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
+    UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey,
+        Should_Fly)
 end
 
 --[[----------------------应用服务端魔毯移动参数------------------------]]
@@ -175,6 +179,12 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped)
     end
 
     self:Set_Flying_Movement_Enabled(false)
+    if self.Flying_Item_ID == Jetpack_Item_ID and (not Is_Equipped or Item_ID ~= Jetpack_Item_ID) then
+        L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, false, 0.5)
+        local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
+        UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey,
+            false)
+    end
     self:Restore_Magic_Carpet_Movement()
     self.Flying_Item_ID = Is_Equipped and Item_ID or 0
     if self.Flying_Item_ID == Jetpack_Item_ID or self.Flying_Item_ID == Magic_Carpet_Item_ID then

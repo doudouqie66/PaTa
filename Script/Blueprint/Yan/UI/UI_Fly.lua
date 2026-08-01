@@ -7,19 +7,21 @@
 ---@field Button_46 UButton
 ---@field Button_85 UButton
 ---@field Button_329 UButton
--- Edit Below--
+--Edit Below--
 ---@class UI_Fly_C:UUserWidget
 ---@field Button_46 UButton
 ---@field Button_85 UButton
 ---@field Button_329 UButton
--- Edit Below--
+--Edit Below--
 local UI_Fly = {}
 
 local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
 local Jetpack_Vertical_Input_Scale = 1 -- 冲天炮上升输入比例
 local Magic_Carpet_Vertical_Input_Scale = 2 -- 魔毯升降输入比例
-local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
+-- local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
+local Magic_Carpet_Max_Fly_Speed = 2500 -- 魔毯最高飞行速度
+
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
 
 --[[----------------------初始化飞行界面------------------------]]
