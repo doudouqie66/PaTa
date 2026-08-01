@@ -38,9 +38,16 @@
 local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID
 
+local Countdown_Effect_Seconds = 3 -- 倒计时提醒秒数
+local Countdown_Button_Scale = 1.12 -- 倒计时按钮放大倍率
+local Countdown_Effect_Duration = 0.3 -- 倒计时单程动画时长
+
 local UI02 = {
     bInitDoOnce = false,
-    Reward_Available_State = {} -- 奖励上次可领取状态
+    Reward_Available_State = {}, -- 奖励上次可领取状态
+    Reward_Countdown_Effect_State = {}, -- 奖励倒计时特效状态
+    Reward_Countdown_Scale_Tweens = {}, -- 奖励倒计时缩放动画
+    Reward_Countdown_Color_Tweens = {} -- 奖励倒计时颜色动画
 }
 
 --[[----------------------构造主城界面------------------------]]
@@ -63,6 +70,9 @@ function UI02:Destruct()
     if self.Tower_Reward_UI_Timer then
         UGCTimerUtility.RemoveLuaTimer(self.Tower_Reward_UI_Timer)
         self.Tower_Reward_UI_Timer = nil
+    end
+    for Reward_Index = 1, #L_Enum.Tower_Reward.Reward_Times do
+        self:StopTowerRewardCountdownEffect(Reward_Index)
     end
 end
 
@@ -95,11 +105,60 @@ function UI02:LuaInit()
     UGCCommoditySystem.UGCProductsChangedDelegate:Add(self.RefreshStarterGiftButton, self)
     -- [Editor Generated Lua] BindingEvent End;
     self:RefreshCurrency()
+    local Reward_Buttons = {self.Button_5, self.Button_6, self.Button_7, self.Button_8, self.Button_9} -- 五档奖励按钮
+    for _, Reward_Button in ipairs(Reward_Buttons) do
+        Reward_Button:SetRenderTransformPivot(UGCMathUtility.MakeVector2D(0.5, 0.5))
+    end
     self:RefreshTowerRewards()
     self:RefreshStarterGiftButton()
     self.Tower_Reward_UI_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
         self:RefreshTowerRewards()
     end, true)
+end
+
+--[[----------------------开始奖励最后三秒提醒------------------------]]
+function UI02:StartTowerRewardCountdownEffect(Reward_Index, Reward_Button)
+    if self.Reward_Countdown_Effect_State[Reward_Index] then
+        return
+    end
+
+    self.Reward_Countdown_Effect_State[Reward_Index] = true
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Countdown)
+    self.Reward_Countdown_Scale_Tweens[Reward_Index] = UGCTweenSystem.TweenFloatValue(
+        1.0,
+        Countdown_Button_Scale,
+        Countdown_Effect_Duration,
+        EEasingType.QuadInOut,
+        function(_, Scale)
+            Reward_Button:SetRenderScale(UGCMathUtility.MakeVector2D(Scale, Scale))
+        end,
+        UGCTweenSystem.MakeConfig(0, -1, true, 0)
+    )
+    self.Reward_Countdown_Color_Tweens[Reward_Index] = UGCTweenSystem.TweenColorValue(
+        KismetMathLibrary.MakeColor(1, 1, 1, 1),
+        KismetMathLibrary.MakeColor(1, 0, 0, 1),
+        Countdown_Effect_Duration,
+        EEasingType.Linear,
+        function(_, Color)
+            Reward_Button:SetBackgroundColor(Color)
+        end,
+        UGCTweenSystem.MakeConfig(0, -1, true, 0)
+    )
+end
+
+--[[----------------------停止奖励最后三秒提醒------------------------]]
+function UI02:StopTowerRewardCountdownEffect(Reward_Index)
+    local Scale_Tween = self.Reward_Countdown_Scale_Tweens[Reward_Index] -- 当前奖励缩放动画
+    local Color_Tween = self.Reward_Countdown_Color_Tweens[Reward_Index] -- 当前奖励颜色动画
+    if Scale_Tween and UGCTweenSystem.IsTweenValid(Scale_Tween) then
+        UGCTweenSystem.KillTween(Scale_Tween)
+    end
+    if Color_Tween and UGCTweenSystem.IsTweenValid(Color_Tween) then
+        UGCTweenSystem.KillTween(Color_Tween)
+    end
+    self.Reward_Countdown_Effect_State[Reward_Index] = false
+    self.Reward_Countdown_Scale_Tweens[Reward_Index] = nil
+    self.Reward_Countdown_Color_Tweens[Reward_Index] = nil
 end
 
 --[[----------------------刷新塔内计时奖励界面------------------------]]
@@ -116,6 +175,7 @@ function UI02:RefreshTowerRewards()
         local Has_Claimed = math.floor(Player_Controller.Tower_Reward_Claim_Mask / Reward_Flag) % 2 == 1 -- 是否已领取
 
         if Has_Claimed then
+            self:StopTowerRewardCountdownEffect(Reward_Index)
             self.Reward_Available_State[Reward_Index] = false
             Reward_Buttons[Reward_Index]:SetVisibility(ESlateVisibility.Collapsed)
             Reward_Texts[Reward_Index]:SetVisibility(ESlateVisibility.Collapsed)
@@ -124,6 +184,11 @@ function UI02:RefreshTowerRewards()
         else
             local Is_Available = Elapsed_Time >= Reward_Time -- 当前档位是否可以领取
             local Remaining_Time = math.max(0, Reward_Time - Elapsed_Time) -- 当前档位剩余秒数
+            if not Is_Available and Remaining_Time <= Countdown_Effect_Seconds then
+                self:StartTowerRewardCountdownEffect(Reward_Index, Reward_Buttons[Reward_Index])
+            else
+                self:StopTowerRewardCountdownEffect(Reward_Index)
+            end
             if self.Reward_Available_State[Reward_Index] == false and Is_Available then
                 SoundMgr.PlaySound2D(SoundMgr.SoundName.Reward_Ready)
             end
