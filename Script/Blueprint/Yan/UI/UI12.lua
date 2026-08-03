@@ -1,18 +1,20 @@
 ---@class UI12_C:UUserWidget
+---@field Button_69 UButton
 ---@field Button_112 UButton
 ---@field Button_147 UButton
+---@field Button_177 UButton
 ---@field Button_186 UButton
 ---@field Button_194 UButton
 ---@field Button_195 UButton
 ---@field Button_196 UButton
 ---@field Button_197 UButton
 ---@field Button_198 UButton
----@field Button_199 UButton
 ---@field Button_200 UButton
 ---@field Image_0 UImage
 ---@field Image_69 UImage
 ---@field Image_70 UImage
 ---@field Image_95 UImage
+---@field Image_100 UImage
 ---@field Image_145 UImage
 ---@field Image_170 UImage
 ---@field Image_257 UImage
