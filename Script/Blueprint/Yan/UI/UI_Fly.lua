@@ -2,6 +2,7 @@
 ---@field Button_46 UButton
 ---@field Button_85 UButton
 ---@field Button_329 UButton
+---@field UI_CTP_NJ UI_CTP_NJ_C
 --Edit Below--
 ---@class UI_Fly_C:UUserWidget
 ---@field Button_46 UButton
@@ -19,8 +20,8 @@ local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
 local Jetpack_Vertical_Input_Scale = 1 -- 冲天炮上升输入比例
 local Magic_Carpet_Vertical_Input_Scale = 2 -- 魔毯升降输入比例
--- local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
-local Magic_Carpet_Max_Fly_Speed = 2500 -- 魔毯最高飞行速度
+local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
+-- local Magic_Carpet_Max_Fly_Speed = 2500 -- 魔毯最高飞行速度
 
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
 
@@ -120,8 +121,21 @@ function UI_Fly:SetFlyingItem(Flying_Item_ID)
     self.Button_85:SetVisibility(Magic_Carpet_Button_Visibility)
     self.Button_329:SetIsEnabled(Is_Magic_Carpet)
     self.Button_329:SetVisibility(Magic_Carpet_Button_Visibility)
+    self.UI_CTP_NJ:SetVisibility(Is_Jetpack and ESlateVisibility.SelfHitTestInvisible or ESlateVisibility.Collapsed)
     self:SetVisibility((Is_Jetpack or Is_Magic_Carpet) and ESlateVisibility.SelfHitTestInvisible or
                            ESlateVisibility.Collapsed)
+end
+
+--[[----------------------根据冲天炮耐久刷新飞行按钮------------------------]]
+function UI_Fly:SetJetpackDurability(Durability_Percent)
+    self.UI_CTP_NJ:SetPercent(Durability_Percent)
+    if Durability_Percent <= 0 and self.Jetpack_Is_Pressed then
+        self.Jetpack_Is_Pressed = false
+        self:SetJetpackFlying(false)
+    end
+    if UGCGameSystem.GetLocalPlayerController().Flying_Item_ID == Jetpack_Item_ID then
+        self.Button_46:SetIsEnabled(Durability_Percent > 0)
+    end
 end
 
 --[[----------------------请求服务器设置冲天炮飞行状态------------------------]]

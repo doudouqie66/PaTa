@@ -19,7 +19,8 @@ local UGCPlayerController = {
     Tower_Reward_Claim_Mask = 0, -- 五档奖励领取状态位
     Tower_Climb_Enter_Time = 0, -- 本次爬塔进入时间戳
     Is_Monster_Death = false, -- 是否由怪物内部碰撞体致死
-    Flying_Item_ID = 0 -- 当前装备的飞行物ID
+    Flying_Item_ID = 0, -- 当前装备的飞行物ID
+    Jetpack_Durability = 0 -- 冲天炮当前耐久秒数
 }
 
 local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
@@ -30,6 +31,8 @@ local Falling_Movement_Mode = 3 -- 下落移动模式
 local Fly_State_Tag = "PawnState.Movement.Flying" -- 飞行状态标签
 local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
+local Jetpack_Max_Durability = 10 -- 冲天炮最大耐久秒数
+local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
 
 --[[---------------------初始化测试-------------------------]] --
 function UGCPlayerController:ReceiveBeginPlay()
@@ -40,6 +43,9 @@ end
 
 --[[----------------------结束时解绑购买结果委托------------------------]]
 function UGCPlayerController:ReceiveEndPlay()
+    if self:HasAuthority() and self.Flying_Item_ID == Jetpack_Item_ID then
+        self:Set_Jetpack_Flying(false)
+    end
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
     self.SuperClass.ReceiveEndPlay(self)
 end
@@ -88,7 +94,7 @@ function UGCPlayerController:GetReplicatedProperties()
     return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}, {"WeekEndTime", "Lazy"},
         {"WinCup", "Lazy"}, {"Tower_Reward_Has_Started", "Lazy"}, {"Tower_Reward_Is_Timing", "Lazy"},
         {"Tower_Reward_Enter_Time", "Lazy"}, {"Tower_Reward_Accumulated_Time", "Lazy"},
-        {"Tower_Reward_Claim_Mask", "Lazy"}, {"Flying_Item_ID", "Lazy"}
+        {"Tower_Reward_Claim_Mask", "Lazy"}, {"Flying_Item_ID", "Lazy"}, {"Jetpack_Durability", "Lazy"}
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
@@ -127,6 +133,18 @@ function UGCPlayerController:Set_Flying_Movement_Enabled(Is_Enabled)
     Player_Pawn.CharacterMovement:SetMovementMode(Fly_Movement_Mode, 0)
 end
 
+--[[----------------------停止冲天炮耐久计时------------------------]]
+function UGCPlayerController:Stop_Jetpack_Durability_Timer()
+    if not self.Jetpack_Durability_Timer_Handle then
+        return
+    end
+
+    KismetSystemLibrary.K2_ClearTimerHandle(self, self.Jetpack_Durability_Timer_Handle)
+    ObjectExtend.DestroyDelegate(self.Jetpack_Durability_Timer_Delegate)
+    self.Jetpack_Durability_Timer_Handle = nil
+    self.Jetpack_Durability_Timer_Delegate = nil
+end
+
 --[[----------------------设置冲天炮飞行状态------------------------]]
 function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     if not self:HasAuthority() or self.Flying_Item_ID ~= Jetpack_Item_ID then
@@ -135,8 +153,41 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
 
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
     local Equipped_Item = UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备飞行物
-    local Can_Fly = Equipped_Item.TypeSpecificID == Jetpack_Item_ID -- 是否允许冲天炮飞行
+    local Can_Fly = Equipped_Item and Equipped_Item.TypeSpecificID == Jetpack_Item_ID and
+                        self.Jetpack_Durability > 0 -- 是否允许冲天炮飞行
     local Should_Fly = Is_Flying and Can_Fly -- 冲天炮实际飞行状态
+    if self.Jetpack_Is_Flying == Should_Fly then
+        return
+    end
+
+    self.Jetpack_Is_Flying = Should_Fly
+    if Should_Fly then
+        self.Jetpack_Last_Consume_Time = UGCGameSystem.GetTimeSeconds(self)
+        self.Jetpack_Durability_Timer_Delegate = ObjectExtend.CreateDelegate(self, function()
+            local Current_Time = UGCGameSystem.GetTimeSeconds(self) -- 当前游戏时间
+            self.Jetpack_Durability = math.max(0,
+                self.Jetpack_Durability - (Current_Time - self.Jetpack_Last_Consume_Time))
+            self.Jetpack_Last_Consume_Time = Current_Time
+            UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
+            if self.Jetpack_Durability <= 0 then
+                self:Set_Jetpack_Flying(false)
+                local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Equipped_Item, 1) -- 删除的冲天炮数量
+                if Removed_Count ~= 1 then
+                    ugcprint("[Jetpack] 耐久耗尽，但冲天炮删除失败")
+                end
+            end
+        end)
+        self.Jetpack_Durability_Timer_Handle = KismetSystemLibrary.K2_SetTimerDelegateForLua(
+            self.Jetpack_Durability_Timer_Delegate, self, Jetpack_Consume_Interval, true)
+    else
+        self:Stop_Jetpack_Durability_Timer()
+        if Equipped_Item and Equipped_Item.TypeSpecificID == Jetpack_Item_ID then
+            local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Equipped_Item) or {} -- 冲天炮实例数据
+            Custom_Data.Jetpack_Durability = self.Jetpack_Durability
+            UGCItemSystemV2.SaveItemCustomData(Equipped_Item, Custom_Data)
+        end
+    end
+
     self:Set_Flying_Movement_Enabled(Should_Fly)
     L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, Should_Fly, 0.5)
     local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
@@ -169,7 +220,7 @@ function UGCPlayerController:Restore_Magic_Carpet_Movement()
 end
 
 --[[----------------------同步当前装备的飞行物------------------------]]
-function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped)
+function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped, Item_Define_ID)
     if not self:HasAuthority() then
         return
     end
@@ -187,6 +238,15 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped)
     end
     self:Restore_Magic_Carpet_Movement()
     self.Flying_Item_ID = Is_Equipped and Item_ID or 0
+    self.Jetpack_Durability = 0
+    if self.Flying_Item_ID == Jetpack_Item_ID then
+        local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+        local Equipped_Item = Item_Define_ID or
+                                  UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备冲天炮
+        local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Equipped_Item) or {} -- 冲天炮实例数据
+        self.Jetpack_Durability = math.max(0,
+            math.min(Jetpack_Max_Durability, Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
+    end
     if self.Flying_Item_ID == Jetpack_Item_ID or self.Flying_Item_ID == Magic_Carpet_Item_ID then
         self:Apply_Magic_Carpet_Movement()
     end
@@ -194,6 +254,7 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped)
         self:Set_Flying_Movement_Enabled(true)
     end
     UnrealNetwork.RepLazyProperty(self, "Flying_Item_ID")
+    UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
     ugcprint(string.format("[FlyingItem] 装备状态同步：物品ID=%s", tostring(self.Flying_Item_ID)))
 end
 
@@ -604,6 +665,16 @@ function UGCPlayerController:OnRep_Flying_Item_ID()
     local Fly_UI = L_GloTools.UI_Map[UI_Path] -- 已创建的飞行物控制界面
     if Fly_UI then
         Fly_UI:SetFlyingItem(self.Flying_Item_ID)
+    end
+
+    self:OnRep_Jetpack_Durability()
+end
+
+--[[----------------------刷新冲天炮耐久界面------------------------]]
+function UGCPlayerController:OnRep_Jetpack_Durability()
+    local Fly_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Fly] -- 飞行物控制界面
+    if Fly_UI then
+        Fly_UI:SetJetpackDurability(self.Jetpack_Durability / Jetpack_Max_Durability)
     end
 end
 
