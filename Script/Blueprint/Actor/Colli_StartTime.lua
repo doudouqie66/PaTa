@@ -1,4 +1,5 @@
 ---@class Colli_StartTime_C:AActor
+---@field StaticMesh UStaticMeshComponent
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 --Edit Below--

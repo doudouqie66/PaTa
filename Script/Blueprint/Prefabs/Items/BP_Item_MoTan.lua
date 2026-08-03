@@ -129,7 +129,7 @@ function BP_Item_MoTan:OnAttach(ParentDefineID, SlotName)
     if SlotName == Flying_Item_Slot_Name then
         local Own_Backpack_Component = UGCItemSystemV2.GetOwnBackpackComponent(self) -- 所属背包组件
         local Player_Controller = Own_Backpack_Component:GetOwner() -- 所属玩家控制器
-        Player_Controller:Update_Flying_Item(Magic_Carpet_Item_ID, true)
+        Player_Controller:Update_Flying_Item(Magic_Carpet_Item_ID, true, self:GetDefineID())
         L_GloTools.SetAnimMontage(Player_Controller, L_Enum.Name_AnimMontagePath.MoTan_Fly, true)
     end
 end

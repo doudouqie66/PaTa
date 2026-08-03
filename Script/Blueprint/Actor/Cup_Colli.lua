@@ -75,6 +75,10 @@ function Cup_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, 
         for _, Player_Controller in ipairs(UGCGameSystem.GetAllPlayerController(false)) do
             L_TipsTool.ShowTips_01(Notice_Text, Player_Controller, SoundMgr.SoundName.Event_Notice)
         end
+        if PC.Tower_Climb_Magic_Carpet_Define_ID then
+            UGCBackpackSystemV2.RemoveItemByDefineIDV2(PC, PC.Tower_Climb_Magic_Carpet_Define_ID, 1)
+            PC.Tower_Climb_Magic_Carpet_Define_ID = nil
+        end
     end
 
     -- 发放奖励

@@ -18,6 +18,7 @@ local UGCPlayerController = {
     Tower_Reward_Accumulated_Time = 0, -- 已累计的区域内停留秒数
     Tower_Reward_Claim_Mask = 0, -- 五档奖励领取状态位
     Tower_Climb_Enter_Time = 0, -- 本次爬塔进入时间戳
+    Tower_Climb_Magic_Carpet_Define_ID = nil, -- 本次爬塔使用的魔毯实例ID
     Is_Monster_Death = false, -- 是否由怪物内部碰撞体致死
     Flying_Item_ID = 0, -- 当前装备的飞行物ID
     Jetpack_Durability = 0 -- 冲天炮当前耐久秒数
@@ -229,6 +230,11 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped, Item_Defin
         return
     end
 
+    if Is_Equipped and Item_ID == Magic_Carpet_Item_ID and self.Tower_Climb_Enter_Time > 0 and
+        not self.Tower_Climb_Magic_Carpet_Define_ID and Item_Define_ID then
+        self.Tower_Climb_Magic_Carpet_Define_ID = Item_Define_ID
+    end
+
     self:Set_Flying_Movement_Enabled(false)
     if self.Flying_Item_ID == Jetpack_Item_ID and (not Is_Equipped or Item_ID ~= Jetpack_Item_ID) then
         L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, false, 0.5)
@@ -297,6 +303,13 @@ function UGCPlayerController:StartTowerClimbTimer()
         return
     end
 
+    self.Tower_Climb_Magic_Carpet_Define_ID = nil
+    if self.Flying_Item_ID == Magic_Carpet_Item_ID then
+        local Equipped_Item = UGCBackpackSystemV2.GetEquippedItemBySlotName(self, Flying_Item_Slot_Name) -- 已装备的魔毯实例
+        if Equipped_Item and Equipped_Item.TypeSpecificID == Magic_Carpet_Item_ID then
+            self.Tower_Climb_Magic_Carpet_Define_ID = Equipped_Item
+        end
+    end
     self.Tower_Climb_Enter_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime())
     L_TipsTool.ShowTips_01("开始计时", self, SoundMgr.SoundName.Event_Notice)
 end

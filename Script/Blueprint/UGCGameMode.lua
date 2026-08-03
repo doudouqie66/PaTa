@@ -7,6 +7,7 @@
 ---@class UGCGameMode_C:BP_UGCGameBase_C
 local UGCGameMode = {};
 local Max_Room_Player_Count = 10 -- 房间最大玩家数量
+local Room_Only_Item_ID = 8310033 -- 仅限当前房间使用的物品ID
 
 --[[----------------------游戏启动------------------------]] --
 function UGCGameMode:ReceiveBeginPlay()
@@ -144,6 +145,11 @@ end
 
 --[[----------------------玩家离开游戏前保存存档------------------------]]
 function UGCGameMode:UGC_PlayerExitEvent(PlayerController)
+    local Item_Count = UGCBackpackSystemV2.GetItemCountV2(PlayerController, Room_Only_Item_ID) -- 房间限定物品总数
+    if Item_Count > 0 then
+        UGCBackpackSystemV2.RemoveItemV2(PlayerController, Room_Only_Item_ID, Item_Count)
+    end
+
     self:SavePlayerArchive(PlayerController)
 
     local Team_ID = UGCTeamSystem.GetTeamIDByPlayerKey(PlayerController.PlayerKey) -- 离开玩家的队伍ID
