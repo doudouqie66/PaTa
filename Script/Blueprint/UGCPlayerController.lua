@@ -61,7 +61,7 @@ function UGCPlayerController:InitTest()
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310037, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310038, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310038, 1)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310002, 10)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310014, 10)
             UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310016, 10)
@@ -154,8 +154,7 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
 
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
     local Equipped_Item = UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备飞行物
-    local Can_Fly = Equipped_Item and Equipped_Item.TypeSpecificID == Jetpack_Item_ID and
-                        self.Jetpack_Durability > 0 -- 是否允许冲天炮飞行
+    local Can_Fly = Equipped_Item and Equipped_Item.TypeSpecificID == Jetpack_Item_ID and self.Jetpack_Durability > 0 -- 是否允许冲天炮飞行
     local Should_Fly = Is_Flying and Can_Fly -- 冲天炮实际飞行状态
     if self.Jetpack_Is_Flying == Should_Fly then
         return
@@ -166,8 +165,8 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
         self.Jetpack_Last_Consume_Time = UGCGameSystem.GetTimeSeconds(self)
         self.Jetpack_Durability_Timer_Delegate = ObjectExtend.CreateDelegate(self, function()
             local Current_Time = UGCGameSystem.GetTimeSeconds(self) -- 当前游戏时间
-            self.Jetpack_Durability = math.max(0,
-                self.Jetpack_Durability - (Current_Time - self.Jetpack_Last_Consume_Time))
+            self.Jetpack_Durability = math.max(0, self.Jetpack_Durability -
+                (Current_Time - self.Jetpack_Last_Consume_Time))
             self.Jetpack_Last_Consume_Time = Current_Time
             UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
             if self.Jetpack_Durability <= 0 then
@@ -192,8 +191,7 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     self:Set_Flying_Movement_Enabled(Should_Fly)
     L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, Should_Fly, 0.5)
     local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
-    UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey,
-        Should_Fly)
+    UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey, Should_Fly)
 end
 
 --[[----------------------应用服务端魔毯移动参数------------------------]]
@@ -239,8 +237,7 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped, Item_Defin
     if self.Flying_Item_ID == Jetpack_Item_ID and (not Is_Equipped or Item_ID ~= Jetpack_Item_ID) then
         L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, false, 0.5)
         local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
-        UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey,
-            false)
+        UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey, false)
     end
     self:Restore_Magic_Carpet_Movement()
     self.Flying_Item_ID = Is_Equipped and Item_ID or 0
@@ -250,8 +247,8 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped, Item_Defin
         local Equipped_Item = Item_Define_ID or
                                   UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备冲天炮
         local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Equipped_Item) or {} -- 冲天炮实例数据
-        self.Jetpack_Durability = math.max(0,
-            math.min(Jetpack_Max_Durability, Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
+        self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
+            Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
     end
     if self.Flying_Item_ID == Jetpack_Item_ID or self.Flying_Item_ID == Magic_Carpet_Item_ID then
         self:Apply_Magic_Carpet_Movement()
