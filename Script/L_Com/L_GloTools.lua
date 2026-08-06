@@ -15,7 +15,7 @@ function L_GloTools.UIMgr(str, bVisible)
         local UI_Class = UE.LoadClass(str);
         local PlayerController = UGCGameSystem.GetLocalPlayerController()
         UI_BP = UserWidget.NewWidgetObjectBP(PlayerController, UI_Class);
-        if str == L_Enum.Name_ClassPath.UI01 or str == L_Enum.Name_ClassPath.kj01 then
+        if str == L_Enum.Name_ClassPath.UI01 then
             UI_BP:AddToViewport(9999999);
 
         else
@@ -24,23 +24,36 @@ function L_GloTools.UIMgr(str, bVisible)
         end
         L_GloTools.UI_Map[str] = UI_BP
         L_GloTools.UI_Visibility_Map[str] = UI_BP:GetVisibility()
-        return
     end
 
     if bVisible == true then
         UI_BP:SetVisibility(L_GloTools.UI_Visibility_Map[str])
-        return
-    end
-
-    if bVisible == false then
+        if str ~= L_Enum.Name_ClassPath.UI01 and str ~= L_Enum.Name_ClassPath.UI02 and str ~=
+            L_Enum.Name_ClassPath.UI10 and str ~= L_Enum.Name_ClassPath.UI_TestBtn then
+            L_GloTools.Change_SysUI(false)
+        end
+    elseif bVisible == false then
         UI_BP:SetVisibility(ESlateVisibility.Collapsed)
-        return
+        L_GloTools.Change_SysUI(true)
     end
+end
 
-    if UI_BP:IsVisible() then
-        UI_BP:SetVisibility(ESlateVisibility.Collapsed)
+--[[----------------------改变系统UI------------------------]]
+function L_GloTools.Change_SysUI(bool)
+    local mainUI = L_GloTools.Main_UI or UGCWidgetManagerSystem.GetMainUI() or
+        UGCWidgetManagerSystem.GetMainControlUI() -- 优先使用隐藏前缓存的主UI实例
+    if bool == true then
+        if mainUI then
+            mainUI:SetVisibility(L_GloTools.Main_UI_Visibility or ESlateVisibility.SelfHitTestInvisible) -- 恢复根节点原始可见性，避免挡住下层按钮
+            L_GloTools.Main_UI = nil -- 清除缓存，下次隐藏时重新获取主UI实例
+            L_GloTools.Main_UI_Visibility = nil -- 清除原始可见性缓存
+        end
     else
-        UI_BP:SetVisibility(L_GloTools.UI_Visibility_Map[str])
+        L_GloTools.Main_UI = mainUI -- 缓存主UI实例，恢复时不再依赖GetMainUI
+        if mainUI then
+            L_GloTools.Main_UI_Visibility = mainUI:GetVisibility() -- 缓存主UI原始可见性
+            mainUI:SetVisibility(ESlateVisibility.Collapsed) -- 直接收起根节点，确保系统UI不显示
+        end
     end
 end
 
@@ -157,11 +170,13 @@ function L_GloTools.SetJetpackParticles(Player_Pawn, Is_Playing)
             end
             if Is_Playing then
                 L_GloTools.EmitJetpackParticles(Jetpack_Actor)
-                Jetpack_Actor.Jetpack_Particle_Timer_Delegate = ObjectExtend.CreateDelegate(Jetpack_Actor, function()
-                    L_GloTools.EmitJetpackParticles(Jetpack_Actor)
-                end)
-                Jetpack_Actor.Jetpack_Particle_Timer_Handle = KismetSystemLibrary.K2_SetTimerDelegateForLua(
-                    Jetpack_Actor.Jetpack_Particle_Timer_Delegate, Jetpack_Actor, Jetpack_Particle_Interval, true)
+                Jetpack_Actor.Jetpack_Particle_Timer_Delegate =
+                    ObjectExtend.CreateDelegate(Jetpack_Actor, function()
+                        L_GloTools.EmitJetpackParticles(Jetpack_Actor)
+                    end)
+                Jetpack_Actor.Jetpack_Particle_Timer_Handle =
+                    KismetSystemLibrary.K2_SetTimerDelegateForLua(Jetpack_Actor.Jetpack_Particle_Timer_Delegate,
+                        Jetpack_Actor, Jetpack_Particle_Interval, true)
             end
             return
         end

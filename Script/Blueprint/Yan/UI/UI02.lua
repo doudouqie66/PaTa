@@ -243,6 +243,7 @@ end
 
 function UI02:Button_115_OnClicked()
     -- 打开排行榜界面
+    L_GloTools.Change_SysUI(false)
     RankingListManager:OpenRankingList()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
@@ -273,7 +274,7 @@ function UI02:Button_0_OnClicked()
     local UI_Path = L_Enum.Name_ClassPath.UI06 -- 首充界面路径
     local UI_BP = L_GloTools.UI_Map[UI_Path] -- 已创建的首充界面
     local Is_Opening = UI_BP == nil or not UI_BP:IsVisible() -- 本次是否打开界面
-    L_GloTools.UIMgr(UI_Path)
+    L_GloTools.UIMgr(UI_Path, true)
     SoundMgr.PlaySound2D(Is_Opening and SoundMgr.SoundName.UI_Switch or SoundMgr.SoundName.Event_Notice)
 end
 
@@ -315,7 +316,7 @@ function UI02:Button_113_OnClicked()
     local UI_Path = L_Enum.Name_ClassPath.UI05 -- 奖杯商店界面路径
     local UI_BP = L_GloTools.UI_Map[UI_Path] -- 已创建的奖杯商店界面
     local Is_Opening = UI_BP == nil or not UI_BP:IsVisible() -- 本次是否打开界面
-    L_GloTools.UIMgr(UI_Path)
+    L_GloTools.UIMgr(UI_Path, true)
     SoundMgr.PlaySound2D(Is_Opening and SoundMgr.SoundName.UI_Switch or SoundMgr.SoundName.Event_Notice)
 end
 return UI02

@@ -5,6 +5,7 @@ local RootPath = UGCMapInfoLib.GetRootLongPackagePath()
 
 L_Enum.Name_ClassPath = {
     MainUI = RootPath .. "Asset/Blueprint/UI/MainUI.MainUI_C",
+    UI_TestBtn = RootPath .. "Asset/Blueprint/UI/UI_TestBtn.UI_TestBtn_C",
     Tips_01 = RootPath .. "Asset/Blueprint/L_Com/Tips/Tips_01.Tips_01_C",
     UI_Attention = RootPath .. "Asset/Blueprint/Yan/UI/UI_Attention.UI_Attention_C",
     UI01 = RootPath .. "Asset/Blueprint/Yan/UI/UI01.UI01_C",
@@ -17,6 +18,8 @@ L_Enum.Name_ClassPath = {
     UI08 = RootPath .. "Asset/Blueprint/Yan/UI/UI08.UI08_C",
     UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C",
     UI10 = RootPath .. "Asset/Blueprint/Yan/UI/UI10.UI10_C",
+    UI12 = RootPath .. "Asset/Blueprint/Yan/UI/UI12.UI12_C",
+    UI13 = RootPath .. "Asset/Blueprint/Yan/UI/UI13.UI13_C",
     UI_Black = RootPath .. "Asset/Blueprint/UI/UI_Black.UI_Black_C",
     UI_CountDownAttnetion = RootPath .. "Asset/Blueprint/UI/UI_CountDownAttnetion.UI_CountDownAttnetion_C",
     BP_Jetpack_AttachActor = RootPath .. "Asset/Blueprint/Actor/BP_Jetpack_AttachActor.BP_Jetpack_AttachActor_C", -- 冲天炮附加Actor
