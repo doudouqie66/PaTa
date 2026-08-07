@@ -2,14 +2,6 @@
 
 -- sorted by enum name asc 
 
----@enum ESignInEventType
-ESignInEventType = { 
-    Monthly = 0,
-    Weekly = 1,
-    OneOff = 2,
-}; 
-
-
 ---@enum EGiftPackOpenType
 EGiftPackOpenType = { 
     ManuallyOpen = 0,
@@ -21,6 +13,14 @@ EGiftPackOpenType = {
 EGiftPackType = { 
     Normal = 0,
     Optional = 1,
+}; 
+
+
+---@enum ESignInEventType
+ESignInEventType = { 
+    Monthly = 0,
+    Weekly = 1,
+    OneOff = 2,
 }; 
 
 

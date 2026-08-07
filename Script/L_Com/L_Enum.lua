@@ -83,6 +83,7 @@ L_Enum.Name_RPC = {
     Men_State = "Men_State", -- 切换门的状态
     Show_Room_Pass_UI = "Show_Room_Pass_UI", -- 显示房间密码界面
     Claim_Tower_Reward = "Claim_Tower_Reward", -- 领取塔内计时奖励
+    Grant_Lottery_Reward = "Grant_Lottery_Reward", -- 发放抽奖奖励
     Exchange_Trophy_Item = "Exchange_Trophy_Item", -- 奖杯兑换道具RPC名称
     Buy_Gold_Item = "Buy_Gold_Item", -- 金币购买道具RPC名称
     Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称

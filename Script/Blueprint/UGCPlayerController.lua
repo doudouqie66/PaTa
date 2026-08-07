@@ -103,7 +103,8 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
         L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
         L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
-        L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying
+        L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
+        L_Enum.Name_RPC.Grant_Lottery_Reward
 
 end
 
@@ -376,6 +377,22 @@ end
 function UGCPlayerController:Add_Backpack_Item(Item_ID, Item_Count)
     local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager")
     Virtual_Item_Manager:AddVirtualItem(self, Item_ID, Item_Count)
+end
+
+--[[----------------------发放抽奖奖励------------------------]]
+function UGCPlayerController:Grant_Lottery_Reward(Item_ID, Item_Count)
+    if not self:HasAuthority() then
+        return
+    end
+    if not Item_ID or not Item_Count or Item_Count <= 0 then
+        return
+    end
+
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
+    if not Virtual_Item_Manager or not Virtual_Item_Manager:AddVirtualItem(self, Item_ID, Item_Count) then
+        L_TipsTool.ShowTips_01("奖励发放失败", self)
+        return
+    end
 end
 
 --[[----------------------使用奖杯兑换道具------------------------]]
