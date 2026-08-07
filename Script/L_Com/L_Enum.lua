@@ -86,6 +86,7 @@ L_Enum.Name_RPC = {
     Grant_Lottery_Reward = "Grant_Lottery_Reward", -- 发放抽奖奖励
     Use_Coin_Lottery_Free_Chance = "Use_Coin_Lottery_Free_Chance", -- 消耗今日免费抽奖次数RPC名称
     Grant_Coin_Lottery_Share_Reward = "Grant_Coin_Lottery_Share_Reward", -- 分享成功奖励免费抽奖RPC名称
+    Remove_Item = "Remove_Item", -- 通用扣除物品RPC名称
     Exchange_Trophy_Item = "Exchange_Trophy_Item", -- 奖杯兑换道具RPC名称
     Buy_Gold_Item = "Buy_Gold_Item", -- 金币购买道具RPC名称
     Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称
@@ -132,6 +133,12 @@ L_Enum.Trophy_Shop = {
         [1010] = 66, -- 冰冻锤
         [1006] = 68 -- 大力拳套
     }
+}
+
+L_Enum.Lottery_Stone = {
+    Virtual_ID = 1034, -- 抽奖石虚拟物品ID
+    Item_ID = 9310, -- 抽奖石物品ID
+    Shop_ID = 9000033 -- 抽奖石商城商品ID
 }
 
 L_Enum.Tower_Reward = {

@@ -108,7 +108,7 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
         L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
         L_Enum.Name_RPC.Grant_Lottery_Reward, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
-        L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward
+        L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item
 
 end
 
@@ -459,6 +459,28 @@ function UGCPlayerController:Grant_Coin_Lottery_Share_Reward()
     Coin_Lottery_Archive.Free_Chance_Count = Coin_Lottery_Archive.Free_Chance_Count + 1
     self:Sync_Coin_Lottery_Archive()
     self:SaveArchive()
+end
+
+--[[----------------------通用扣除玩家物品------------------------]]
+function UGCPlayerController:Remove_Item(Item_ID, Item_Count)
+    if not self:HasAuthority() then
+        return
+    end
+    if not Item_ID or not Item_Count or Item_Count <= 0 then
+        return
+    end
+
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
+    if Virtual_Item_Manager then
+        local Virtual_Item_ID = Virtual_Item_Manager:GetItemData(Item_ID) and Item_ID or
+                                    Virtual_Item_Manager:GetVirtualItemID(Item_ID)
+        if Virtual_Item_ID then
+            Virtual_Item_Manager:RemoveItem(self, Virtual_Item_ID, Item_Count)
+            return
+        end
+    end
+
+    UGCBackpackSystemV2.RemoveItemV2(self, Item_ID, Item_Count)
 end
 
 --[[----------------------使用奖杯兑换道具------------------------]]
