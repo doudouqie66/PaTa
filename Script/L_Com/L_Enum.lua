@@ -37,6 +37,7 @@ L_Enum.Name_Material = {
 
 --[[----------------------特效的路径-----------------------]] --
 L_Enum.Name_Particle = {
+
     P_Fireworks_01 = '/Game/Arts_Effect/ParticleSystems/Share/P_Fireworks_01.P_Fireworks_01',
     Jetpack_Smoke = '/Game/Arts_Effect/ParticleSystems/Share/P_SC_jump_smoke_B001_02.P_SC_jump_smoke_B001_02', -- 冲天炮上升烟雾
     Jetpack_Spark = '/Game/Actor_Timeliness/CG030/CG030_TangDao/Arts_Effect/Particle/P_030_HuoXing_01.P_030_HuoXing_01' -- 冲天炮上升火星
@@ -44,7 +45,7 @@ L_Enum.Name_Particle = {
 
 --[[----------------------蒙太奇资源路径------------------------]]
 L_Enum.Name_AnimMontagePath = {
-    Run_Area_Sprint = RootPath .. "Asset/Blueprint/Animation/Run_Area_Sprint_Montage.Run_Area_Sprint_Montage", -- 区域跑步动作
+    Run_Area_Sprint = RootPath .. "Asset/Blueprint/Animation/Montage_Attack.Montage_Attack", -- 区域跑步动作
     CTP_Fly = "/Game/Arts_Timeliness/CG005_Hero/Arts_Player/Anim/AgileSoldier/AgileSoldier_Umarmed_Fly_Montage.AgileSoldier_Umarmed_Fly_Montage", -- 冲天炮动作
     MoTan_Fly = "/Game/Arts_Player/Characters/Animation/Shared_Anim/Parachute_Anim/Glider/Lobby_FlyingDevice_Montage.Lobby_FlyingDevice_Montage" -- 魔毯
 }
