@@ -132,12 +132,6 @@ function UI12:LuaInit()
     end
 
     for Reward_Index, Reward_Info in ipairs(self.Lottery_Drop_Items) do
-        ugcprint(string.format("[UI12] 掉落配置 %d item=%d count=%d weight=%d weighttype=%s slot=%d", Reward_Index,
-            Reward_Info.ItemID, Reward_Info.Item_Count, Reward_Info.Item_Weight or 0, type(Reward_Info.Item_Weight),
-            Reward_Info.Slot_Index or 0))
-    end
-
-    for Reward_Index, Reward_Info in ipairs(self.Lottery_Drop_Items) do
         local Reward_Image = self.Lottery_Images[Reward_Index] -- 当前格子的图标控件
         local Reward_Icon_Path = UGCItemSystemV2.GetItemIconTextureV2(Reward_Info.ItemID) -- 当前格子的图标路径
         if Reward_Icon_Path then
@@ -180,16 +174,12 @@ function UI12:GetLotteryResult()
         return 1
     end
 
-    local Roll_Value = math.random(Total_Weight) -- 本次随机权重
-    local Random_Weight = Roll_Value
+    local Random_Weight = math.random(Total_Weight) -- 本次随机权重
     for Reward_Index, Reward_Info in ipairs(self.Lottery_Drop_Items) do
         Random_Weight = Random_Weight - (Reward_Info.Item_Weight or 0)
         if Random_Weight <= 0 then
             self.Last_Reward_Item_ID = Reward_Info.ItemID -- 记录本次奖励物品ID
             self.Last_Reward_Count = Reward_Info.Item_Count -- 记录本次奖励数量
-            ugcprint(string.format("[UI12] 抽奖 total=%d random=%d rawindex=%d index=%d item=%d count=%d", Total_Weight,
-                Roll_Value, Reward_Index, Reward_Info.Slot_Index or Reward_Index, Reward_Info.ItemID,
-                Reward_Info.Item_Count))
             return Reward_Info.Slot_Index or Reward_Index
         end
     end
@@ -215,7 +205,6 @@ function UI12:Button_69_OnClicked()
         self.Is_Lottery_Drawing = false
         self.Button_69:SetIsEnabled(true)
         local Reward_Count = self.Last_Reward_Count or 0 -- 本次奖励数量
-        ugcprint(string.format("[UI12] 动画结束 stop=%s count=%d", tostring(Stop_Index), Reward_Count))
         if Reward_Count > 0 then
             local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
             if Player_Controller then

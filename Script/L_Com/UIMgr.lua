@@ -64,10 +64,6 @@ function UIMgr.PlayLotteryEffect(Reward_Panels, Move_Image, Target_Index, On_Fin
         end
     end
 
-    ugcprint(string.format("[UIMgr] target=%d first=%d last=%d pathlen=%d tx=%.1f ty=%.1f", Target_Index,
-        Loop_Spin_Order[1], Loop_Spin_Order[#Loop_Spin_Order], #Spin_Path, Reward_Positions[Target_Index].X,
-        Reward_Positions[Target_Index].Y))
-
     UIMgr.StopLotteryEffect()
 
     local function Set_Move_Position(Move_Position)
@@ -93,8 +89,6 @@ function UIMgr.PlayLotteryEffect(Reward_Panels, Move_Image, Target_Index, On_Fin
 
             Path_Index = Path_Index + 1
             if Path_Index > #Spin_Path then
-                ugcprint(string.format("[UIMgr] final idx=%d x=%.1f y=%.1f", #Spin_Path, Spin_Path[#Spin_Path].X,
-                    Spin_Path[#Spin_Path].Y))
                 UIMgr.Active_Lottery_Timer = UGCTimerUtility.CreateLuaTimer(Lottery_Stop_Stay_Seconds, function()
                     UIMgr.Active_Lottery_Timer = nil
                     if On_Finished then
