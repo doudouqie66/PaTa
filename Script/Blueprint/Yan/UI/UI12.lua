@@ -34,6 +34,7 @@
 ---@field Image_269 UImage
 ---@field Image_270 UImage
 ---@field Image_271 UImage
+---@field TextBlock_165 UTextBlock
 ---@field UIParticleEmitter_32 UUIParticleEmitter
 --Edit Below--
 local UIMgr = UGCGameSystem.UGCRequire("Script.L_Com.UIMgr") -- 抽奖动画管理
@@ -77,27 +78,11 @@ function UI12:LuaInit()
     self.Button_69.OnClicked:Add(self.Button_69_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
 
-    self.Lottery_Panels = {
-        self.CanvasPanel_160,
-        self.CanvasPanel_152,
-        self.CanvasPanel_161,
-        self.CanvasPanel_162,
-        self.CanvasPanel_163,
-        self.CanvasPanel_164,
-        self.CanvasPanel_165,
-        self.CanvasPanel_166
-    } -- 抽奖奖品格子面板（左上、中上、右上、中左、中右、左下、中下、右下）
+    self.Lottery_Panels = {self.CanvasPanel_160, self.CanvasPanel_152, self.CanvasPanel_161, self.CanvasPanel_162,
+                           self.CanvasPanel_163, self.CanvasPanel_164, self.CanvasPanel_165, self.CanvasPanel_166} -- 抽奖奖品格子面板（左上、中上、右上、中左、中右、左下、中下、右下）
 
-    self.Lottery_Images = {
-        self.Image_265,
-        self.Image_257,
-        self.Image_266,
-        self.Image_267,
-        self.Image_268,
-        self.Image_269,
-        self.Image_270,
-        self.Image_271
-    } -- 抽奖奖品格子图标（与格子顺序一致）
+    self.Lottery_Images = {self.Image_265, self.Image_257, self.Image_266, self.Image_267, self.Image_268,
+                           self.Image_269, self.Image_270, self.Image_271} -- 抽奖奖品格子图标（与格子顺序一致）
 
     self.Lottery_Drop_Items = {} -- 掉落表ID4的奖励配置
     local Drop_Table = UGCGameSystem.GetTableData("Data/Table/UGCDrop") -- 掉落表配置
@@ -142,6 +127,8 @@ function UI12:LuaInit()
             end)
         end
     end
+
+    self:Refresh_Free_Lottery_Count()
 end
 
 function UI12:Button_147_OnClicked()
@@ -151,9 +138,29 @@ function UI12:Button_147_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI12, false)
 end
 
+--[[----------------------刷新今日免费抽奖次数显示------------------------]]
+function UI12:Refresh_Free_Lottery_Count(Free_Chance_Count_Override)
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    if not Player_Controller then
+        return
+    end
+
+    local Free_Chance_Count = Free_Chance_Count_Override ~= nil and Free_Chance_Count_Override or
+                                  (Player_Controller.Coin_Lottery_Free_Chance_Count or 1)
+    self.TextBlock_165:SetText("你还有" .. tostring(Free_Chance_Count) .. "次免费抽奖机会")
+end
+
 function UI12:Button_177_OnClicked()
     local bOK = UGCWidgetManagerSystem.Share(function()
         L_TipsTool.ShowTips_01("分享成功")
+        local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+        if Player_Controller and (Player_Controller.Coin_Lottery_Share_Reward_Count or 1) > 0 then
+            UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller,
+                L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward)
+            self:Refresh_Free_Lottery_Count((Player_Controller.Coin_Lottery_Free_Chance_Count or 1) + 1)
+        elseif Player_Controller then
+            PopUpNoticeUI.ShowFastNoticeQueue("今日分享奖励已领取")
+        end
     end)
     if not bOK then
         PopUpNoticeUI.ShowFastNoticeQueue("当前无法分享")
@@ -194,6 +201,16 @@ function UI12:Button_69_OnClicked()
         return
     end
 
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    if not Player_Controller or (Player_Controller.Coin_Lottery_Free_Chance_Count or 0) <= 0 then
+        L_TipsTool.ShowTips_01("今日免费抽奖次数已用完")
+        return
+    end
+
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller,
+        L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance)
+    self:Refresh_Free_Lottery_Count(Player_Controller.Coin_Lottery_Free_Chance_Count - 1)
+
     self.Is_Lottery_Drawing = true -- 抽奖动画进行中
     self.Button_69:SetIsEnabled(false)
     local Target_Index = self:GetLotteryResult() -- 本次抽奖结果
@@ -206,12 +223,11 @@ function UI12:Button_69_OnClicked()
         self.Button_69:SetIsEnabled(true)
         local Reward_Count = self.Last_Reward_Count or 0 -- 本次奖励数量
         if Reward_Count > 0 then
-            local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
             if Player_Controller then
                 UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Grant_Lottery_Reward,
                     self.Last_Reward_Item_ID, Reward_Count)
             end
-            L_TipsTool.ShowTips_01("获得奖励" .. tostring(Reward_Count) .. "个")
+            L_TipsTool.ShowTips_01("获得金币" .. tostring(Reward_Count) .. "个")
         else
             L_TipsTool.ShowTips_01("谢谢参与")
         end

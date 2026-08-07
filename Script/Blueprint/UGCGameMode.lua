@@ -108,6 +108,8 @@ function UGCGameMode:LoadPlayerArchive(PlayerController)
     UnrealNetwork.RepLazyProperty(PlayerController, "WeekEndTime")
     PlayerController.WinCup = archiveData.WinCup or 0
     PlayerController:SyncWinCupToPawn()
+    PlayerController.Coin_Lottery_Archive = archiveData.CoinLottery
+    PlayerController:Sync_Coin_Lottery_Archive()
 end
 
 --[[----------------------保存玩家存档数据------------------------]]
@@ -121,6 +123,7 @@ function UGCGameMode:SavePlayerArchive(PlayerController)
     archiveData.MaxHP = PlayerController.PlayerMaxHP
     archiveData.WeekEndTime = PlayerController.WeekEndTime
     archiveData.WinCup = PlayerController.WinCup
+    archiveData.CoinLottery = PlayerController:Get_Coin_Lottery_Archive()
 
     UGCPlayerStateSystem.SavePlayerArchiveData(tonumber(uid), archiveData)
 end

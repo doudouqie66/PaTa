@@ -21,7 +21,9 @@ local UGCPlayerController = {
     Tower_Climb_Magic_Carpet_Define_ID = nil, -- 本次爬塔使用的魔毯实例ID
     Is_Monster_Death = false, -- 是否由怪物内部碰撞体致死
     Flying_Item_ID = 0, -- 当前装备的飞行物ID
-    Jetpack_Durability = 0 -- 冲天炮当前耐久秒数
+    Jetpack_Durability = 0, -- 冲天炮当前耐久秒数
+    Coin_Lottery_Free_Chance_Count = 1, -- 今日金币抽奖剩余免费次数
+    Coin_Lottery_Share_Reward_Count = 1 -- 今日金币抽奖剩余分享奖励次数
 }
 
 local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
@@ -95,7 +97,8 @@ function UGCPlayerController:GetReplicatedProperties()
     return {"PlayerGameLevel", "Lazy"}, {"PlayerAttack", "Lazy"}, {"PlayerMaxHP", "Lazy"}, {"WeekEndTime", "Lazy"},
         {"WinCup", "Lazy"}, {"Tower_Reward_Has_Started", "Lazy"}, {"Tower_Reward_Is_Timing", "Lazy"},
         {"Tower_Reward_Enter_Time", "Lazy"}, {"Tower_Reward_Accumulated_Time", "Lazy"},
-        {"Tower_Reward_Claim_Mask", "Lazy"}, {"Flying_Item_ID", "Lazy"}, {"Jetpack_Durability", "Lazy"}
+        {"Tower_Reward_Claim_Mask", "Lazy"}, {"Flying_Item_ID", "Lazy"}, {"Jetpack_Durability", "Lazy"},
+        {"Coin_Lottery_Free_Chance_Count", "Lazy"}, {"Coin_Lottery_Share_Reward_Count", "Lazy"}
 end
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
@@ -104,7 +107,8 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
         L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
         L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
-        L_Enum.Name_RPC.Grant_Lottery_Reward
+        L_Enum.Name_RPC.Grant_Lottery_Reward, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
+        L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward
 
 end
 
@@ -393,6 +397,68 @@ function UGCPlayerController:Grant_Lottery_Reward(Item_ID, Item_Count)
         L_TipsTool.ShowTips_01("奖励发放失败", self)
         return
     end
+end
+
+--[[----------------------获取金币抽奖存档数据，跨天自动重置------------------------]]
+function UGCPlayerController:Get_Coin_Lottery_Archive()
+    local Coin_Lottery_Archive = self.Coin_Lottery_Archive or {
+        Date = "",
+        Free_Chance_Count = 1,
+        Share_Reward_Count = 1
+    }
+    local Current_Date = os.date("%Y-%m-%d", UGCGameSystem.GetServerTimeSec()) -- 当前日期
+    if Coin_Lottery_Archive.Date ~= Current_Date then
+        Coin_Lottery_Archive.Date = Current_Date
+        Coin_Lottery_Archive.Free_Chance_Count = 1
+        Coin_Lottery_Archive.Share_Reward_Count = 1
+    else
+        Coin_Lottery_Archive.Free_Chance_Count = math.max(0, math.floor(Coin_Lottery_Archive.Free_Chance_Count or 1))
+        Coin_Lottery_Archive.Share_Reward_Count = math.max(0, math.floor(Coin_Lottery_Archive.Share_Reward_Count or 1))
+    end
+    self.Coin_Lottery_Archive = Coin_Lottery_Archive
+    return Coin_Lottery_Archive
+end
+
+--[[----------------------同步金币抽奖状态到复制属性------------------------]]
+function UGCPlayerController:Sync_Coin_Lottery_Archive()
+    local Coin_Lottery_Archive = self:Get_Coin_Lottery_Archive()
+    self.Coin_Lottery_Free_Chance_Count = Coin_Lottery_Archive.Free_Chance_Count
+    self.Coin_Lottery_Share_Reward_Count = Coin_Lottery_Archive.Share_Reward_Count
+    UnrealNetwork.RepLazyProperty(self, "Coin_Lottery_Free_Chance_Count")
+    UnrealNetwork.RepLazyProperty(self, "Coin_Lottery_Share_Reward_Count")
+end
+
+--[[----------------------消耗今日免费抽奖次数并保存------------------------]]
+function UGCPlayerController:Use_Coin_Lottery_Free_Chance()
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Coin_Lottery_Archive = self:Get_Coin_Lottery_Archive()
+    if Coin_Lottery_Archive.Free_Chance_Count <= 0 then
+        return
+    end
+
+    Coin_Lottery_Archive.Free_Chance_Count = Coin_Lottery_Archive.Free_Chance_Count - 1
+    self:Sync_Coin_Lottery_Archive()
+    self:SaveArchive()
+end
+
+--[[----------------------分享成功后奖励一次免费抽奖并保存------------------------]]
+function UGCPlayerController:Grant_Coin_Lottery_Share_Reward()
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Coin_Lottery_Archive = self:Get_Coin_Lottery_Archive()
+    if Coin_Lottery_Archive.Share_Reward_Count <= 0 then
+        return
+    end
+
+    Coin_Lottery_Archive.Share_Reward_Count = Coin_Lottery_Archive.Share_Reward_Count - 1
+    Coin_Lottery_Archive.Free_Chance_Count = Coin_Lottery_Archive.Free_Chance_Count + 1
+    self:Sync_Coin_Lottery_Archive()
+    self:SaveArchive()
 end
 
 --[[----------------------使用奖杯兑换道具------------------------]]
