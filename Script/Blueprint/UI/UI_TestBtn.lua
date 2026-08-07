@@ -1,7 +1,7 @@
 ---@class UI_TestBtn_C:UUserWidget
+---@field Button_0 UButton
 ---@field Button_6 UButton
----@field Button_11 UButton
----@field Button_12 UButton
+---@field Image_67 UImage
 --Edit Below--
 local UI_TestBtn = {
     bInitDoOnce = false
@@ -33,6 +33,7 @@ function UI_TestBtn:LuaInit()
     self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
     self.Button_11.OnClicked:Add(self.Button_11_OnClicked, self);
     self.Button_12.OnClicked:Add(self.Button_12_OnClicked, self);
+    self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
 end
 
@@ -41,17 +42,11 @@ function UI_TestBtn:Button_6_OnClicked()
 
 end
 
---[[----------------------隐藏整个主UI------------------------]]
-function UI_TestBtn:Button_11_OnClicked()
-    L_GloTools.Change_SysUI(false)
-end
-
---[[----------------------恢复主UI显示------------------------]]
-function UI_TestBtn:Button_12_OnClicked()
-
-    L_GloTools.Change_SysUI(true)
+function UI_TestBtn:Button_0_OnClicked()
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, true)
 
 end
+
 -- [Editor Generated Lua] function define End;
 
 return UI_TestBtn
