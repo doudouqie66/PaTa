@@ -107,7 +107,7 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
         L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
         L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
-        L_Enum.Name_RPC.Grant_Lottery_Reward, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
+        L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
         L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item
 
 end
@@ -383,8 +383,8 @@ function UGCPlayerController:Add_Backpack_Item(Item_ID, Item_Count)
     Virtual_Item_Manager:AddVirtualItem(self, Item_ID, Item_Count)
 end
 
---[[----------------------发放抽奖奖励------------------------]]
-function UGCPlayerController:Grant_Lottery_Reward(Item_ID, Item_Count)
+--[[----------------------发放虚拟物品------------------------]]
+function UGCPlayerController:Grant_Virtual_Item(Item_ID, Item_Count)
     if not self:HasAuthority() then
         return
     end

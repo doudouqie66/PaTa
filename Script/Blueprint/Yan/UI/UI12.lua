@@ -237,7 +237,7 @@ function UI12:Button_69_OnClicked()
         local Reward_Count = self.Last_Reward_Count or 0 -- 本次奖励数量
         if Reward_Count > 0 then
             if Player_Controller then
-                UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Grant_Lottery_Reward,
+                UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Grant_Virtual_Item,
                     self.Last_Reward_Item_ID, Reward_Count)
             end
             L_TipsTool.ShowTips_01("获得金币" .. tostring(Reward_Count) .. "个")

@@ -8,7 +8,8 @@
 ---@field Image_98 UImage
 ---@field Image_246 UImage
 ---@field ProgressBar_76 UProgressBar
--- Edit Below--
+---@field UIParticleEmitter_0 UUIParticleEmitter
+--Edit Below--
 ---@class UI01_C:UUserWidget
 ---@field Button_75 UButton
 ---@field Image_0 UImage
@@ -19,7 +20,7 @@
 ---@field Image_98 UImage
 ---@field Image_246 UImage
 ---@field ProgressBar_76 UProgressBar
--- Edit Below--
+--Edit Below--
 ---@class UI01_C:UUserWidget
 ---@field Button_75 UButton
 ---@field Image_0 UImage
@@ -30,7 +31,7 @@
 ---@field Image_98 UImage
 ---@field Image_246 UImage
 ---@field ProgressBar_76 UProgressBar
--- Edit Below--
+--Edit Below--
 local UI01 = {
     bInitDoOnce = false
 }
@@ -64,7 +65,7 @@ end
 
 function UI01:Button_75_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI01, false)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, true)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.Fly_Start)
 
 end

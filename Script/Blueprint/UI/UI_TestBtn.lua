@@ -31,8 +31,6 @@ function UI_TestBtn:LuaInit()
 
     -- [Editor Generated Lua] BindingEvent Begin:
     self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
-    self.Button_11.OnClicked:Add(self.Button_11_OnClicked, self);
-    self.Button_12.OnClicked:Add(self.Button_12_OnClicked, self);
     self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
 end

@@ -18,6 +18,8 @@ L_Enum.Name_ClassPath = {
     UI08 = RootPath .. "Asset/Blueprint/Yan/UI/UI08.UI08_C",
     UI09 = RootPath .. "Asset/Blueprint/Yan/UI/UI09.UI09_C",
     UI10 = RootPath .. "Asset/Blueprint/Yan/UI/UI10.UI10_C",
+    UI11 = RootPath .. "Asset/Blueprint/Yan/UI/UI11.UI11_C",
+
     UI12 = RootPath .. "Asset/Blueprint/Yan/UI/UI12.UI12_C",
     UI13 = RootPath .. "Asset/Blueprint/Yan/UI/UI13.UI13_C",
     UI_Black = RootPath .. "Asset/Blueprint/UI/UI_Black.UI_Black_C",
@@ -84,7 +86,7 @@ L_Enum.Name_RPC = {
     Men_State = "Men_State", -- 切换门的状态
     Show_Room_Pass_UI = "Show_Room_Pass_UI", -- 显示房间密码界面
     Claim_Tower_Reward = "Claim_Tower_Reward", -- 领取塔内计时奖励
-    Grant_Lottery_Reward = "Grant_Lottery_Reward", -- 发放抽奖奖励
+    Grant_Virtual_Item = "Grant_Virtual_Item", -- 发放虚拟物品
     Use_Coin_Lottery_Free_Chance = "Use_Coin_Lottery_Free_Chance", -- 消耗今日免费抽奖次数RPC名称
     Grant_Coin_Lottery_Share_Reward = "Grant_Coin_Lottery_Share_Reward", -- 分享成功奖励免费抽奖RPC名称
     Remove_Item = "Remove_Item", -- 通用扣除物品RPC名称
