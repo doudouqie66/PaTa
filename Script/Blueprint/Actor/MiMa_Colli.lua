@@ -3,16 +3,6 @@
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 --Edit Below--
----@class MiMa_Colli_C:AActor
----@field StaticMesh UStaticMeshComponent
----@field Box UBoxComponent
----@field DefaultSceneRoot USceneComponent
--- Edit Below--
----@class MiMa_Colli_C:AActor
----@field StaticMesh UStaticMeshComponent
----@field Box UBoxComponent
----@field DefaultSceneRoot USceneComponent
--- Edit Below--
 local MiMa_Colli = {}
 --[[----------------------处理鼠标点击物品------------------------]]
 function MiMa_Colli:ReceiveActorOnClicked(Button_Pressed)

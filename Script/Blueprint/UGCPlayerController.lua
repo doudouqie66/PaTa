@@ -106,10 +106,9 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
         L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
         L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
-        L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
-        L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
-        L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
-        L_Enum.Name_RPC.Spawn_Random_Block
+        L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying, L_Enum.Name_RPC.Grant_Virtual_Item,
+        L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance, L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward,
+        L_Enum.Name_RPC.Remove_Item, L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block
 
 end
 
@@ -768,6 +767,34 @@ function UGCPlayerController:Spawn_Random_Block()
 
     local Spawn_Area = Area_Actors[math.random(#Area_Actors)] -- 随机选择生成区域
     Spawn_Area:Spawn_Random_Block()
+end
+
+--[[----------------------随机发放金币或生成怪物------------------------]]
+function UGCPlayerController:Open_Random_Block(Block_Actor)
+    if not self:HasAuthority() or not Block_Actor or not UE.IsValid(Block_Actor) then
+        return
+    end
+
+    if math.random(2) == 1 then
+        local Gold_Count = math.random(2, 10) -- 本次奖励金币数量
+        UGCBackpackSystemV2.AddItemV2(self:GetPlayerCharacterSafety(), L_Enum.Gold_Shop.Gold_Item_ID, Gold_Count)
+        L_TipsTool.ShowTips_01("获得金币" .. Gold_Count .. "个", self, SoundMgr.SoundName.Reward_Gold)
+    else
+        local Monster_Class = UE.LoadClass(L_Enum.Path_Mons.Mons_01) -- 怪物蓝图类
+        UGCGenericCharacterSystem.SpawnGenericCharacter(self, Monster_Class, Block_Actor:K2_GetActorLocation(), {
+            Roll = 0,
+            Pitch = 0,
+            Yaw = 0
+        })
+        L_TipsTool.ShowTips_01("出现了怪物", self, SoundMgr.SoundName.Event_Alarm)
+    end
+
+    local Spawn_Area = Block_Actor.Spawn_Area -- 方块所属的生成区域
+    if Spawn_Area and UE.IsValid(Spawn_Area) then
+        Spawn_Area:Respawn_Block_After_Delay()
+    end
+
+    Block_Actor:K2_DestroyActor()
 end
 
 --[[----------------------打印兑换码结果------------------------]]

@@ -2,6 +2,7 @@
 ---@field Move UWidgetAnimation
 ---@field Image_0 UImage
 ---@field UIParticleEmitter_0 UUIParticleEmitter
+---@field UTRichTextBlock_6 UUTRichTextBlock
 --Edit Below--
 local UI_TipsToutch = {
     bInitDoOnce = false
@@ -20,4 +21,4 @@ end
 
 -- end
 
-return UI_TipsToutch
+return UI_TipsToutch

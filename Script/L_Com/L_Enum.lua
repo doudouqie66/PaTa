@@ -29,7 +29,10 @@ L_Enum.Name_ClassPath = {
     UI_Fly = RootPath .. "Asset/Blueprint/Yan/UI/UI_Fly.UI_Fly_C"
 
 }
-
+--[[----------------------怪物的路径-----------------------]] --
+L_Enum.Path_Mons = {
+    Mons_01 = RootPath .. 'Asset/Blueprint/Prefabs/Monsters/Mons_01.Mons_01_C'
+}
 --[[----------------------材质的路径-----------------------]] --
 L_Enum.Name_Material = {
     Men_YuanLai = '/Game/Arts_Timeliness/CG005_Concert/Arts_Prop/LightStick/M_Prop_LightStick_Colorful',
@@ -99,7 +102,8 @@ L_Enum.Name_RPC = {
     Set_Anim_Montage = "MulticastRPC_SetAnimMontage", -- 广播播放或停止蒙太奇RPC名称
     Set_Jetpack_Particles = "MulticastRPC_SetJetpackParticles", -- 广播播放或停止冲天炮粒子RPC名称
     Broadcast_Tips = "MulticastRPC_ShowTips", -- 广播提示RPC名称
-    Spawn_Random_Block = "Spawn_Random_Block" -- 随机生成方块RPC名称
+    Spawn_Random_Block = "Spawn_Random_Block", -- 随机生成方块RPC名称
+    Open_Random_Block = "Open_Random_Block" -- 开启随机方块RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 
