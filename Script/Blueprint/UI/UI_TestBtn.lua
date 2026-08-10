@@ -1,5 +1,4 @@
 ---@class UI_TestBtn_C:UUserWidget
----@field Button_0 UButton
 ---@field Button_6 UButton
 ---@field Image_67 UImage
 --Edit Below--
@@ -31,17 +30,16 @@ function UI_TestBtn:LuaInit()
 
     -- [Editor Generated Lua] BindingEvent Begin:
     self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
-    self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
 end
 
+--[[----------------------请求随机生成方块------------------------]]
 function UI_TestBtn:Button_6_OnClicked()
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI12, true)
-
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Spawn_Random_Block)
 end
 
 function UI_TestBtn:Button_0_OnClicked()
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, true)
 
 end
 

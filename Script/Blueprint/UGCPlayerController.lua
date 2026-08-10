@@ -108,7 +108,8 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
         L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
         L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
-        L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item
+        L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
+        L_Enum.Name_RPC.Spawn_Random_Block
 
 end
 
@@ -751,6 +752,22 @@ function UGCPlayerController:UseRedemptionCode(RedemptionCode)
     local UID = UGCPawnAttrSystem.GetPlayerUID(PlayerPawn)
     print(string.format("[UseRedemptionCode] UID=%s Code=%s", tostring(UID), tostring(RedemptionCode)))
     UGCCommoditySystem.UseRedemptionCode(tonumber(UID), RedemptionCode)
+end
+
+--[[----------------------请求在区域内随机生成方块------------------------]]
+function UGCPlayerController:Spawn_Random_Block()
+    local Area_Path = UGCGameSystem.GetUGCResourcesFullPath(
+        "Asset/Blueprint/Actor/BP_Block_Spawn_Area.BP_Block_Spawn_Area_C") -- 生成区域蓝图完整路径
+    local Area_Class = UE.LoadClass(Area_Path) -- 生成区域蓝图类
+    local Area_Actors = UGCActorComponentUtility.GetAllActorsOfClass(self, Area_Class) -- 场景中的生成区域
+
+    if #Area_Actors == 0 then
+        print("BlockSpawnArea Request Failed: AreaNotFound")
+        return
+    end
+
+    local Spawn_Area = Area_Actors[math.random(#Area_Actors)] -- 随机选择生成区域
+    Spawn_Area:Spawn_Random_Block()
 end
 
 --[[----------------------打印兑换码结果------------------------]]
