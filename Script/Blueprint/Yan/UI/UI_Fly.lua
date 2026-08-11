@@ -21,7 +21,7 @@ local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
 local Jetpack_Vertical_Input_Scale = 1 -- 冲天炮上升输入比例
 local Magic_Carpet_Vertical_Input_Scale = 2 -- 魔毯升降输入比例
 local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
-local Jetpack_Skill_Max_Fly_Speed = 200 -- 技能冲天炮最高飞行速度
+local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能冲天炮最高飞行速度
 -- local Magic_Carpet_Max_Fly_Speed = 2500 -- 魔毯最高飞行速度
 
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力

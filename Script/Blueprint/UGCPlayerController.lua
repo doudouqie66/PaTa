@@ -34,7 +34,7 @@ local Falling_Movement_Mode = 3 -- 下落移动模式
 local Fly_State_Tag = "PawnState.Movement.Flying" -- 飞行状态标签
 local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
-local Jetpack_Skill_Max_Fly_Speed = 200 -- 技能冲天炮最高飞行速度
+local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能冲天炮最高飞行速度
 local Jetpack_Max_Durability = 10 -- 冲天炮最大耐久秒数
 local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
 
@@ -240,8 +240,25 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
             self.Jetpack_Last_Consume_Time = Current_Time
             UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
             if self.Jetpack_Durability <= 0 then
-                local Depleted_Define_ID = self.Jetpack_Skill_Define_ID -- 已耗尽的冲天炮实例
+                local Depleted_Instance_ID = self.Jetpack_Skill_Define_ID.InstanceID -- 已耗尽的冲天炮实例ID
+                self.Jetpack_Skill_Durability_Depleted = true
                 self:Set_Jetpack_Skill_Flying(false)
+                self.Jetpack_Skill_Durability_Depleted = false
+
+                local Current_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self,
+                    Jetpack_Item_ID) -- 当前冲天炮实例列表
+                local Depleted_Define_ID = nil -- 重新取得的有效耗尽实例
+                for _, Item_Define_ID in ipairs(Current_Define_IDs) do
+                    if Item_Define_ID.InstanceID == Depleted_Instance_ID then
+                        Depleted_Define_ID = Item_Define_ID
+                        break
+                    end
+                end
+                if not Depleted_Define_ID then
+                    ugcprint("[JetpackSkill] 耐久耗尽，但未找到对应冲天炮实例")
+                    return
+                end
+
                 local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Depleted_Define_ID, 1) -- 删除的冲天炮数量
                 if Removed_Count ~= 1 then
                     ugcprint("[JetpackSkill] 耐久耗尽，但冲天炮删除失败")
@@ -249,26 +266,20 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
                 end
 
                 self.Jetpack_Skill_Define_ID = nil
-                local Remaining_Same_Count = UGCBackpackSystemV2.GetItemCountByDefineIDV2(self,
-                    Depleted_Define_ID) -- 同一实例剩余堆叠数量
-                if Remaining_Same_Count > 0 then
-                    local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Depleted_Define_ID) or {} -- 下一件冲天炮实例数据
-                    Next_Custom_Data.Jetpack_Durability = Jetpack_Max_Durability
-                    UGCItemSystemV2.SaveItemCustomData(Depleted_Define_ID, Next_Custom_Data)
-                    self.Jetpack_Skill_Define_ID = Depleted_Define_ID
-                    self.Jetpack_Durability = Jetpack_Max_Durability
-                else
-                    local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self,
-                        Jetpack_Item_ID) -- 剩余冲天炮实例列表
-                    local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件冲天炮实例
-                    if Next_Define_ID then
-                        local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件冲天炮实例数据
-                        self.Jetpack_Skill_Define_ID = Next_Define_ID
-                        self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
-                            Next_Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
-                    else
-                        self.Jetpack_Durability = 0
+                local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self,
+                    Jetpack_Item_ID) -- 剩余冲天炮实例列表
+                local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件冲天炮实例
+                if Next_Define_ID then
+                    local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件冲天炮实例数据
+                    if Next_Define_ID.InstanceID == Depleted_Instance_ID then
+                        Next_Custom_Data.Jetpack_Durability = Jetpack_Max_Durability
+                        UGCItemSystemV2.SaveItemCustomData(Next_Define_ID, Next_Custom_Data)
                     end
+                    self.Jetpack_Skill_Define_ID = Next_Define_ID
+                    self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
+                        Next_Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
+                else
+                    self.Jetpack_Durability = 0
                 end
                 UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
             end
@@ -277,7 +288,8 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
             self.Jetpack_Durability_Timer_Delegate, self, Jetpack_Consume_Interval, true)
     else
         self:Stop_Jetpack_Durability_Timer()
-        if Jetpack_Define_ID and UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) > 0 then
+        if not self.Jetpack_Skill_Durability_Depleted and Jetpack_Define_ID and
+            UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) > 0 then
             local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 冲天炮实例数据
             Custom_Data.Jetpack_Durability = self.Jetpack_Durability
             UGCItemSystemV2.SaveItemCustomData(Jetpack_Define_ID, Custom_Data)

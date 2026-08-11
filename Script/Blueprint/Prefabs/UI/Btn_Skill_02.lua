@@ -27,7 +27,7 @@
 local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Jetpack_Product_ID = 9000010 -- 冲天炮商品ID
 local Jetpack_Max_Durability = 10 -- 单个冲天炮最大耐久秒数
-local Jetpack_Vertical_Input_Scale = 0.5 -- 冲天炮上升输入比例
+local Jetpack_Vertical_Input_Scale = 0.7 -- 冲天炮上升输入比例
 local Btn_Skill_02 = {
 	ReadyForActivateTimer = nil,
 	PreCDState = false,
