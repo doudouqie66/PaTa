@@ -1,4 +1,4 @@
----@class BP_Item_Grapple_C:Template_Rifle_M416_C
+---@class BP_Item_Grapple_C:Item_Unuse_Tmp_C
 --Edit Below--
 local BP_Item_Grapple = {} 
 
