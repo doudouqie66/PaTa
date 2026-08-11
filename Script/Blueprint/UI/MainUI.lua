@@ -121,7 +121,7 @@ function MainUI:Button_381_OnClicked()
     -- local PC = UGCGameSystem.GetLocalPlayerController()
     -- UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.UseRedemptionCode, "XXXX-XXXX-XXXX")
     --[[-------------------测试UImgr---------------------------]] --
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, true)
 end
 
 --[[----------------------输入完成后提交兑换码------------------------]]

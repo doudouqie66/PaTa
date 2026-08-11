@@ -2,6 +2,7 @@
 ---@field Box UBoxComponent
 ---@field DefaultSceneRoot USceneComponent
 ---@field Type int32
+---@field Num_PassNeed int32
 --Edit Below--
 local RunArea = {}
 

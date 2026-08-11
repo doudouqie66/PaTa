@@ -58,27 +58,26 @@ function UGCPlayerController:InitTest()
     local OBTimerDelegate = ObjectExtend.CreateDelegate(self, function()
         if self:HasAuthority() == true then
             local PlayerPawn = self:GetPlayerCharacterSafety()
-            -- V2 背包添加物品
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310000, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310037, 1)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310038, 1)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310002, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310014, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310016, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310018, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310020, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310021, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310023, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310024, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310026, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310027, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310007, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310010, 10)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310003, 6666)
-            UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310012, 6666)
+            -- -- V2 背包添加物品
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310000, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310037, 1)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310002, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310014, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310016, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310018, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310020, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310021, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310023, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310024, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310026, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310027, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310007, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310010, 10)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310003, 6666)
+            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310012, 6666)
 
         end
     end)
@@ -205,8 +204,7 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
 
     local Jetpack_Define_ID = self.Jetpack_Skill_Define_ID -- 当前技能消耗的冲天炮实例
     if Is_Flying then
-        if not Jetpack_Define_ID or
-            UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) <= 0 then
+        if not Jetpack_Define_ID or UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) <= 0 then
             local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 冲天炮实例列表
             Jetpack_Define_ID = Item_Define_IDs[1]
             self.Jetpack_Skill_Define_ID = Jetpack_Define_ID
@@ -245,8 +243,7 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
                 self:Set_Jetpack_Skill_Flying(false)
                 self.Jetpack_Skill_Durability_Depleted = false
 
-                local Current_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self,
-                    Jetpack_Item_ID) -- 当前冲天炮实例列表
+                local Current_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 当前冲天炮实例列表
                 local Depleted_Define_ID = nil -- 重新取得的有效耗尽实例
                 for _, Item_Define_ID in ipairs(Current_Define_IDs) do
                     if Item_Define_ID.InstanceID == Depleted_Instance_ID then
@@ -266,8 +263,7 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
                 end
 
                 self.Jetpack_Skill_Define_ID = nil
-                local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self,
-                    Jetpack_Item_ID) -- 剩余冲天炮实例列表
+                local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 剩余冲天炮实例列表
                 local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件冲天炮实例
                 if Next_Define_ID then
                     local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件冲天炮实例数据
