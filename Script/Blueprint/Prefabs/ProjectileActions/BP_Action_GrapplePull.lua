@@ -9,7 +9,9 @@ local Min_Pull_Speed = 500 -- 接近目标时的最低拉拽速度
 local Max_Pull_Time = 2.5 -- 单次拉拽最长时间
 local Surface_Offset_Distance = 80 -- 目标点远离命中表面的距离
 local Min_Move_Distance = 2 -- 判定玩家发生有效移动的最小距离
-local Max_Blocked_Count = 3 -- 连续移动受阻的最大次数
+local Max_Blocked_Count = 15 -- 连续移动受阻的最大次数
+local Fly_Movement_Mode = 5 -- 飞行移动模式
+local Falling_Movement_Mode = 3 -- 下落移动模式
 local Active_Grapple_Actions = {} -- 各玩家当前正在执行的钩爪动作
 
 --[[----------------------初始化钩爪拉拽动作------------------------]]
@@ -45,6 +47,9 @@ function BP_Action_GrapplePull:ApplyActionEffect(TargetData)
     }
     self.Pull_Elapsed_Time = 0
     self.Blocked_Count = 0
+    self.Last_Player_Location = self.Player_Pawn:K2_GetActorLocation()
+    self.Previous_Movement_Mode = self.Player_Pawn.CharacterMovement.MovementMode
+    self.Player_Pawn.CharacterMovement:SetMovementMode(Fly_Movement_Mode, 0)
     self.Pull_Timer_Delegate = ObjectExtend.CreateDelegate(self, self.PullPlayer, self)
 
     self.Pull_Timer_Handle = KismetSystemLibrary.K2_SetTimerDelegateForLua(
@@ -83,24 +88,15 @@ function BP_Action_GrapplePull:PullPlayer()
         Current_Pull_Speed = math.max(Min_Pull_Speed, Pull_Speed * Speed_Ratio)
     end
 
-    local Move_Distance = math.min(Current_Pull_Speed * Pull_Interval, Distance - Stop_Distance) -- 本次移动距离
-    local New_Location = { -- 玩家本次移动的目标位置
-        X = Player_Location.X + Offset_X / Distance * Move_Distance,
-        Y = Player_Location.Y + Offset_Y / Distance * Move_Distance,
-        Z = Player_Location.Z + Offset_Z / Distance * Move_Distance
-    }
-
-    self.Player_Pawn:K2_SetActorLocation(New_Location, true, nil, false)
-
-    local Actual_Location = self.Player_Pawn:K2_GetActorLocation() -- 碰撞处理后的玩家实际位置
-    local Actual_Offset_X = Actual_Location.X - Player_Location.X -- 本次实际移动的X轴距离
-    local Actual_Offset_Y = Actual_Location.Y - Player_Location.Y -- 本次实际移动的Y轴距离
-    local Actual_Offset_Z = Actual_Location.Z - Player_Location.Z -- 本次实际移动的Z轴距离
+    local Actual_Offset_X = Player_Location.X - self.Last_Player_Location.X -- 上次拉拽后的X轴移动距离
+    local Actual_Offset_Y = Player_Location.Y - self.Last_Player_Location.Y -- 上次拉拽后的Y轴移动距离
+    local Actual_Offset_Z = Player_Location.Z - self.Last_Player_Location.Z -- 上次拉拽后的Z轴移动距离
     local Actual_Move_Distance = math.sqrt(
         Actual_Offset_X * Actual_Offset_X +
         Actual_Offset_Y * Actual_Offset_Y +
         Actual_Offset_Z * Actual_Offset_Z
-    ) -- 本次实际移动距离
+    ) -- 上次拉拽后的实际移动距离
+    self.Last_Player_Location = Player_Location
 
     if Actual_Move_Distance < Min_Move_Distance then
         self.Blocked_Count = self.Blocked_Count + 1
@@ -110,7 +106,15 @@ function BP_Action_GrapplePull:PullPlayer()
 
     if self.Blocked_Count >= Max_Blocked_Count then
         self:StopPull("[钩爪] 拉拽被障碍阻挡")
+        return
     end
+
+    local Pull_Velocity = Vector.New( -- 玩家持续拉向钩爪的速度
+        Offset_X / Distance * Current_Pull_Speed,
+        Offset_Y / Distance * Current_Pull_Speed,
+        Offset_Z / Distance * Current_Pull_Speed
+    )
+    self.Player_Pawn.CharacterMovement.Velocity = Pull_Velocity
 end
 
 --[[----------------------停止钩爪拉拽并销毁钩爪------------------------]]
@@ -119,6 +123,13 @@ function BP_Action_GrapplePull:StopPull(Stop_Reason)
     ObjectExtend.DestroyDelegate(self.Pull_Timer_Delegate)
     self.Pull_Timer_Delegate = nil
     self.Pull_Timer_Handle = nil
+
+    if self.Player_Pawn then
+        self.Player_Pawn.CharacterMovement.Velocity = Vector.New(0, 0, 0)
+        if self.Previous_Movement_Mode ~= Fly_Movement_Mode then
+            self.Player_Pawn.CharacterMovement:SetMovementMode(Falling_Movement_Mode, 0)
+        end
+    end
 
     if self.Player_Pawn and Active_Grapple_Actions[self.Player_Pawn] == self then
         Active_Grapple_Actions[self.Player_Pawn] = nil
