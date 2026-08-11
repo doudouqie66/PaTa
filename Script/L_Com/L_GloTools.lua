@@ -4,7 +4,7 @@ L_GloTools.UI_Visibility_Map = L_GloTools.UI_Visibility_Map or {} -- 缓存UI原
 local Jetpack_Particle_Interval = 0.6 -- 冲天炮上升粒子重复间隔
 
 --[[----------------------管理UI显示隐藏------------------------]]
-function L_GloTools.UIMgr(str, bVisible)
+function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统UI
     local UI_BP = L_GloTools.UI_Map[str]
 
     if UI_BP == nil then
@@ -28,7 +28,7 @@ function L_GloTools.UIMgr(str, bVisible)
 
     if bVisible == true then
         UI_BP:SetVisibility(L_GloTools.UI_Visibility_Map[str])
-        if str ~= L_Enum.Name_ClassPath.UI01 and str ~= L_Enum.Name_ClassPath.UI02 and str ~=
+        if Is_Change_SysUI ~= false and str ~= L_Enum.Name_ClassPath.UI01 and str ~= L_Enum.Name_ClassPath.UI02 and str ~=
             L_Enum.Name_ClassPath.UI10 and str ~= L_Enum.Name_ClassPath.UI_TestBtn then
             L_GloTools.Change_SysUI(false)
         end
@@ -40,8 +40,7 @@ end
 
 --[[----------------------改变系统UI------------------------]]
 function L_GloTools.Change_SysUI(bool)
-    local mainUI = L_GloTools.Main_UI or UGCWidgetManagerSystem.GetMainUI() or
-        UGCWidgetManagerSystem.GetMainControlUI() -- 优先使用隐藏前缓存的主UI实例
+    local mainUI = L_GloTools.Main_UI or UGCWidgetManagerSystem.GetMainUI() or UGCWidgetManagerSystem.GetMainControlUI() -- 优先使用隐藏前缓存的主UI实例
     if bool == true then
         if mainUI then
             mainUI:SetVisibility(L_GloTools.Main_UI_Visibility or ESlateVisibility.SelfHitTestInvisible) -- 恢复根节点原始可见性，避免挡住下层按钮
@@ -59,7 +58,7 @@ end
 
 --[[----------------------播放事件倒计时------------------------]]
 function L_GloTools.StartEventCountdown(Countdown_Duration, Event_Name)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_CountDownAttnetion, true)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_CountDownAttnetion, true, false)
     local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_CountDownAttnetion] -- 倒计时提示界面
     UI_BP:StartEventCountdown(Countdown_Duration, Event_Name)
 end

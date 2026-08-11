@@ -693,7 +693,7 @@ end
 --[[----------------------显示警示并播放怪物音效------------------------]] --
 
 function UGCPlayerController:Mgr_Atten(bool, Monster_Actor)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, bool)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, bool, false)
     if bool and Monster_Actor then
         SoundMgr.PlaySoundAttachActor(SoundMgr.SoundName.Attention, Monster_Actor)
     end
