@@ -1,6 +1,5 @@
 ---@class BP_Jetpack_AttachActor_C:AActor
 ---@field CustomParticleSystem1 UCustomParticleSystemComponent
----@field CustomParticleSystem UCustomParticleSystemComponent
 ---@field StaticMesh UStaticMeshComponent
 ---@field DefaultSceneRoot USceneComponent
 --Edit Below--
