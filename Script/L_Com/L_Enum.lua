@@ -43,15 +43,12 @@ L_Enum.Name_Material = {
 --[[----------------------特效的路径-----------------------]] --
 L_Enum.Name_Particle = {
 
-    P_Fireworks_01 = '/Game/Arts_Effect/ParticleSystems/Share/P_Fireworks_01.P_Fireworks_01',
-    Jetpack_Smoke = '/Game/Arts_Effect/ParticleSystems/Share/P_SC_jump_smoke_B001_02.P_SC_jump_smoke_B001_02', -- 冲天炮上升烟雾
-    Jetpack_Spark = '/Game/Actor_Timeliness/CG030/CG030_TangDao/Arts_Effect/Particle/P_030_HuoXing_01.P_030_HuoXing_01' -- 冲天炮上升火星
+    P_Fireworks_01 = '/Game/Arts_Effect/ParticleSystems/Share/P_Fireworks_01.P_Fireworks_01'
 }
 
 --[[----------------------蒙太奇资源路径------------------------]]
 L_Enum.Name_AnimMontagePath = {
     Run_Area_Sprint = RootPath .. "Asset/Blueprint/Animation/Montage_Attack.Montage_Attack", -- 区域跑步动作
-    CTP_Fly = "/Game/Arts_Timeliness/CG005_Hero/Arts_Player/Anim/AgileSoldier/AgileSoldier_Umarmed_Fly_Montage.AgileSoldier_Umarmed_Fly_Montage", -- 冲天炮动作
     MoTan_Fly = "/Game/Arts_Player/Characters/Animation/Shared_Anim/Parachute_Anim/Glider/Lobby_FlyingDevice_Montage.Lobby_FlyingDevice_Montage" -- 魔毯
 }
 
@@ -100,7 +97,6 @@ L_Enum.Name_RPC = {
     Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置冲天炮飞行状态RPC名称
     Event_Countdown = "Event_Countdown", -- 事件倒计时RPC名称
     Set_Anim_Montage = "MulticastRPC_SetAnimMontage", -- 广播播放或停止蒙太奇RPC名称
-    Set_Jetpack_Particles = "MulticastRPC_SetJetpackParticles", -- 广播播放或停止冲天炮粒子RPC名称
     Broadcast_Tips = "MulticastRPC_ShowTips", -- 广播提示RPC名称
     Spawn_Random_Block = "Spawn_Random_Block", -- 随机生成方块RPC名称
     Open_Random_Block = "Open_Random_Block" -- 开启随机方块RPC名称

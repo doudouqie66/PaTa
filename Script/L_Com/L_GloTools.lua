@@ -1,7 +1,6 @@
 L_GloTools = L_GloTools or {}
 L_GloTools.UI_Map = L_GloTools.UI_Map or {} -- 缓存已创建的UI
 L_GloTools.UI_Visibility_Map = L_GloTools.UI_Visibility_Map or {} -- 缓存UI原始显示状态
-local Jetpack_Particle_Interval = 0.6 -- 冲天炮上升粒子重复间隔
 
 --[[----------------------管理UI显示隐藏------------------------]]
 function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统UI
@@ -120,66 +119,6 @@ function L_GloTools.PlayParticleAtLocation(World_Context, Particle_Path, Locatio
         Y = 1,
         Z = 1
     }, true)
-end
-
---[[----------------------在指定组件上播放跟随粒子特效------------------------]]
-function L_GloTools.PlayParticleAttached(Particle_Path, Attach_Component, Scale)
-    local Particle_System = UE.LoadObject(Particle_Path) -- 粒子特效资源
-    if not Particle_System then
-        return
-    end
-
-    return UGCGameSystem.SpawnEmitterAttached(Particle_System, Attach_Component, "", {}, {}, Scale or {
-        X = 1,
-        Y = 1,
-        Z = 1
-    }, EAttachLocation.KeepRelativeOffset, true)
-end
-
---[[----------------------触发一次冲天炮上升粒子------------------------]]
-function L_GloTools.EmitJetpackParticles(Jetpack_Actor)
-    L_GloTools.PlayParticleAttached(L_Enum.Name_Particle.Jetpack_Smoke, Jetpack_Actor.CustomParticleSystem, {
-        X = 3,
-        Y = 3,
-        Z = 3
-    })
-    L_GloTools.PlayParticleAttached(L_Enum.Name_Particle.Jetpack_Spark, Jetpack_Actor.CustomParticleSystem, {
-        X = 3,
-        Y = 3,
-        Z = 3
-    })
-end
-
---[[----------------------播放或停止指定玩家的冲天炮上升特效------------------------]]
-function L_GloTools.SetJetpackParticles(Player_Pawn, Is_Playing)
-    local Jetpack_Actor_Class = UE.LoadClass(L_Enum.Name_ClassPath.BP_Jetpack_AttachActor) -- 冲天炮附加Actor类
-    local Jetpack_Actors = UGCActorComponentUtility.GetAllActorsOfClass(Player_Pawn, Jetpack_Actor_Class) -- 场景中的冲天炮Actor
-
-    for _, Jetpack_Actor in ipairs(Jetpack_Actors) do
-        local Attach_Parent = Jetpack_Actor:GetAttachParentActor() -- 冲天炮附加链父Actor
-        while Attach_Parent and Attach_Parent ~= Player_Pawn do
-            Attach_Parent = Attach_Parent:GetAttachParentActor()
-        end
-        if Attach_Parent == Player_Pawn then
-            if Jetpack_Actor.Jetpack_Particle_Timer_Handle then
-                KismetSystemLibrary.K2_ClearTimerHandle(Jetpack_Actor, Jetpack_Actor.Jetpack_Particle_Timer_Handle)
-                ObjectExtend.DestroyDelegate(Jetpack_Actor.Jetpack_Particle_Timer_Delegate)
-                Jetpack_Actor.Jetpack_Particle_Timer_Handle = nil
-                Jetpack_Actor.Jetpack_Particle_Timer_Delegate = nil
-            end
-            if Is_Playing then
-                L_GloTools.EmitJetpackParticles(Jetpack_Actor)
-                Jetpack_Actor.Jetpack_Particle_Timer_Delegate =
-                    ObjectExtend.CreateDelegate(Jetpack_Actor, function()
-                        L_GloTools.EmitJetpackParticles(Jetpack_Actor)
-                    end)
-                Jetpack_Actor.Jetpack_Particle_Timer_Handle =
-                    KismetSystemLibrary.K2_SetTimerDelegateForLua(Jetpack_Actor.Jetpack_Particle_Timer_Delegate,
-                        Jetpack_Actor, Jetpack_Particle_Interval, true)
-            end
-            return
-        end
-    end
 end
 
 return L_GloTools

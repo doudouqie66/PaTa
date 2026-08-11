@@ -34,6 +34,7 @@ local Falling_Movement_Mode = 3 -- 下落移动模式
 local Fly_State_Tag = "PawnState.Movement.Flying" -- 飞行状态标签
 local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
+local Jetpack_Skill_Max_Fly_Speed = 200 -- 技能冲天炮最高飞行速度
 local Jetpack_Max_Durability = 10 -- 冲天炮最大耐久秒数
 local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
 
@@ -194,18 +195,106 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     end
 
     self:Set_Flying_Movement_Enabled(Should_Fly)
-    L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, Should_Fly, 0.5)
-    local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
-    UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey, Should_Fly)
+end
+
+--[[----------------------设置技能冲天炮飞行状态------------------------]]
+function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Jetpack_Define_ID = self.Jetpack_Skill_Define_ID -- 当前技能消耗的冲天炮实例
+    if Is_Flying then
+        if not Jetpack_Define_ID or
+            UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) <= 0 then
+            local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 冲天炮实例列表
+            Jetpack_Define_ID = Item_Define_IDs[1]
+            self.Jetpack_Skill_Define_ID = Jetpack_Define_ID
+        end
+        if not Jetpack_Define_ID then
+            self.Jetpack_Durability = 0
+            UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
+            return
+        end
+
+        local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 冲天炮实例数据
+        self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
+            Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
+        UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
+        if self.Jetpack_Durability <= 0 then
+            return
+        end
+    end
+    if self.Jetpack_Is_Flying == Is_Flying then
+        return
+    end
+
+    self.Jetpack_Is_Flying = Is_Flying
+    if Is_Flying then
+        self:Apply_Magic_Carpet_Movement(Jetpack_Skill_Max_Fly_Speed)
+        self.Jetpack_Last_Consume_Time = UGCGameSystem.GetTimeSeconds(self)
+        self.Jetpack_Durability_Timer_Delegate = ObjectExtend.CreateDelegate(self, function()
+            local Current_Time = UGCGameSystem.GetTimeSeconds(self) -- 当前游戏时间
+            self.Jetpack_Durability = math.max(0, self.Jetpack_Durability -
+                (Current_Time - self.Jetpack_Last_Consume_Time))
+            self.Jetpack_Last_Consume_Time = Current_Time
+            UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
+            if self.Jetpack_Durability <= 0 then
+                local Depleted_Define_ID = self.Jetpack_Skill_Define_ID -- 已耗尽的冲天炮实例
+                self:Set_Jetpack_Skill_Flying(false)
+                local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Depleted_Define_ID, 1) -- 删除的冲天炮数量
+                if Removed_Count ~= 1 then
+                    ugcprint("[JetpackSkill] 耐久耗尽，但冲天炮删除失败")
+                    return
+                end
+
+                self.Jetpack_Skill_Define_ID = nil
+                local Remaining_Same_Count = UGCBackpackSystemV2.GetItemCountByDefineIDV2(self,
+                    Depleted_Define_ID) -- 同一实例剩余堆叠数量
+                if Remaining_Same_Count > 0 then
+                    local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Depleted_Define_ID) or {} -- 下一件冲天炮实例数据
+                    Next_Custom_Data.Jetpack_Durability = Jetpack_Max_Durability
+                    UGCItemSystemV2.SaveItemCustomData(Depleted_Define_ID, Next_Custom_Data)
+                    self.Jetpack_Skill_Define_ID = Depleted_Define_ID
+                    self.Jetpack_Durability = Jetpack_Max_Durability
+                else
+                    local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self,
+                        Jetpack_Item_ID) -- 剩余冲天炮实例列表
+                    local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件冲天炮实例
+                    if Next_Define_ID then
+                        local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件冲天炮实例数据
+                        self.Jetpack_Skill_Define_ID = Next_Define_ID
+                        self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
+                            Next_Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
+                    else
+                        self.Jetpack_Durability = 0
+                    end
+                end
+                UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
+            end
+        end)
+        self.Jetpack_Durability_Timer_Handle = KismetSystemLibrary.K2_SetTimerDelegateForLua(
+            self.Jetpack_Durability_Timer_Delegate, self, Jetpack_Consume_Interval, true)
+    else
+        self:Stop_Jetpack_Durability_Timer()
+        if Jetpack_Define_ID and UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) > 0 then
+            local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 冲天炮实例数据
+            Custom_Data.Jetpack_Durability = self.Jetpack_Durability
+            UGCItemSystemV2.SaveItemCustomData(Jetpack_Define_ID, Custom_Data)
+        end
+        self:Restore_Magic_Carpet_Movement()
+    end
+    self:Set_Flying_Movement_Enabled(Is_Flying)
 end
 
 --[[----------------------应用服务端魔毯移动参数------------------------]]
-function UGCPlayerController:Apply_Magic_Carpet_Movement()
+function UGCPlayerController:Apply_Magic_Carpet_Movement(Max_Fly_Speed)
+    Max_Fly_Speed = Max_Fly_Speed or Magic_Carpet_Max_Fly_Speed
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
     local Character_Movement = Player_Pawn.CharacterMovement -- 角色移动组件
     Player_Pawn.Magic_Carpet_Original_Max_Fly_Speed = Character_Movement.MaxFlySpeed
     Player_Pawn.Magic_Carpet_Original_Braking_Deceleration = Character_Movement.BrakingDecelerationFlying
-    Character_Movement.MaxFlySpeed = Magic_Carpet_Max_Fly_Speed
+    Character_Movement.MaxFlySpeed = Max_Fly_Speed
     Character_Movement.BrakingDecelerationFlying = Magic_Carpet_Braking_Deceleration
 end
 
@@ -239,11 +328,6 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped, Item_Defin
     end
 
     self:Set_Flying_Movement_Enabled(false)
-    if self.Flying_Item_ID == Jetpack_Item_ID and (not Is_Equipped or Item_ID ~= Jetpack_Item_ID) then
-        L_GloTools.SetAnimMontage(self, L_Enum.Name_AnimMontagePath.CTP_Fly, false, 0.5)
-        local Game_State = UGCGameSystem.GetGameState() -- 当前游戏状态
-        UnrealNetwork.CallUnrealRPC_Multicast(Game_State, L_Enum.Name_RPC.Set_Jetpack_Particles, self.PlayerKey, false)
-    end
     self:Restore_Magic_Carpet_Movement()
     self.Flying_Item_ID = Is_Equipped and Item_ID or 0
     self.Jetpack_Durability = 0

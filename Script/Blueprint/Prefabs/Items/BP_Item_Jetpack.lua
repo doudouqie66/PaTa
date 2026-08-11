@@ -1,4 +1,4 @@
----@class BP_Item_Jetpack_C:Template_Equipment_C
+---@class BP_Item_Jetpack_C:Item_Unuse_Tmp_C
 --Edit Below--
 local BP_Item_Jetpack = {} 
 

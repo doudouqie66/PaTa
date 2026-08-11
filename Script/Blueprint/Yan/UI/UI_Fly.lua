@@ -21,6 +21,7 @@ local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
 local Jetpack_Vertical_Input_Scale = 1 -- 冲天炮上升输入比例
 local Magic_Carpet_Vertical_Input_Scale = 2 -- 魔毯升降输入比例
 local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
+local Jetpack_Skill_Max_Fly_Speed = 200 -- 技能冲天炮最高飞行速度
 -- local Magic_Carpet_Max_Fly_Speed = 2500 -- 魔毯最高飞行速度
 
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
@@ -67,15 +68,16 @@ function UI_Fly:LuaInit()
 end
 
 --[[----------------------应用本地魔毯移动参数------------------------]]
-function UI_Fly:ApplyMagicCarpetMovement()
+function UI_Fly:ApplyMagicCarpetMovement(Max_Fly_Speed)
     if self.Magic_Carpet_Movement_Applied then
         return
     end
 
+    Max_Fly_Speed = Max_Fly_Speed or Magic_Carpet_Max_Fly_Speed
     local Character_Movement = UGCGameSystem.GetLocalPlayerPawn().CharacterMovement -- 本地角色移动组件
     self.Original_Max_Fly_Speed = Character_Movement.MaxFlySpeed
     self.Original_Braking_Deceleration_Flying = Character_Movement.BrakingDecelerationFlying
-    Character_Movement.MaxFlySpeed = Magic_Carpet_Max_Fly_Speed
+    Character_Movement.MaxFlySpeed = Max_Fly_Speed
     Character_Movement.BrakingDecelerationFlying = Magic_Carpet_Braking_Deceleration
     self.Magic_Carpet_Movement_Applied = true
 end
@@ -124,6 +126,27 @@ function UI_Fly:SetFlyingItem(Flying_Item_ID)
     self.UI_CTP_NJ:SetVisibility(Is_Jetpack and ESlateVisibility.SelfHitTestInvisible or ESlateVisibility.Collapsed)
     self:SetVisibility((Is_Jetpack or Is_Magic_Carpet) and ESlateVisibility.SelfHitTestInvisible or
                            ESlateVisibility.Collapsed)
+    if self.Skill_Jetpack_Progress_Visible then
+        self:SetSkillJetpackProgressVisible(true)
+    end
+end
+
+--[[----------------------只显示技能冲天炮进度条------------------------]]
+function UI_Fly:SetSkillJetpackProgressVisible(Is_Visible)
+    self.Skill_Jetpack_Progress_Visible = Is_Visible
+    if Is_Visible then
+        self:ApplyMagicCarpetMovement(Jetpack_Skill_Max_Fly_Speed)
+        self.Button_46:SetVisibility(ESlateVisibility.Collapsed)
+        self.Button_85:SetVisibility(ESlateVisibility.Collapsed)
+        self.Button_329:SetVisibility(ESlateVisibility.Collapsed)
+        self.UI_CTP_NJ:SetVisibility(ESlateVisibility.SelfHitTestInvisible)
+        self.UI_CTP_NJ:SetPercent(1)
+        self:SetVisibility(ESlateVisibility.SelfHitTestInvisible)
+        return
+    end
+
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    self:SetFlyingItem(Player_Controller and Player_Controller.Flying_Item_ID or 0)
 end
 
 --[[----------------------根据冲天炮耐久刷新飞行按钮------------------------]]
