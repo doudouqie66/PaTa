@@ -1,5 +1,6 @@
 ---@class Skill_Use_02_C:PESkillTemplate_Base_C
 --Edit Below--
+local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Skill_Use_02 = {}
 
 --[[----------------------启用技能并关闭系统失败提示------------------------]]
@@ -11,6 +12,15 @@ end
 --[[----------------------禁用冲天炮技能------------------------]]
 function Skill_Use_02:OnDisableSkill_BP()
     Skill_Use_02.SuperClass.OnDisableSkill_BP(self)
+end
+
+--[[----------------------检查是否拥有冲天炮------------------------]]
+function Skill_Use_02:CanActivateSkill_BP()
+    local Player_Controller = self:GetOwnerActor():GetController() -- 技能所属玩家控制器
+    if UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Jetpack_Item_ID) < 1 then
+        return false
+    end
+    return Skill_Use_02.SuperClass.CanActivateSkill_BP(self)
 end
 
 --[[----------------------启动冲天炮飞行------------------------]]
