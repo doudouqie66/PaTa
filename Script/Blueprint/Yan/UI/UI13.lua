@@ -10,11 +10,32 @@
 ---@field Button_8 UButton
 ---@field Button_9 UButton
 ---@field Button_10 UButton
+---@field Button_11 UButton
+---@field Button_12 UButton
+---@field Button_13 UButton
+---@field Button_14 UButton
+---@field Button_15 UButton
+---@field Button_16 UButton
+---@field Button_17 UButton
 ---@field Button_69 UButton
 ---@field Button_147 UButton
 ---@field Button_194 UButton
 ---@field Image_0 UImage
 ---@field Image_1 UImage
+---@field Image_2 UImage
+---@field Image_3 UImage
+---@field Image_4 UImage
+---@field Image_5 UImage
+---@field Image_6 UImage
+---@field Image_7 UImage
+---@field Image_8 UImage
+---@field Image_9 UImage
+---@field Image_10 UImage
+---@field Image_11 UImage
+---@field Image_12 UImage
+---@field Image_13 UImage
+---@field Image_14 UImage
+---@field Image_15 UImage
 ---@field Image_70 UImage
 ---@field Image_95 UImage
 ---@field Image_103 UImage
@@ -42,7 +63,6 @@
 ---@field Image_145 UImage
 ---@field Image_170 UImage
 ---@field Image_265 UImage
----@field UIParticleEmitter_283 UUIParticleEmitter
 --Edit Below--
 local UI13 = {
     bInitDoOnce = false
