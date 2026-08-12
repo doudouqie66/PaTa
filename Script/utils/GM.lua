@@ -11,7 +11,7 @@ function GM:Register(DebugUI)
     Cur_Func_List["调试"] = {
         ["快捷功能"] = {
             {UGCGMUI.ItemTypeEnum.Button, {{"移动到塔顶"}, {"将玩家移动到塔顶"}}, "S_Move_To_Tower_Top"},
-            {UGCGMUI.ItemTypeEnum.Button, {{"添加所有物品"}, {"每种物品添加20个"}}, "S_Add_All_Items"},
+            {UGCGMUI.ItemTypeEnum.Button, {{"添加所有物品"}, {"三把武器各1把，其余各20个"}}, "S_Add_All_Items"},
             {UGCGMUI.ItemTypeEnum.Button, {{"塔内奖励到下一档"}, {"推进到下一档奖励时间"}}, "S_Advance_Tower_Reward"}
         }
     }
@@ -30,9 +30,9 @@ end
 function GM:S_Add_All_Items(Param, PC)
     local Player_Pawn = PC:GetPlayerCharacterSafety() -- 当前玩家角色
     UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310000, 20)
-    UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310033, 20)
-    UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310035, 20)
-    UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310036, 20)
+    UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310033, 1)
+    UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310035, 1)
+    UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310036, 1)
     UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310037, 20)
     UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310002, 20)
     UGCBackpackSystemV2.AddItemV2(Player_Pawn, 8310014, 20)

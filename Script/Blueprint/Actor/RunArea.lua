@@ -61,7 +61,13 @@ function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Ot
         return
     end
 
+    if Player_Controller.WinCup < self.Num_PassNeed then
+        L_TipsTool.ShowTips_01("通关次数不足", Player_Controller, SoundMgr.SoundName.UI_Error)
+        return
+    end
+
     Player_Controller.Run_Area_Type = self.Type -- 当前金币区域类型
+    Player_Controller.Run_Area_Num_PassNeed = self.Num_PassNeed -- 当前金币区域要求的通关次数
     L_TipsTool.ShowTips_01("进入区域")
     EventScheduler:_AddBuffToOnePlayers(OtherActor, L_Enum.Name_BuffPath.Buff10)
     L_GloTools.SetAnimMontage(Player_Controller, L_Enum.Name_AnimMontagePath.Run_Area_Sprint, true)
@@ -77,6 +83,7 @@ function RunArea:Box_OnComponentEndOverlap(OverlappedComponent, OtherActor, Othe
     L_TipsTool.ShowTips_01("离开区域")
     EventScheduler:_RemoveBuffFromOnePlayers(OtherActor, L_Enum.Name_BuffPath.Buff10)
     Player_Controller.Run_Area_Type = 0 -- 清除当前金币区域类型
+    Player_Controller.Run_Area_Num_PassNeed = 0 -- 清除当前金币区域要求的通关次数
     L_GloTools.SetAnimMontage(Player_Controller, L_Enum.Name_AnimMontagePath.Run_Area_Sprint, false)
 end
 

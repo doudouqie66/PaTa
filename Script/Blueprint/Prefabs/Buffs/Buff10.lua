@@ -65,7 +65,7 @@ function Buff10:GiveGold(Delta)
     if self:HasAuthority() then
         local Owner_Actor = self:GetOwnerActor() -- Buff所属玩家角色
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Owner_Actor) -- 获取玩家控制器
-        local Clear_Count = Player_Controller.WinCup -- 玩家累计通关次数
+        local Pass_Need = Player_Controller.Run_Area_Num_PassNeed -- 当前区域要求的通关次数
         local Gold_Count = 2 -- 本次获得的金币数量
         local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
         local Is_Week_Card_Member = Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime -- 是否为周卡会员
@@ -74,20 +74,20 @@ function Buff10:GiveGold(Delta)
             return
         end
         if Player_Controller.Run_Area_Type == 2 then
-            if Clear_Count >= 10 then
+            if Pass_Need == 10 then
                 Gold_Count = 15
-            elseif Clear_Count >= 5 then
+            elseif Pass_Need == 5 then
                 Gold_Count = 10
-            elseif Clear_Count >= 2 then
+            elseif Pass_Need == 2 then
                 Gold_Count = 8
             else
                 Gold_Count = 3
             end
-        elseif Clear_Count >= 10 then
+        elseif Pass_Need == 10 then
             Gold_Count = 10
-        elseif Clear_Count >= 5 then
+        elseif Pass_Need == 5 then
             Gold_Count = 8
-        elseif Clear_Count >= 2 then
+        elseif Pass_Need == 2 then
             Gold_Count = 5
         end
         local Double_Gold_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff09) -- 金币翻倍Buff类

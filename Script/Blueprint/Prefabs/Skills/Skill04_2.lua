@@ -1,4 +1,6 @@
 ---@class Skill04_2_C:PESkillTemplate_Base_C
+---@field SetterActors ULuaArrayHelper<AEmitter>
+---@field SetterActors_1 ULuaArrayHelper<AEmitter>
 --Edit Below--
 local Skill04_2 = {}
  
