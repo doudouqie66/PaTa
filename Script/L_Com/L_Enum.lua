@@ -33,6 +33,11 @@ L_Enum.Name_ClassPath = {
 L_Enum.Path_Mons = {
     Mons_01 = RootPath .. 'Asset/Blueprint/Prefabs/Monsters/Mons_01.Mons_01_C'
 }
+--[[----------------------排行榜人物的路径-----------------------]] --
+L_Enum.Path_RankBP = {
+    BP_Rank_01 = RootPath .. 'Asset/Blueprint/Prefabs/Monsters/BP_Rank_01.BP_Rank_01_C',
+    Pic_Null = RootPath .. 'Asset/Blueprint/Yan/Picture/actionarena_ting.actionarena_ting'
+}
 --[[----------------------材质的路径-----------------------]] --
 L_Enum.Name_Material = {
     Men_YuanLai = '/Game/Arts_Timeliness/CG005_Concert/Arts_Prop/LightStick/M_Prop_LightStick_Colorful',

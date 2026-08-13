@@ -21,6 +21,11 @@ local UGCGameState = {
     Reward_End_Time = 0 -- 礼包可再次领取的服务器时间
 };
 
+local Trophy_Rank_ID = 1 -- 奖杯排行榜ID
+local Max_Rank_Pawn_Count = 60 -- 最大排行角色数量
+local Rank_BP_Init_Check_Interval = 1 -- 排行角色初始化检查间隔秒数
+local Rank_BP_Collect_Check_Interval = 1 -- 排行角色同步检查间隔秒数
+
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCGameState:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.Men_State
@@ -35,6 +40,188 @@ end
 function UGCGameState:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self);
     self:InitUI()
+
+    if not self:InitRankBP() then
+        self.Rank_BP_Init_Timer = Timer.InsertTimer(Rank_BP_Init_Check_Interval, function()
+            if self:InitRankBP() then
+                Timer.RemoveTimer(self.Rank_BP_Init_Timer)
+                self.Rank_BP_Init_Timer = nil
+            end
+        end, true, "RankBPInit", 0)
+    end
+end
+
+--[[----------------------初始化排行榜角色------------------------]]
+function UGCGameState:InitRankBP()
+    if self:HasAuthority() then
+        return self:InitRankBPServer()
+    end
+
+    return self:InitRankBPClient()
+end
+
+--[[----------------------服务端初始化排行榜角色------------------------]]
+function UGCGameState:InitRankBPServer()
+    local Spawn_Points = UGCActorComponentUtility.GetAllActorsWithTag(self, "Point_RankBP") -- 排行角色点位
+    if #Spawn_Points == 0 then
+        return false
+    end
+
+    table.sort(Spawn_Points, function(Point_A, Point_B)
+        return Point_A.ID_PointSpawn < Point_B.ID_PointSpawn
+    end)
+
+    self.Rank_Spawn_Points = Spawn_Points
+    self.Rank_Pawn_By_ID = {}
+    self:SpawnRankPawns()
+    return true
+end
+
+--[[----------------------客户端初始化排行榜展示------------------------]]
+function UGCGameState:InitRankBPClient()
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    local Ranking_List_Manager = UGCGamePartSystem.GetGamePartGlobalActor("RankingListManager") -- 排行榜管理器
+
+    if not UE.IsValid(Player_Controller) or not UE.IsValid(Player_Controller.RankingListComponent) or
+        not UE.IsValid(Ranking_List_Manager) then
+        return false
+    end
+
+    local Spawn_Points = UGCActorComponentUtility.GetAllActorsWithTag(self, "Point_RankBP") -- 排行角色点位
+    if #Spawn_Points == 0 then
+        return false
+    end
+
+    self.Rank_Pawn_By_ID = {}
+    self.Rank_Spawn_Count = math.min(#Spawn_Points, Max_Rank_Pawn_Count)
+    self.Ranking_List_Manager = Ranking_List_Manager
+
+    Ranking_List_Manager.ShowRankDataChangeDelegate:Add(self.OnTrophyRankDataChanged, self)
+    Ranking_List_Manager.ProfileDataChangeDelegate:Add(self.OnTrophyProfileDataChanged, self)
+    self.Rank_Data_Delegate_Bound = true
+
+    if self.Rank_Spawn_Count > 0 then
+        Player_Controller.RankingListComponent:RequestRankingListDataByRankID(Trophy_Rank_ID, 1,
+            self.Rank_Spawn_Count, 0)
+    end
+
+    if self:CollectRankPawns() < self.Rank_Spawn_Count then
+        self.Rank_BP_Collect_Timer = Timer.InsertTimer(Rank_BP_Collect_Check_Interval, function()
+            local Collected_Count = self:CollectRankPawns() -- 已同步排行角色数量
+            self:RefreshRankPawnProfiles()
+
+            if Collected_Count >= self.Rank_Spawn_Count then
+                Timer.RemoveTimer(self.Rank_BP_Collect_Timer)
+                self.Rank_BP_Collect_Timer = nil
+            end
+        end, true, "RankBPCollect", 0)
+    end
+
+    self:RefreshRankPawnProfiles()
+    return true
+end
+
+--[[----------------------响应奖杯排行榜数据变化------------------------]]
+function UGCGameState:OnTrophyRankDataChanged(Rank_ID, Ranking_Cycles)
+    if Rank_ID == Trophy_Rank_ID and Ranking_Cycles == 0 then
+        self:RefreshRankPawnProfiles()
+    end
+end
+
+--[[----------------------响应排行榜玩家资料变化------------------------]]
+function UGCGameState:OnTrophyProfileDataChanged(Rank_ID)
+    if Rank_ID == Trophy_Rank_ID then
+        self:RefreshRankPawnProfiles()
+    end
+end
+
+--[[----------------------在排行榜点位生成展示角色------------------------]]
+function UGCGameState:SpawnRankPawns()
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Rank_Pawn_Class = UGCObjectUtility.LoadClass(L_Enum.Path_RankBP.BP_Rank_01) -- 排行角色类
+
+    for Spawn_Order, Spawn_Point in ipairs(self.Rank_Spawn_Points) do
+        if Spawn_Order > Max_Rank_Pawn_Count then
+            break
+        end
+
+        local Rank_Index = Spawn_Point.ID_PointSpawn -- 点位对应名次
+
+        if not self.Rank_Pawn_By_ID[Rank_Index] then
+            local Rank_Pawn = UGCGenericCharacterSystem.SpawnGenericCharacter(self, Rank_Pawn_Class,
+                Spawn_Point:K2_GetActorLocation(), Spawn_Point.Arrow:K2_GetComponentRotation()) -- 排行榜怪物
+
+            if Rank_Pawn then
+                Rank_Pawn.Rank_Index = Rank_Index
+                self.Rank_Pawn_By_ID[Rank_Index] = Rank_Pawn
+            end
+        end
+    end
+end
+
+--[[----------------------收集服务端同步的排行角色------------------------]]
+function UGCGameState:CollectRankPawns()
+    local Rank_Pawn_Class = UGCObjectUtility.LoadClass(L_Enum.Path_RankBP.BP_Rank_01) -- 排行角色类
+    local Rank_Pawns = UGCActorComponentUtility.GetAllActorsOfClass(self, Rank_Pawn_Class) -- 已同步排行角色
+    local Collected_Count = 0 -- 已收集角色数量
+
+    for _, Rank_Pawn in ipairs(Rank_Pawns) do
+        if Rank_Pawn.Rank_Index and Rank_Pawn.Rank_Index > 0 then
+            self.Rank_Pawn_By_ID[Rank_Pawn.Rank_Index] = Rank_Pawn
+        end
+    end
+
+    for _ in pairs(self.Rank_Pawn_By_ID) do
+        Collected_Count = Collected_Count + 1
+    end
+
+    return Collected_Count
+end
+
+--[[----------------------刷新排行角色名字和头像------------------------]]
+function UGCGameState:RefreshRankPawnProfiles()
+    if not UE.IsValid(self.Ranking_List_Manager) then
+        return
+    end
+
+    local Rank_List_Data = self.Ranking_List_Manager:GetRankListData(Trophy_Rank_ID, 0) or {} -- 奖杯排行榜数据
+
+    for Rank_Index, Rank_Pawn in pairs(self.Rank_Pawn_By_ID) do
+        local Rank_Data = Rank_List_Data[Rank_Index] -- 当前名次数据
+        local Profile_Data = nil -- 当前玩家资料
+
+        if Rank_Data then
+            Profile_Data = self.Ranking_List_Manager:GetProfileData(Trophy_Rank_ID, Rank_Data.UID)
+        end
+
+        if UE.IsValid(Rank_Pawn) then
+            Rank_Pawn:RefreshRankDisplay(Rank_Data, Profile_Data)
+        end
+    end
+end
+
+--[[----------------------清理排行榜角色展示回调------------------------]]
+function UGCGameState:ReceiveEndPlay()
+    if self.Rank_BP_Init_Timer then
+        Timer.RemoveTimer(self.Rank_BP_Init_Timer)
+        self.Rank_BP_Init_Timer = nil
+    end
+
+    if self.Rank_BP_Collect_Timer then
+        Timer.RemoveTimer(self.Rank_BP_Collect_Timer)
+        self.Rank_BP_Collect_Timer = nil
+    end
+
+    if self.Rank_Data_Delegate_Bound and UE.IsValid(self.Ranking_List_Manager) then
+        self.Ranking_List_Manager.ShowRankDataChangeDelegate:Remove(self.OnTrophyRankDataChanged, self)
+        self.Ranking_List_Manager.ProfileDataChangeDelegate:Remove(self.OnTrophyProfileDataChanged, self)
+        self.Rank_Data_Delegate_Bound = false
+    end
+
+    UGCGameState.SuperClass.ReceiveEndPlay(self)
 end
 
 --[[--------------------改变门状态--------------------------]] --
@@ -101,7 +288,6 @@ function UGCGameState:InitUI()
         -- PlayerController.MainUI_BP = MainUI_BP;
         -- MainUI_BP:AddToViewport();
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI01, true)
-        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_TestBtn, true)
     end
 
     local MainUI = UGCWidgetManagerSystem.GetMainControlUI()
