@@ -34,11 +34,14 @@ local Btn_Skill_02 = {
 	PreEnableState = false,
 	PreTagDisableState = false,
 	Jetpack_Is_Pressed = false,
+	Jetpack_Press_Check_Timer = nil, -- 冲天炮按压状态检查计时器
 }
 
 --[[----------------------构造冲天炮技能按钮------------------------]]
 function Btn_Skill_02:Construct()
 	Btn_Skill_02.SuperClass.InitButton(self, self.Image_Icon, self.Text_Name, self.Button_Skill)
+	self.Button_Skill.OnPressedParam:RemoveAll() -- 移除技能框架的原生按下回调，避免与自定义长按逻辑重复激活
+	self.Button_Skill.OnReleasedParam:RemoveAll() -- 移除技能框架的原生抬起回调
 	self.Button_Skill.OnPressed:RemoveAll()
 	self.Button_Skill.OnPressed:Add(self.OnSkillButtonPressed, self)
 	self.Button_Skill.OnReleased:RemoveAll()
@@ -65,6 +68,10 @@ end
 --[[----------------------销毁冲天炮技能按钮------------------------]]
 function Btn_Skill_02:Destruct()
 	self.Jetpack_Is_Pressed = false
+	if self.Jetpack_Press_Check_Timer then
+		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Press_Check_Timer)
+		self.Jetpack_Press_Check_Timer = nil
+	end
 	if self.Backpack_Component then
 		self.Backpack_Component.ItemChangeDelegateV2:Remove(self.OnJetpackItemChanged, self)
 	end
@@ -90,6 +97,12 @@ function Btn_Skill_02:OnSkillButtonPressed()
 		return
 	end
 	self.Jetpack_Is_Pressed = true
+	--[[----------------------检查冲天炮按钮是否仍处于按压状态------------------------]]
+	self.Jetpack_Press_Check_Timer = UGCTimerUtility.CreateLuaTimer(0, function()
+		if not self.Button_Skill:IsPressed() then
+			self:OnSkillButtonReleased()
+		end
+	end, true)
 	local Fly_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Fly] -- 冲天炮耐久界面
 	if Fly_UI then
 		Fly_UI:SetSkillJetpackProgressVisible(true)
@@ -132,6 +145,10 @@ end
 --[[----------------------松开按钮时停止冲天炮技能------------------------]]
 function Btn_Skill_02:OnSkillButtonReleased()
 	self.Jetpack_Is_Pressed = false
+	if self.Jetpack_Press_Check_Timer then
+		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Press_Check_Timer)
+		self.Jetpack_Press_Check_Timer = nil
+	end
 	local Fly_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Fly] -- 冲天炮耐久界面
 	if Fly_UI then
 		Fly_UI:SetSkillJetpackProgressVisible(false)
