@@ -124,26 +124,15 @@ function UI02:StartTowerRewardCountdownEffect(Reward_Index, Reward_Button)
 
     self.Reward_Countdown_Effect_State[Reward_Index] = true
     SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Countdown)
-    self.Reward_Countdown_Scale_Tweens[Reward_Index] = UGCTweenSystem.TweenFloatValue(
-        1.0,
-        Countdown_Button_Scale,
-        Countdown_Effect_Duration,
-        EEasingType.QuadInOut,
-        function(_, Scale)
+    self.Reward_Countdown_Scale_Tweens[Reward_Index] = UGCTweenSystem.TweenFloatValue(1.0, Countdown_Button_Scale,
+        Countdown_Effect_Duration, EEasingType.QuadInOut, function(_, Scale)
             Reward_Button:SetRenderScale(UGCMathUtility.MakeVector2D(Scale, Scale))
-        end,
-        UGCTweenSystem.MakeConfig(0, -1, true, 0)
-    )
+        end, UGCTweenSystem.MakeConfig(0, -1, true, 0))
     self.Reward_Countdown_Color_Tweens[Reward_Index] = UGCTweenSystem.TweenColorValue(
-        KismetMathLibrary.MakeColor(1, 1, 1, 1),
-        KismetMathLibrary.MakeColor(1, 0, 0, 1),
-        Countdown_Effect_Duration,
-        EEasingType.Linear,
-        function(_, Color)
+        KismetMathLibrary.MakeColor(1, 1, 1, 1), KismetMathLibrary.MakeColor(1, 0, 0, 1), Countdown_Effect_Duration,
+        EEasingType.Linear, function(_, Color)
             Reward_Button:SetBackgroundColor(Color)
-        end,
-        UGCTweenSystem.MakeConfig(0, -1, true, 0)
-    )
+        end, UGCTweenSystem.MakeConfig(0, -1, true, 0))
 end
 
 --[[----------------------停止奖励最后三秒提醒------------------------]]
@@ -243,7 +232,6 @@ end
 
 function UI02:Button_115_OnClicked()
     -- 打开排行榜界面
-    L_GloTools.Change_SysUI(false)
     RankingListManager:OpenRankingList()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
