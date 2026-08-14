@@ -1,5 +1,8 @@
 ---@class HeadTop_UI_C:UUserWidget
 ---@field TextBlock_0 UTextBlock
+--Edit Below--
+---@class HeadTop_UI_C:UUserWidget
+---@field TextBlock_0 UTextBlock
 -- Edit Below--
 local HeadTop_UI = {
     bInitDoOnce = false

@@ -25,6 +25,7 @@ local Trophy_Rank_ID = 1 -- 奖杯排行榜ID
 local Max_Rank_Pawn_Count = 60 -- 最大排行角色数量
 local Rank_BP_Init_Check_Interval = 1 -- 排行角色初始化检查间隔秒数
 local Rank_BP_Collect_Check_Interval = 1 -- 排行角色同步检查间隔秒数
+local Virtual_Item_Get_UI_Class_Path = "Asset/Blueprint/UI/UGC_Get_UIBP.UGC_Get_UIBP_C" -- 自定义获得物品界面路径
 
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCGameState:GetAvailableServerRPCs()
@@ -41,6 +42,11 @@ function UGCGameState:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self);
     self:InitUI()
 
+    if not self:InitVirtualItemGetUI() then
+        self.Virtual_Item_UI_Listener_ID = UGCGenericMessageSystem.ListenGlobalMessage(self,
+            UGCGenericMessageSystem.Messages.UGC.GamePart.GamePartLoaded, self, self.OnGamePartLoaded)
+    end
+
     if not self:InitRankBP() then
         self.Rank_BP_Init_Timer = Timer.InsertTimer(Rank_BP_Init_Check_Interval, function()
             if self:InitRankBP() then
@@ -49,6 +55,35 @@ function UGCGameState:ReceiveBeginPlay()
             end
         end, true, "RankBPInit", 0)
     end
+end
+
+--[[----------------------替换获得物品默认界面------------------------]]
+function UGCGameState:InitVirtualItemGetUI()
+    if self:HasAuthority() then
+        return true
+    end
+
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
+    if not UE.IsValid(Virtual_Item_Manager) then
+        return false
+    end
+
+    local Get_Item_UI_Class_Path = Virtual_Item_Manager.GetItemUIClassPath -- 获得物品界面软类路径
+    Get_Item_UI_Class_Path.AssetPathName = UGCGameSystem.GetUGCResourcesFullPath(Virtual_Item_Get_UI_Class_Path)
+    Get_Item_UI_Class_Path.SubPathString = ""
+    Virtual_Item_Manager.GetItemUIClassPath = Get_Item_UI_Class_Path
+    return true
+end
+
+--[[----------------------响应功能模块加载完成------------------------]]
+function UGCGameState:OnGamePartLoaded(GamePart_Name)
+    if GamePart_Name ~= "VirtualItemManager" or not self:InitVirtualItemGetUI() then
+        return
+    end
+
+    UGCGenericMessageSystem.UnListenMessage(self.Virtual_Item_UI_Listener_ID,
+        UGCGenericMessageSystem.Messages.UGC.GamePart.GamePartLoaded)
+    self.Virtual_Item_UI_Listener_ID = nil
 end
 
 --[[----------------------初始化排行榜角色------------------------]]
@@ -205,6 +240,12 @@ end
 
 --[[----------------------清理排行榜角色展示回调------------------------]]
 function UGCGameState:ReceiveEndPlay()
+    if self.Virtual_Item_UI_Listener_ID then
+        UGCGenericMessageSystem.UnListenMessage(self.Virtual_Item_UI_Listener_ID,
+            UGCGenericMessageSystem.Messages.UGC.GamePart.GamePartLoaded)
+        self.Virtual_Item_UI_Listener_ID = nil
+    end
+
     if self.Rank_BP_Init_Timer then
         Timer.RemoveTimer(self.Rank_BP_Init_Timer)
         self.Rank_BP_Init_Timer = nil
