@@ -191,6 +191,7 @@ function UGCGameState:SpawnRankPawns()
 
             if Rank_Pawn then
                 Rank_Pawn.Rank_Index = Rank_Index
+                Rank_Pawn:K2_SetActorLocation(Spawn_Point:K2_GetActorLocation())
                 self.Rank_Pawn_By_ID[Rank_Index] = Rank_Pawn
             end
         end
