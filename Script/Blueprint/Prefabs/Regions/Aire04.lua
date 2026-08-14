@@ -1,6 +1,10 @@
 ---@class Aire04_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
+--Edit Below--
+---@class Aire04_C:BP_MagicFieldActorBase_C
+---@field Box UBoxComponent
+---@field StaticMesh UStaticMeshComponent
 -- Edit Below--
 ---@class Aire04_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
