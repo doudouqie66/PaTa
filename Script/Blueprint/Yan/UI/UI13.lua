@@ -18,6 +18,7 @@ local UI13 = {
     Gold_Quantity = 20 -- 初始金币数量
 }
 function UI13:Construct()
+    self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self)
     self:LuaInit();
 end
 
@@ -25,13 +26,27 @@ end
 function UI13:Add_Test_Items()
     self.WrapBox_29:ClearChildren()
 
-    local Item_Configs = {
-        {Config = CFG_SL.All.Normal_Gold, Class = self.Pre_Item_01, OnClicked = self.Item_01_OnClicked},
-        {Config = CFG_SL.All.Add_Ten_Gold, Class = self.Pre_Item_02, OnClicked = self.Item_02_OnClicked},
-        {Config = CFG_SL.All.Double_Gold, Class = self.Pre_Item_03, OnClicked = self.Item_03_OnClicked},
-        {Config = CFG_SL.All.Banana_Peel, Class = self.Pre_Item_04, OnClicked = self.Item_04_OnClicked},
-        {Config = CFG_SL.All.Explosive, Class = self.Pre_Item_05, OnClicked = self.Item_05_OnClicked}
-    }
+    local Item_Configs = {{
+        Config = CFG_SL.All.Normal_Gold,
+        Class = self.Pre_Item_01,
+        OnClicked = self.Item_01_OnClicked
+    }, {
+        Config = CFG_SL.All.Add_Ten_Gold,
+        Class = self.Pre_Item_02,
+        OnClicked = self.Item_02_OnClicked
+    }, {
+        Config = CFG_SL.All.Double_Gold,
+        Class = self.Pre_Item_03,
+        OnClicked = self.Item_03_OnClicked
+    }, {
+        Config = CFG_SL.All.Banana_Peel,
+        Class = self.Pre_Item_04,
+        OnClicked = self.Item_04_OnClicked
+    }, {
+        Config = CFG_SL.All.Explosive,
+        Class = self.Pre_Item_05,
+        OnClicked = self.Item_05_OnClicked
+    }}
 
     local Total_Weight = 0
     for _, Item_Data in ipairs(Item_Configs) do
@@ -100,5 +115,17 @@ function UI13:LuaInit()
     self.bInitDoOnce = true;
     self:Refresh_Gold_Text()
     self:Add_Test_Items()
+end
+
+--[[----------------------见好就收------------------------]]
+function UI13:Button_0_OnClicked()
+    if self.Gold_Quantity > 0 then
+        local Player_Controller = UGCGameSystem.GetLocalPlayerController()
+        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Grant_Virtual_Item, 1005,
+            self.Gold_Quantity)
+    end
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, false, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
+
 end
 return UI13
