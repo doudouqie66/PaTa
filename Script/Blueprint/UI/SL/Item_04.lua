@@ -3,6 +3,7 @@
 ---@field CanvasPanel_3 UCanvasPanel
 ---@field Image_5 UImage
 ---@field Image_6 UImage
+---@field UIParticleEmitter_0 UUIParticleEmitter
 --Edit Below--
 local Item_04 = {
     bInitDoOnce = false
@@ -26,8 +27,7 @@ end
 --[[----------------------播放点击音效并隐藏按钮------------------------]]
 function Item_04:PlayClickEffect()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
-
-    --[[----------------------渐变隐藏按钮------------------------]]
+    self.UIParticleEmitter_0:SetVisibility(ESlateVisibility.Visible)
     self:FadeOutButton()
 end
 

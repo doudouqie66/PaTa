@@ -28,8 +28,6 @@ end
 function Item_02:PlayClickEffect()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
     self.UIParticleEmitter_0:SetVisibility(ESlateVisibility.Visible)
-
-    --[[----------------------渐变隐藏按钮------------------------]]
     self:FadeOutButton()
 end
 
