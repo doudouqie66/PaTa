@@ -16,6 +16,7 @@ UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPac
 UGCGameSystem.UGCRequire("ExtendResource.SignInEvent.OfficialPackage.Script.SignInEvent.SignInEventManager")
 UGCGameSystem.UGCRequire("ExtendResource.RankingList.OfficialPackage.Script.RankingList.RankingListManager")
 UGCGameSystem.UGCRequire("ExtendResource.ShopV2.OfficialPackage.Script.ShopV2.ShopV2Manager")
+UGCGameSystem.UGCRequire('Script.L_Com.Config_SL.CFG_SL')
 local UGCGameState = {
     Room_Pass = 0,
     Reward_End_Time = 0 -- 礼包可再次领取的服务器时间
@@ -136,8 +137,8 @@ function UGCGameState:InitRankBPClient()
     self.Rank_Data_Delegate_Bound = true
 
     if self.Rank_Spawn_Count > 0 then
-        Player_Controller.RankingListComponent:RequestRankingListDataByRankID(Trophy_Rank_ID, 1,
-            self.Rank_Spawn_Count, 0)
+        Player_Controller.RankingListComponent:RequestRankingListDataByRankID(Trophy_Rank_ID, 1, self.Rank_Spawn_Count,
+            0)
     end
 
     if self:CollectRankPawns() < self.Rank_Spawn_Count then
@@ -330,6 +331,8 @@ function UGCGameState:InitUI()
         -- PlayerController.MainUI_BP = MainUI_BP;
         -- MainUI_BP:AddToViewport();
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI01, true)
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_TestBtn, true)
+
     end
 
     local MainUI = UGCWidgetManagerSystem.GetMainControlUI()

@@ -1,5 +1,5 @@
 ---@class UI_TestBtn_C:UUserWidget
----@field Button_6 UButton
+---@field Button_0 UButton
 ---@field Image_67 UImage
 --Edit Below--
 local UI_TestBtn = {
@@ -17,11 +17,14 @@ function UI_TestBtn:LuaInit()
         return
     end
     self.Is_Initialized = true
-    self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self)
+    self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self)
 end
 
 --[[----------------------响应按钮点击------------------------]]
-function UI_TestBtn:Button_6_OnClicked()
+function UI_TestBtn:Button_0_OnClicked()
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, false, true)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, true, true)
+
 end
 
 return UI_TestBtn
