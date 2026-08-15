@@ -8,11 +8,6 @@ local Guide_Arrow = {}
 --[[----------------------设置广告牌显示文字------------------------]]
 function Guide_Arrow:ReceiveBeginPlay()
     Guide_Arrow.SuperClass.ReceiveBeginPlay(self)
-
-    local Ad_Widget = self.Widget:GetUserWidgetObject()  -- 获取广告牌控件
-    if Ad_Widget then
-        Ad_Widget.TextBlock_0:SetText(self.Name)
-    end
 end
 
 --[[
