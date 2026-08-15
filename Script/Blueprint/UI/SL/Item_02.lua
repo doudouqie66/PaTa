@@ -5,7 +5,9 @@
 ---@field Image_6 UImage
 ---@field UIParticleEmitter_0 UUIParticleEmitter
 --Edit Below--
-local Item_02 = { bInitDoOnce = false } 
+local Item_02 = {
+    bInitDoOnce = false
+}
 
 --[[----------------------初始化物品二控件------------------------]]
 function Item_02:Construct()

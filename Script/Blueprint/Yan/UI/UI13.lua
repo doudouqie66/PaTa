@@ -48,25 +48,23 @@ function UI13:Add_Test_Items()
         OnClicked = self.Item_05_OnClicked
     }}
 
-    local Total_Weight = 0
+    local All_Items = {}
     for _, Item_Data in ipairs(Item_Configs) do
-        Total_Weight = Total_Weight + Item_Data.Config.Grid_Count
+        for _ = 1, Item_Data.Config.Grid_Count do
+            table.insert(All_Items, Item_Data)
+        end
     end
 
-    for _ = 1, CFG_SL.Total_Grid_Count do
-        local Random_Weight = math.random(Total_Weight)
-        local Weight_Sum = 0
+    for Index = #All_Items, 2, -1 do
+        local Random_Index = math.random(Index)
+        All_Items[Index], All_Items[Random_Index] = All_Items[Random_Index], All_Items[Index]
+    end
 
-        for _, Item_Data in ipairs(Item_Configs) do
-            Weight_Sum = Weight_Sum + Item_Data.Config.Grid_Count
-            if Random_Weight <= Weight_Sum then
-                local Item_Widget = UGCWidgetManagerSystem.CreateWidget(Item_Data.Class)
+    for _, Item_Data in ipairs(All_Items) do
+        local Item_Widget = UGCWidgetManagerSystem.CreateWidget(Item_Data.Class)
 
-                self.WrapBox_29:AddChildWrapBox(Item_Widget)
-                Item_Widget.Button_5.OnClicked:Add(Item_Data.OnClicked, self)
-                break
-            end
-        end
+        self.WrapBox_29:AddChildWrapBox(Item_Widget)
+        Item_Widget.Button_5.OnClicked:Add(Item_Data.OnClicked, self)
     end
 end
 
@@ -117,6 +115,13 @@ function UI13:LuaInit()
     self:Add_Test_Items()
 end
 
+--[[----------------------刷新页面显示内容------------------------]]
+function UI13:Refresh()
+    self.Gold_Quantity = 20
+    self:Refresh_Gold_Text()
+    self:Add_Test_Items()
+end
+
 --[[----------------------见好就收------------------------]]
 function UI13:Button_0_OnClicked()
     if self.Gold_Quantity > 0 then
@@ -124,6 +129,7 @@ function UI13:Button_0_OnClicked()
         UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Grant_Virtual_Item, 1005,
             self.Gold_Quantity)
     end
+    self:Refresh()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, false, false)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
 

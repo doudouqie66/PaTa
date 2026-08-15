@@ -4,7 +4,9 @@
 ---@field Image_5 UImage
 ---@field Image_6 UImage
 --Edit Below--
-local Item_04 = { bInitDoOnce = false } 
+local Item_04 = {
+    bInitDoOnce = false
+}
 
 --[[----------------------初始化物品四控件------------------------]]
 function Item_04:Construct()

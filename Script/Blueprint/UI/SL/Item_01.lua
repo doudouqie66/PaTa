@@ -5,7 +5,9 @@
 ---@field Image_6 UImage
 ---@field UIParticleEmitter_0 UUIParticleEmitter
 --Edit Below--
-local Item_01 = { bInitDoOnce = false } 
+local Item_01 = {
+    bInitDoOnce = false
+}
 
 --[[----------------------初始化物品一控件------------------------]]
 function Item_01:Construct()
@@ -32,16 +34,9 @@ end
 
 --[[----------------------渐隐按钮------------------------]]
 function Item_01:FadeOutButton()
-    UGCTweenSystem.TweenFloatValue(
-        1.0,
-        0.0,
-        2.0,
-        EEasingType.Linear,
-        function(_, Value)
-            self.Button_5:SetRenderOpacity(Value)
-        end,
-        UGCTweenSystem.MakeConfig(0, 0, false, 0)
-    )
+    UGCTweenSystem.TweenFloatValue(1.0, 0.0, 2.0, EEasingType.Linear, function(_, Value)
+        self.Button_5:SetRenderOpacity(Value)
+    end, UGCTweenSystem.MakeConfig(0, 0, false, 0))
 end
 
 -- function Item_01:Tick(MyGeometry, InDeltaTime)
