@@ -1,6 +1,9 @@
 EventScheduler = EventScheduler or {}
 local L_Enum = UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
+local L_TipsTool = UGCGameSystem.UGCRequire('Script.L_Com.L_TipsTool')
 EventScheduler.Tower_Players = EventScheduler.Tower_Players or {} -- 当前在塔内的玩家
+local Ammo_Grant_Interval = 30 -- 火箭弹发放间隔秒数
+local RPG_Ammo_Item_ID = 8310044 -- RPG火箭弹物品ID
 
 --[[---------------------启动事件循环-------------------------]] --
 function EventScheduler.Start()
@@ -8,6 +11,10 @@ function EventScheduler.Start()
     UGCTimerUtility.CreateLuaTimer(1, function()
         EventScheduler.Elapsed = EventScheduler.Elapsed + 1
         UGCGameSystem.GameState.EventElapsed = EventScheduler.Elapsed
+
+        if EventScheduler.Elapsed % Ammo_Grant_Interval == 0 then
+            EventScheduler:GrantRPGAmmo()
+        end
 
         EventScheduler:_CheckEvent(EventScheduler.Elapsed)
     end, true, "EventSchedulerTick")
@@ -40,6 +47,18 @@ function EventScheduler.GetWarningEvent()
         end
     end
     return nil
+end
+
+--[[----------------------给房间玩家发放RPG火箭弹------------------------]]
+function EventScheduler:GrantRPGAmmo()
+    local Player_Controllers = UGCGameSystem.GetAllPlayerController(false) -- 房间玩家控制器
+    for _, Player_Controller in ipairs(Player_Controllers) do
+        local Added_Count = UGCBackpackSystemV2.AddItemV2(Player_Controller, RPG_Ammo_Item_ID, 1) -- 实际添加数量
+        if Added_Count < 1 then
+            ugcprint("[RPG发弹] 添加失败，PlayerKey=" .. tostring(Player_Controller.PlayerKey))
+        end
+    end
+    L_TipsTool.ShowTips_Broadcast("发放火箭弹一个")
 end
 
 --[[---------------------检测当前是否有活跃事件，方便后面玩家-------------------------]] --
