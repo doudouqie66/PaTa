@@ -8,6 +8,11 @@
 local UGCGameMode = {};
 local Max_Room_Player_Count = 10 -- 房间最大玩家数量
 local Room_Only_Item_ID = 8310033 -- 仅限当前房间使用的物品ID
+UGCGameMode.Backfill_Request_Pending = false -- 是否存在补人请求
+UGCGameMode.Backfill_Match_Callback_Seen = false -- 是否收到补人成功回调
+UGCGameMode.Backfill_Login_Serial = 0 -- 玩家登录序号
+UGCGameMode.Backfill_Login_Serial_At_Request = 0 -- 申请补人时的登录序号
+UGCGameMode.Backfill_Refresh_Scheduled = false -- 是否已安排补人刷新
 
 --[[----------------------游戏启动------------------------]] --
 function UGCGameMode:ReceiveBeginPlay()
@@ -16,31 +21,74 @@ function UGCGameMode:ReceiveBeginPlay()
         EventScheduler.Start()
         -- 生成随机密码
         self:GenerateRoomPass()
+        self.Backfill_Request_Pending = false
+        self.Backfill_Match_Callback_Seen = false
+        self.Backfill_Login_Serial = 0
+        self.Backfill_Login_Serial_At_Request = 0
+        self.Backfill_Refresh_Scheduled = false
+        UGCGameSystem.ApplyPlayerJoinSucceededDelegate:Add(self.OnPlayerJoinSucceeded, self)
         UGCGameSystem.OpenPlayerJoin()
-
-        --[[----------------------延迟申请初始补人名额------------------------]]
-        local Apply_Player_Join_Delegate = ObjectExtend.CreateDelegate(self, function()
-            self:ApplyRoomPlayerJoin()
-        end)
-        KismetSystemLibrary.K2_SetTimerDelegateForLua(Apply_Player_Join_Delegate, self, 3, false)
     end
 
 end
 
---[[----------------------申请将房间玩家补充至人数上限------------------------]]
-function UGCGameMode:ApplyRoomPlayerJoin()
-    local Player_Controllers = UGCGameSystem.GetAllPlayerController(false)
-    if #Player_Controllers == 0 then
+--[[----------------------延迟刷新房间补人请求------------------------]]
+function UGCGameMode:ScheduleRoomPlayerJoin()
+    if self.Backfill_Refresh_Scheduled then
         return
     end
 
-    local Need_Player_Count = Max_Room_Player_Count - #Player_Controllers -- 当前需要补充的玩家数量
-    if Need_Player_Count <= 0 then
+    self.Backfill_Refresh_Scheduled = true
+    --[[----------------------执行延迟补人刷新------------------------]]
+    local Apply_Player_Join_Delegate = ObjectExtend.CreateDelegate(self, function()
+        self.Backfill_Refresh_Scheduled = false
+        self:ApplyRoomPlayerJoin()
+    end)
+    KismetSystemLibrary.K2_SetTimerDelegateForLua(Apply_Player_Join_Delegate, self, 1, false)
+end
+
+--[[----------------------为房间滚动申请一名玩家------------------------]]
+function UGCGameMode:ApplyRoomPlayerJoin()
+    if self.Backfill_Request_Pending then
+        return
+    end
+
+    local Player_Controllers = UGCGameSystem.GetAllPlayerController(false)
+    if #Player_Controllers == 0 or #Player_Controllers >= Max_Room_Player_Count then
         return
     end
 
     local Team_ID = UGCTeamSystem.GetTeamIDByPlayerKey(Player_Controllers[1].PlayerKey) -- 补人目标队伍ID
-    UGCGameSystem.ApplyPlayerJoinLimitCount({[Team_ID] = Need_Player_Count})
+    self.Backfill_Request_Pending = true
+    self.Backfill_Match_Callback_Seen = false
+    self.Backfill_Login_Serial_At_Request = self.Backfill_Login_Serial
+    UGCGameSystem.ApplyPlayerJoinLimitCount({[Team_ID] = 1})
+    ugcprint("[房间补人] 已申请一名玩家，队伍=" .. tostring(Team_ID) .. "，当前人数=" .. tostring(#Player_Controllers))
+end
+
+--[[----------------------确认本次补人已经完成------------------------]]
+function UGCGameMode:CompleteRoomPlayerJoin()
+    if not self.Backfill_Request_Pending or not self.Backfill_Match_Callback_Seen or
+        self.Backfill_Login_Serial <= self.Backfill_Login_Serial_At_Request then
+        return
+    end
+
+    self.Backfill_Request_Pending = false
+    self.Backfill_Match_Callback_Seen = false
+    ugcprint("[房间补人] 玩家已进入房间，继续申请下一名玩家")
+    self:ScheduleRoomPlayerJoin()
+end
+
+--[[----------------------接收补人成功回调------------------------]]
+function UGCGameMode:OnPlayerJoinSucceeded(UID, Remaining_Player_Count_To_Join)
+    if not self:HasAuthority() or not self.Backfill_Request_Pending then
+        return
+    end
+
+    self.Backfill_Match_Callback_Seen = true
+    ugcprint("[房间补人] 匹配成功，玩家UID=" .. tostring(UID) .. "，剩余人数=" ..
+        tostring(Remaining_Player_Count_To_Join))
+    self:CompleteRoomPlayerJoin()
 end
 
 --[[-------------------生成随机密码---------------------------]] --
@@ -56,6 +104,7 @@ end
 
 --[[----------------------玩家进入游戏时读取存档，后加入的同步事件状态------------------------]] --
 function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
+    self.Backfill_Login_Serial = self.Backfill_Login_Serial + 1
     self:LoadPlayerArchive(PlayerController)
 
     local activeEvent = EventScheduler.GetActiveEvent()
@@ -63,6 +112,9 @@ function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
         -- 施加效果
         EventScheduler:_OnStart(activeEvent)
     end
+
+    self:CompleteRoomPlayerJoin()
+    self:ScheduleRoomPlayerJoin()
 end
 
 --[[----------------------玩家非怪物致死后自动复活------------------------]]
@@ -154,8 +206,6 @@ function UGCGameMode:UGC_PlayerExitEvent(PlayerController)
     end
 
     self:SavePlayerArchive(PlayerController)
-
-    local Team_ID = UGCTeamSystem.GetTeamIDByPlayerKey(PlayerController.PlayerKey) -- 离开玩家的队伍ID
-    UGCGameSystem.ApplyPlayerJoinLimitCount({[Team_ID] = 1})
+    self:ScheduleRoomPlayerJoin()
 end
 return UGCGameMode;
