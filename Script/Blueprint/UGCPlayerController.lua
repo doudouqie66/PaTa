@@ -28,6 +28,7 @@ local UGCPlayerController = {
 
 local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
+local RPG_Item_ID = 8310043 -- RPG物品ID
 local Flying_Item_Slot_Name = "EquipmentSlot.Custom.Jetpack" -- 飞行物装备槽位
 local Fly_Movement_Mode = 5 -- 飞行移动模式
 local Falling_Movement_Mode = 3 -- 下落移动模式
@@ -38,11 +39,11 @@ local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能冲天炮最高飞行速度
 local Jetpack_Max_Durability = 10 -- 冲天炮最大耐久秒数
 local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
 
---[[---------------------初始化测试-------------------------]] --
+--[[----------------------初始化玩家控制器------------------------]]
 function UGCPlayerController:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self)
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyUGCCommodityResult, self)
-    self:InitTest()
+    self:EnsureRPGWeapon()
 end
 
 --[[----------------------结束时解绑购买结果委托------------------------]]
@@ -53,13 +54,12 @@ function UGCPlayerController:ReceiveEndPlay()
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
     self.SuperClass.ReceiveEndPlay(self)
 end
---[[------------------测试送东西----------------------------]] --
-function UGCPlayerController:InitTest()
+--[[----------------------确保玩家拥有RPG------------------------]]
+function UGCPlayerController:EnsureRPGWeapon()
     local OBTimerDelegate = ObjectExtend.CreateDelegate(self, function()
-        if self:HasAuthority() == true then
-            local PlayerPawn = self:GetPlayerCharacterSafety()
+        if self:HasAuthority() == true and UGCBackpackSystemV2.GetItemCountV2(self, RPG_Item_ID) < 1 then
             -- -- V2 背包添加物品
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310000, 1)
+            UGCBackpackSystemV2.AddItemV2(self, RPG_Item_ID, 1)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
