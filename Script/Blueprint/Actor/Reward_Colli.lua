@@ -6,7 +6,7 @@
 local L_Enum = UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
 local L_GloTools = UGCGameSystem.UGCRequire('Script.L_Com.L_GloTools')
 local Reward_Colli = {
-    Reward_Wait_Time = 200, -- 礼包每次领取后的等待时间
+    Reward_Wait_Time = 300, -- 礼包每次领取后的等待时间
     Reward_Drop_ID = 3 -- 礼包使用的掉落表编号
 }
 
