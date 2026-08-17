@@ -29,6 +29,7 @@ local UGCPlayerController = {
 local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
 local RPG_Item_ID = 8310043 -- RPG物品ID
+local Pistol_Item_ID = 8310045 -- 手枪物品ID
 local Flying_Item_Slot_Name = "EquipmentSlot.Custom.Jetpack" -- 飞行物装备槽位
 local Fly_Movement_Mode = 5 -- 飞行移动模式
 local Falling_Movement_Mode = 3 -- 下落移动模式
@@ -43,7 +44,7 @@ local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
 function UGCPlayerController:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self)
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyUGCCommodityResult, self)
-    self:EnsureRPGWeapon()
+    self:EnsureInitialWeapons()
 end
 
 --[[----------------------结束时解绑购买结果委托------------------------]]
@@ -54,12 +55,16 @@ function UGCPlayerController:ReceiveEndPlay()
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
     self.SuperClass.ReceiveEndPlay(self)
 end
---[[----------------------确保玩家拥有RPG------------------------]]
-function UGCPlayerController:EnsureRPGWeapon()
+--[[----------------------确保玩家拥有初始武器------------------------]]
+function UGCPlayerController:EnsureInitialWeapons()
     local OBTimerDelegate = ObjectExtend.CreateDelegate(self, function()
-        if self:HasAuthority() == true and UGCBackpackSystemV2.GetItemCountV2(self, RPG_Item_ID) < 1 then
-            -- -- V2 背包添加物品
-            UGCBackpackSystemV2.AddItemV2(self, RPG_Item_ID, 1)
+        if self:HasAuthority() == true then
+            if UGCBackpackSystemV2.GetItemCountV2(self, RPG_Item_ID) < 1 then
+                UGCBackpackSystemV2.AddItemV2(self, RPG_Item_ID, 1)
+            end
+            if UGCBackpackSystemV2.GetItemCountV2(self, Pistol_Item_ID) < 1 then
+                UGCBackpackSystemV2.AddItemV2(self, Pistol_Item_ID, 1)
+            end
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
             -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
