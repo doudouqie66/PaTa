@@ -32,4 +32,12 @@ function WP_02:GetAvailableServerRPCs()
 end
 --]]
 
+--[[----------------------检查手枪是否允许开火------------------------]]
+function WP_02:StartFireFilter()
+    if not WP_02.SuperClass.StartFireFilter(self) then
+        return false
+    end
+    return #UGCPersistEffectSystem.GetBuffsByClass(self:GetOwner(), L_Enum.Name_BuffPath.Buff07_2) == 0
+end
+
 return WP_02

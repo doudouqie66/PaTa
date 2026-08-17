@@ -9,6 +9,7 @@ function Buff07_2:OnApply_BP(OwnerActor)
         UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.Debuff.Dizzy", true, true)
         UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.OnStun", true, true)
         UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.HitFly", true, true)
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.Gun.GunFire", true, true)
         self.Hit_Back_Resist_Operation_ID = UGCAttributeSystem.AddGameAttributeOperation(OwnerActor, "HitBackResist",
             EAttrOperator.Plus, 1) -- 击退抗性修改ID
     end
@@ -21,6 +22,7 @@ function Buff07_2:OnUnApply_BP(OwnerActor, Reason)
         UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.Debuff.Dizzy", false, false)
         UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.OnStun", false, false)
         UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.AddtiveState.HitFly", false, false)
+        UGCPersistEffectSystem.SetDynamicStateDisabled(OwnerActor, "PawnState.Gun.GunFire", false, false)
         if self.Hit_Back_Resist_Operation_ID then
             UGCAttributeSystem.RemoveGameAttributeOperation(OwnerActor, self.Hit_Back_Resist_Operation_ID)
         end

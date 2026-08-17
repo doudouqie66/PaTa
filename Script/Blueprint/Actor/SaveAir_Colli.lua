@@ -65,9 +65,9 @@ function SaveAir_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherAct
     if Player_Controller == nil then
         return
     end
-    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07_2) -- 安全区Buff类
-
     OtherActor.Is_In_Monster_Safe_Area = true -- 标记玩家处于怪物安全区
+
+    local Safe_Area_Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Buff07_2) -- 安全区Buff类
     UGCPersistEffectSystem.AddBuffByClass(OtherActor, Safe_Area_Buff_Class)
 end
 --[[----------------------玩家离开区域时关闭怪物碰撞保护------------------------]]
