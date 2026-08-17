@@ -65,27 +65,11 @@ function UGCPlayerController:EnsureInitialWeapons()
             if UGCBackpackSystemV2.GetItemCountV2(self, Pistol_Item_ID) < 1 then
                 UGCBackpackSystemV2.AddItemV2(self, Pistol_Item_ID, 1)
             end
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310033, 1)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310035, 1)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310036, 1)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310037, 1)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310002, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310014, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310016, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310018, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310020, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310021, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310023, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310024, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310026, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310027, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310007, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310010, 10)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310003, 6666)
-            -- UGCBackpackSystemV2.AddItemV2(PlayerPawn, 8310012, 6666)
-
+            UGCBackpackSystemV2.AddItemV2(self, 8310046, 666)
+            UGCBackpackSystemV2.AddItemV2(self, 8310044, 666)
         end
     end)
+
     KismetSystemLibrary.K2_SetTimerDelegateForLua(OBTimerDelegate, self, 2, false)
 
 end
