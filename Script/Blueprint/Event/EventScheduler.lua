@@ -97,7 +97,8 @@ function EventScheduler:_GetPlayerEventBuffPath(Event)
     if Event.name == L_Enum.Name_Event.SpeedLow then
         return L_Enum.Name_BuffPath.Debuff01
     elseif Event.name == L_Enum.Name_Event.DoubleGold then
-        return L_Enum.Name_BuffPath.Buff09
+        -- 改成跳高的buff咯
+        return L_Enum.Name_BuffPath.Buff06
     elseif Event.name == L_Enum.Name_Event.AllSpeedUp then
         return L_Enum.Name_BuffPath.Buff05
     elseif Event.name == L_Enum.Name_Event.FullScreenNight then
