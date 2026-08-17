@@ -14,6 +14,7 @@
 ---@field Button_113 UButton
 ---@field Button_115 UButton
 ---@field Button_151 UButton
+---@field Button_181 UButton
 ---@field Image_187 UImage
 ---@field Image_188 UImage
 ---@field Image_276 UImage
@@ -103,7 +104,8 @@ function UI02:LuaInit()
     self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyStarterGiftResult, self)
     UGCCommoditySystem.UGCProductsChangedDelegate:Add(self.RefreshStarterGiftButton, self)
-    -- [Editor Generated Lua] BindingEvent End;
+    self.Button_181.OnClicked:Add(self.Button_181_OnClicked, self);
+	-- [Editor Generated Lua] BindingEvent End;
     self:RefreshCurrency()
     local Reward_Buttons = {self.Button_5, self.Button_6, self.Button_7, self.Button_8, self.Button_9} -- 五档奖励按钮
     for _, Reward_Button in ipairs(Reward_Buttons) do
@@ -294,6 +296,14 @@ end
 function UI02:Button_1_OnClicked()
     ShopV2Manager:OpenMainUI(TabID)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
+end
+
+--[[----------------------点击回城按钮传送到初始点位------------------------]]
+function UI02:Button_181_OnClicked()
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Tele_To_Point, 1)
+    self.Button_181:SetVisibility(ESlateVisibility.Collapsed)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 
 -- [Editor Generated Lua] function define End;
