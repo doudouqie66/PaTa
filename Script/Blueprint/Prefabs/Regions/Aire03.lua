@@ -1,4 +1,6 @@
 ---@class Aire03_C:BP_MagicFieldActorBase_C
+---@field ParticleSystem1 UParticleSystemComponent
+---@field ParticleSystem UParticleSystemComponent
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
 --Edit Below--
@@ -69,6 +71,9 @@ function Aire03:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Oth
 
     local Buff_Class = UGCObjectUtility.LoadClass(L_Enum.Name_BuffPath.Debuff01) -- Buff类
     local Buff_Instance = UGCPersistEffectSystem.AddBuffByClass(OtherActor, Buff_Class) -- 添加的Buff实例
+    local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 玩家控制器
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Play_Sound,
+        SoundMgr.SoundName.Freeze_Start)
     self:K2_DestroyActor()
 end
 

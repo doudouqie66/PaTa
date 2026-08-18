@@ -110,6 +110,7 @@ L_Enum.Name_RPC = {
     Event_Countdown = "Event_Countdown", -- 事件倒计时RPC名称
     Set_Anim_Montage = "MulticastRPC_SetAnimMontage", -- 广播播放或停止蒙太奇RPC名称
     Broadcast_Tips = "MulticastRPC_ShowTips", -- 广播提示RPC名称
+    Play_Sound = "Play_Sound", -- 播放2D音效RPC名称
     Spawn_Random_Block = "Spawn_Random_Block", -- 随机生成方块RPC名称
     Open_Random_Block = "Open_Random_Block" -- 开启随机方块RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"

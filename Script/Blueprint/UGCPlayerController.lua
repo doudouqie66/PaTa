@@ -805,6 +805,11 @@ function UGCPlayerController:Tool_Msg_01(str, Sound_Name)
     end
 end
 
+--[[----------------------播放指定的2D音效------------------------]]
+function UGCPlayerController:Play_Sound(Sound_Name)
+    SoundMgr.PlaySound2D(Sound_Name)
+end
+
 --[[----------------------播放事件倒计时------------------------]]
 function UGCPlayerController:Event_Countdown(Countdown_Duration, Event_Name)
     if Countdown_Duration <= 0 then

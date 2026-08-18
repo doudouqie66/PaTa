@@ -1,23 +1,25 @@
 ---@class Aire04_C:BP_MagicFieldActorBase_C
+---@field ParticleSystem1 UParticleSystemComponent
+---@field ParticleSystem UParticleSystemComponent
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
 --Edit Below--
 ---@class Aire04_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
--- Edit Below--
+--Edit Below--
 ---@class Aire04_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
--- Edit Below--
+--Edit Below--
 ---@class Aire03_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
--- Edit Below--
+--Edit Below--
 ---@class Aire03_C:BP_MagicFieldActorBase_C
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
--- Edit Below--
+--Edit Below--
 local Aire04 = {}
 
 --[[
@@ -70,12 +72,14 @@ end
 --[[----------------------玩家进入盒体时传送回去------------------------]]
 function Aire04:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep,
     SweepResult)
+
     if (OtherActor.Control_Immune_Buff_Count or 0) > 0 then
         self:K2_DestroyActor()
         return
     end
 
     local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor)
+    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Play_Sound, SoundMgr.SoundName.Boom)
     PC:TeleToPoint(1)
     self:K2_DestroyActor()
 

@@ -1,4 +1,5 @@
 ---@class Aire01_C:BP_MagicFieldActorBase_C
+---@field ParticleSystem UParticleSystemComponent
 ---@field Box UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
 --Edit Below--
