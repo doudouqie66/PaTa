@@ -1,20 +1,57 @@
 ---@class UI_Black_C:UUserWidget
+---@field Button_151 UButton
 ---@field Image_0 UImage
+---@field ScaleBox_43 UScaleBox
+---@field TextBlock_287 UTextBlock
 --Edit Below--
-local UI_Black = { bInitDoOnce = false } 
+local UI_Black = {
+    bInitDoOnce = false,
+    Night_Countdown_Timer = nil -- 黑夜剩余时间计时器
+}
 
---[==[ Construct
+--[[----------------------构造黑夜界面------------------------]]
 function UI_Black:Construct()
-	
+    self.ScaleBox_43:SetVisibility(ESlateVisibility.Hidden)
 end
--- Construct ]==]
 
 -- function UI_Black:Tick(MyGeometry, InDeltaTime)
 
 -- end
 
--- function UI_Black:Destruct()
+--[[----------------------开始显示黑夜剩余时间------------------------]]
+function UI_Black:StartNightCountdown(Night_Buff)
+    self:StopNightCountdown()
+    self.Night_Buff = Night_Buff -- 当前黑夜Buff
+    self.TextBlock_287:SetText(tostring(math.max(0, math.ceil(Night_Buff:GetRemainingTime()))))
+    self.ScaleBox_43:SetVisibility(ESlateVisibility.HitTestInvisible)
 
--- end
+    self.Night_Countdown_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
+        if not self.Night_Buff or not UE.IsValid(self.Night_Buff) then
+            self:StopNightCountdown()
+            return
+        end
+
+        local Remaining_Seconds = math.max(0, math.ceil(self.Night_Buff:GetRemainingTime())) -- 黑夜剩余秒数
+        self.TextBlock_287:SetText(tostring(Remaining_Seconds))
+        if Remaining_Seconds <= 0 then
+            self:StopNightCountdown()
+        end
+    end, true)
+end
+
+--[[----------------------停止显示黑夜剩余时间------------------------]]
+function UI_Black:StopNightCountdown()
+    if self.Night_Countdown_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Night_Countdown_Timer)
+        self.Night_Countdown_Timer = nil
+    end
+    self.Night_Buff = nil
+    self.ScaleBox_43:SetVisibility(ESlateVisibility.Hidden)
+end
+
+--[[----------------------销毁黑夜界面------------------------]]
+function UI_Black:Destruct()
+    self:StopNightCountdown()
+end
 
 return UI_Black

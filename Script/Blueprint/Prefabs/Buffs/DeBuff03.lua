@@ -13,6 +13,8 @@ end
 function DeBuff03:OnApply_BP(OwnerActor)
     if self:IsAutonomous() then
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Black, true)
+        local UI_Black = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Black] -- 黑夜界面
+        UI_Black:StartNightCountdown(self)
     end
 end
 
@@ -20,6 +22,10 @@ end
 --[[----------------------Debuff失效时关闭黑色界面------------------------]]
 function DeBuff03:OnUnApply_BP(OwnerActor, Reason)
     if self:IsAutonomous() then
+        local UI_Black = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Black] -- 黑夜界面
+        if UI_Black then
+            UI_Black:StopNightCountdown()
+        end
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Black, false)
     end
 end

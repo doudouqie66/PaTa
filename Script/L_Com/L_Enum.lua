@@ -56,6 +56,12 @@ L_Enum.Name_AnimMontagePath = {
     MoTan_Fly = "/Game/Arts_Player/Characters/Animation/Shared_Anim/Parachute_Anim/Glider/Lobby_FlyingDevice_Montage.Lobby_FlyingDevice_Montage" -- 魔毯
 }
 
+--[[----------------------技能资源路径------------------------]]
+L_Enum.Name_SkillPath = {
+    Skill_RunArea = UGCGameSystem.GetUGCResourcesFullPath(
+        "Asset/Blueprint/Prefabs/Skills/Skill_RunArea.Skill_RunArea_C") -- 区域弹飞技能
+}
+
 --[[----------------------Buff名字------------------------]] --
 
 L_Enum.Name_BuffPath = {
