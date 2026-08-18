@@ -163,7 +163,7 @@ L_Enum.Ranking_List = {
 
 L_Enum.Name_Event = {
     SpeedLow = "移动减速", -- 移动减速事件
-    DoubleGold = "金币翻倍", -- 金币翻倍事件
+    DoubleGold = "跳跃加强", -- 金币翻倍事件
     AllSpeedUp = "全体移动加速", -- 全体移动加速事件
     MonsterStop = "怪物静止", -- 怪物静止事件
     FullScreenNight = "全屏黑夜", -- 全屏黑夜事件
