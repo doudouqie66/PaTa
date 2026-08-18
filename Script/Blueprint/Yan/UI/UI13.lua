@@ -104,7 +104,7 @@ end
 function UI13:Item_05_OnClicked()
     self.Gold_Quantity = CFG_SL.All.Explosive.Effect_Value
     self:Refresh_Gold_Text()
-    L_TipsTool.ShowTips_01("踩到炸弹啦")
+    L_TipsTool.ShowTips_01("踩到炸弹啦，啥都没啦")
     self.Button_0:SetIsEnabled(false)
 
     UGCTimerUtility.CreateLuaTimer(2, function()

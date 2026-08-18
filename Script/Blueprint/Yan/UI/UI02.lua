@@ -312,9 +312,11 @@ function UI02:Button_181_OnClicked()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
 end
 
+--[[----------------------申请购买门票并打开界面------------------------]]
 function UI02:Button_2_OnClicked()
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, false, true)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, true, true)
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    self.Button_2:SetIsEnabled(false)
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Buy_Ticket)
 end
 
 function UI02:Button_3_OnClicked()

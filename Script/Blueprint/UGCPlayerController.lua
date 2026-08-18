@@ -39,6 +39,7 @@ local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
 local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能冲天炮最高飞行速度
 local Jetpack_Max_Durability = 10 -- 冲天炮最大耐久秒数
 local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
+local Ticket_Price = 100 -- 门票金币价格
 
 --[[----------------------初始化玩家控制器------------------------]]
 function UGCPlayerController:ReceiveBeginPlay()
@@ -94,10 +95,11 @@ function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
         L_Enum.Name_RPC.Request_Respawn, L_Enum.Name_RPC.Add_WinCup, L_Enum.Name_RPC.Switch_View,
         L_Enum.Name_RPC.New_Pass, L_Enum.Name_RPC.Add_Backpack_Item, L_Enum.Name_RPC.Claim_Tower_Reward,
-        L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Tele_To_Point,
-        L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying, L_Enum.Name_RPC.Grant_Virtual_Item,
-        L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance, L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward,
-        L_Enum.Name_RPC.Remove_Item, L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block
+        L_Enum.Name_RPC.Exchange_Trophy_Item, L_Enum.Name_RPC.Buy_Gold_Item, L_Enum.Name_RPC.Buy_Ticket,
+        L_Enum.Name_RPC.Tele_To_Point, L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
+        L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
+        L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
+        L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block
 
 end
 
@@ -634,6 +636,44 @@ function UGCPlayerController:Buy_Gold_Item(Item_ID)
     end
 
     L_TipsTool.ShowTips_01("购买成功", self, SoundMgr.SoundName.Reward_Gold)
+end
+
+--[[----------------------使用金币购买门票------------------------]]
+function UGCPlayerController:Buy_Ticket()
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Gold_Item_ID = L_Enum.Gold_Shop.Gold_Item_ID -- 金币物品ID
+    if UGCBackpackSystemV2.GetItemCountV2(self, Gold_Item_ID) < Ticket_Price then
+        UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Open_Ticket_UI, false)
+        return
+    end
+
+    local Removed_Count = UGCBackpackSystemV2.RemoveItemV2(self, Gold_Item_ID, Ticket_Price) -- 实际扣除金币数量
+    if Removed_Count ~= Ticket_Price then
+        if Removed_Count > 0 then
+            UGCBackpackSystemV2.AddItemV2(self, Gold_Item_ID, Removed_Count)
+        end
+        UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Open_Ticket_UI, false)
+        return
+    end
+
+    UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Open_Ticket_UI, true)
+end
+
+--[[----------------------显示门票提示并打开界面------------------------]]
+function UGCPlayerController:Open_Ticket_UI(Is_Success)
+    if not Is_Success then
+        L_TipsTool.ShowTips_01("门票一百金币", nil, SoundMgr.SoundName.UI_Error)
+        local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI02] -- 主城界面
+        UI_BP.Button_2:SetIsEnabled(true)
+        return
+    end
+
+    L_TipsTool.ShowTips_01("成功购买门票，一百金币!")
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, false, true)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, true, true)
 end
 
 --[[----------------------重新生成密码------------------------]]

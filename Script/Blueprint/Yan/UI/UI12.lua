@@ -242,10 +242,13 @@ function UI12:Button_69_OnClicked()
                 UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Grant_Virtual_Item,
                     self.Last_Reward_Item_ID, Reward_Count)
             end
+            SoundMgr.PlaySound2D(SoundMgr.SoundName.Get_Gold)
             L_TipsTool.ShowTips_01("获得金币" .. tostring(Reward_Count) .. "个")
         else
             L_TipsTool.ShowTips_01("谢谢参与")
         end
+    end, function()
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.Ding)
     end)
 end
 function UI12:Button_112_OnClicked()

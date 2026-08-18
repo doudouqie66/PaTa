@@ -8,7 +8,7 @@ local Lottery_Stop_Stay_Seconds = 1 -- 停在目标格子的停留秒数
 UIMgr.Active_Lottery_Timer = nil -- 当前抽奖闪现计时器
 
 --[[----------------------播放抽奖闪现动画------------------------]]
-function UIMgr.PlayLotteryEffect(Reward_Panels, Move_Image, Target_Index, On_Finished)
+function UIMgr.PlayLotteryEffect(Reward_Panels, Move_Image, Target_Index, On_Finished, On_Position_Changed)
     local Move_Widgets = type(Move_Image) == "table" and Move_Image or {Move_Image} -- 需要移动的控件列表
     if not Reward_Panels or #Reward_Panels == 0 or #Move_Widgets == 0 then
         return
@@ -72,6 +72,9 @@ function UIMgr.PlayLotteryEffect(Reward_Panels, Move_Image, Target_Index, On_Fin
             if Move_Slot then
                 Move_Slot:SetPosition(UGCMathUtility.MakeVector2D(Move_Position.X, Move_Position.Y))
             end
+        end
+        if On_Position_Changed then
+            On_Position_Changed()
         end
     end
 
