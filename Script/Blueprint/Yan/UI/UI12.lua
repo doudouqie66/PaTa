@@ -238,9 +238,9 @@ function UI12:Button_69_OnClicked()
         end
         self.Is_Lottery_Drawing = false
         self.Button_69:SetIsEnabled(true)
-        SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_End)
         local Reward_Count = self.Last_Reward_Count or 0 -- 本次奖励数量
         if Reward_Count > 0 then
+            SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_End)
             if Player_Controller then
                 UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Grant_Virtual_Item,
                     self.Last_Reward_Item_ID, Reward_Count)

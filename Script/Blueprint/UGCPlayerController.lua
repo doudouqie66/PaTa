@@ -23,7 +23,8 @@ local UGCPlayerController = {
     Flying_Item_ID = 0, -- 当前装备的飞行物ID
     Jetpack_Durability = 0, -- 冲天炮当前耐久秒数
     Coin_Lottery_Free_Chance_Count = 1, -- 今日金币抽奖剩余免费次数
-    Coin_Lottery_Share_Reward_Count = 1 -- 今日金币抽奖剩余分享奖励次数
+    Coin_Lottery_Share_Reward_Count = 1, -- 今日金币抽奖剩余分享奖励次数
+    Room_Lottery_Has_Claimed = false -- 当前房间是否已经抽奖
 }
 
 local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
@@ -40,6 +41,8 @@ local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能冲天炮最高飞行速度
 local Jetpack_Max_Durability = 10 -- 冲天炮最大耐久秒数
 local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
 local Ticket_Price = 100 -- 门票金币价格
+local Room_Lottery_Drop_ID = 5 -- 当前房间抽奖掉落表ID
+local Room_Lottery_Item_ID = 1005 -- 当前房间抽奖金币物品ID
 
 --[[----------------------初始化玩家控制器------------------------]]
 function UGCPlayerController:ReceiveBeginPlay()
@@ -88,7 +91,8 @@ function UGCPlayerController:GetReplicatedProperties()
         {"WinCup", "Lazy"}, {"Tower_Reward_Has_Started", "Lazy"}, {"Tower_Reward_Is_Timing", "Lazy"},
         {"Tower_Reward_Enter_Time", "Lazy"}, {"Tower_Reward_Accumulated_Time", "Lazy"},
         {"Tower_Reward_Claim_Mask", "Lazy"}, {"Flying_Item_ID", "Lazy"}, {"Jetpack_Durability", "Lazy"},
-        {"Coin_Lottery_Free_Chance_Count", "Lazy"}, {"Coin_Lottery_Share_Reward_Count", "Lazy"}
+        {"Coin_Lottery_Free_Chance_Count", "Lazy"}, {"Coin_Lottery_Share_Reward_Count", "Lazy"},
+        {"Room_Lottery_Has_Claimed", "Lazy"}
 end
 
 --[[----------------------周卡有效期同步后刷新周卡页面------------------------]]
@@ -108,7 +112,8 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Tele_To_Point, L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
         L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
         L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
-        L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block
+        L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block,
+        L_Enum.Name_RPC.Claim_Room_Lottery
 
 end
 
@@ -473,6 +478,55 @@ end
 function UGCPlayerController:Add_Backpack_Item(Item_ID, Item_Count)
     local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager")
     Virtual_Item_Manager:AddVirtualItem(self, Item_ID, Item_Count)
+end
+
+--[[----------------------领取当前房间抽奖奖励------------------------]]
+function UGCPlayerController:Claim_Room_Lottery()
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Game_Mode = UGCGameSystem.GetGameMode() -- 当前游戏模式
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    local Player_UID = Player_Pawn and UGCPawnAttrSystem.GetPlayerUID(Player_Pawn) -- 当前玩家UID
+    if not Game_Mode or Player_UID == nil then
+        L_TipsTool.ShowTips_01("抽奖失败，请重试", self, SoundMgr.SoundName.UI_Error)
+        UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Room_Lottery_Result, 0, false)
+        return
+    end
+
+    local Player_UID_Key = tostring(Player_UID) -- 当前玩家UID索引
+    Game_Mode.Room_Lottery_Claimed_UIDs = Game_Mode.Room_Lottery_Claimed_UIDs or {}
+    if Game_Mode.Room_Lottery_Claimed_UIDs[Player_UID_Key] then
+        self.Room_Lottery_Has_Claimed = true
+        UnrealNetwork.RepLazyProperty(self, "Room_Lottery_Has_Claimed")
+        L_TipsTool.ShowTips_01("本局已经抽过了", self, SoundMgr.SoundName.UI_Error)
+        UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Room_Lottery_Result, 0, true)
+        return
+    end
+
+    local Drop_Result = UGCDropSystem.DropItems(Room_Lottery_Drop_ID) -- 本次掉落结果
+    local Drop_Count = Drop_Result and Drop_Result[Room_Lottery_Item_ID] or 0 -- 本次金币数量
+    local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
+    if Drop_Count <= 0 or not Virtual_Item_Manager or
+        not Virtual_Item_Manager:AddVirtualItem(self, Room_Lottery_Item_ID, Drop_Count) then
+        L_TipsTool.ShowTips_01("抽奖失败，请重试", self, SoundMgr.SoundName.UI_Error)
+        UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Room_Lottery_Result, 0, false)
+        return
+    end
+
+    Game_Mode.Room_Lottery_Claimed_UIDs[Player_UID_Key] = true
+    self.Room_Lottery_Has_Claimed = true
+    UnrealNetwork.RepLazyProperty(self, "Room_Lottery_Has_Claimed")
+    UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Room_Lottery_Result, Drop_Count, false)
+end
+
+--[[----------------------显示当前房间抽奖结果------------------------]]
+function UGCPlayerController:Show_Room_Lottery_Result(Drop_Count, Is_Already_Claimed)
+    local Lottery_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI11] -- 当前房间抽奖界面
+    if Lottery_UI then
+        Lottery_UI:Play_Room_Lottery_Result(Drop_Count, Is_Already_Claimed)
+    end
 end
 
 --[[----------------------发放虚拟物品------------------------]]

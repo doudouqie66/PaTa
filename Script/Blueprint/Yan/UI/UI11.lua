@@ -57,13 +57,27 @@ function UI11:Button_147_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
 
 end
---[[----------------------开金币------------------------]] --
+--[[----------------------请求当前房间抽奖------------------------]]
 function UI11:Button_72_OnClicked()
     self.Button_72:SetIsEnabled(false)
-    SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_End)
+    local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Claim_Room_Lottery)
+end
 
-    local Drop_Result = UGCDropSystem.DropItems(5)
-    local Drop_Count = Drop_Result[1005]
+--[[----------------------播放当前房间抽奖结果------------------------]]
+function UI11:Play_Room_Lottery_Result(Drop_Count, Is_Already_Claimed)
+    if Is_Already_Claimed then
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, false, false)
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI10, true, false)
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
+        return
+    end
+    if not Drop_Count or Drop_Count <= 0 then
+        self.Button_72:SetIsEnabled(true)
+        return
+    end
+
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_End)
     ---触发点击图片
     self.Image_0:SetVisibility(ESlateVisibility.Visible)
 
@@ -93,13 +107,6 @@ function UI11:Button_72_OnClicked()
 
             UGCTweenSystem.BindCompletedDelegate(Gold_Count_Tween, function()
                 self.TextBlock_49:SetText("+" .. tostring(Drop_Count))
-            end)
-
-            ---获得奖励
-            UGCTimerUtility.CreateLuaTimer(3, function()
-                local PC = UGCGameSystem.GetLocalPlayerController()
-                UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Grant_Virtual_Item, 1005, Drop_Count)
-
             end)
         end)
     end)

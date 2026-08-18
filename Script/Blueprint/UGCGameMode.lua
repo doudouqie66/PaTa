@@ -17,6 +17,7 @@ UGCGameMode.Backfill_Login_Serial_At_Request = 0 -- 申请补人时的登录序�
 UGCGameMode.Backfill_Refresh_Scheduled = false -- 是否已安排补人刷新
 UGCGameMode.Assigned_Team_By_Player = {} -- 玩家对应的玩法队伍
 UGCGameMode.Camp_By_Team = {} -- 玩法队伍对应的阵营
+UGCGameMode.Room_Lottery_Claimed_UIDs = {} -- 当前房间已经抽奖的玩家UID集合
 
 --[[----------------------游戏启动------------------------]] --
 function UGCGameMode:ReceiveBeginPlay()
@@ -32,6 +33,7 @@ function UGCGameMode:ReceiveBeginPlay()
         self.Backfill_Refresh_Scheduled = false
         self.Assigned_Team_By_Player = {}
         self.Camp_By_Team = {}
+        self.Room_Lottery_Claimed_UIDs = {}
         UGCCampSystem.SetDefaultCampRelation(ECampRelation.Enemy)
         UGCGameSystem.ApplyPlayerJoinSucceededDelegate:Add(self.OnPlayerJoinSucceeded, self)
         UGCGameSystem.OpenPlayerJoin()
@@ -215,6 +217,11 @@ function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
     self.Backfill_Login_Serial = self.Backfill_Login_Serial + 1
     self:AssignPlayerRoomTeam(PlayerController)
     self:LoadPlayerArchive(PlayerController)
+    local Player_Pawn = PlayerController:GetPlayerCharacterSafety() -- 当前玩家角色
+    local Player_UID = UGCPawnAttrSystem.GetPlayerUID(Player_Pawn) -- 当前玩家UID
+    PlayerController.Room_Lottery_Has_Claimed = Player_UID ~= nil and
+                                                    self.Room_Lottery_Claimed_UIDs[tostring(Player_UID)] == true
+    UnrealNetwork.RepLazyProperty(PlayerController, "Room_Lottery_Has_Claimed")
 
     local activeEvent = EventScheduler.GetActiveEvent()
     if activeEvent then
