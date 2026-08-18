@@ -5,8 +5,6 @@
 ---@field Num_PassNeed int32
 --Edit Below--
 local RunArea = {}
-local Run_Area_Launch_Speed = 900 -- 弹出区域的水平速度
-local Run_Area_Launch_Height = 220 -- 弹出区域的向上速度
 
 --[[----------------------初始化并绑定区域碰撞事件------------------------]]
 function RunArea:ReceiveBeginPlay()
@@ -55,28 +53,6 @@ function RunArea:LuaInit()
     -- [Editor Generated Lua] BindingEvent End;
 end
 
---[[----------------------将不符合条件的玩家弹出区域------------------------]]
-function RunArea:LaunchPlayerOut(Player_Pawn)
-    local Area_Location = self:K2_GetActorLocation() -- 区域中心位置
-    local Player_Location = Player_Pawn:K2_GetActorLocation() -- 玩家当前位置
-    local Offset_X = Player_Location.X - Area_Location.X -- 玩家相对区域中心的X轴偏移
-    local Offset_Y = Player_Location.Y - Area_Location.Y -- 玩家相对区域中心的Y轴偏移
-    local Distance = math.sqrt(Offset_X * Offset_X + Offset_Y * Offset_Y) -- 玩家与区域中心的水平距离
-
-    if Distance <= 0 then
-        local Forward_Vector = self:GetActorForwardVector() -- 区域前方向
-        Offset_X = Forward_Vector.X
-        Offset_Y = Forward_Vector.Y
-        Distance = 1
-    end
-
-    Player_Pawn:LaunchCharacter(Vector.New(
-        Offset_X / Distance * Run_Area_Launch_Speed,
-        Offset_Y / Distance * Run_Area_Launch_Speed,
-        Run_Area_Launch_Height
-    ), true, true)
-end
-
 --[[----------------------玩家进入区域时添加金币Buff------------------------]]
 function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep,
     SweepResult)
@@ -87,15 +63,6 @@ function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Ot
 
     if Player_Controller.WinCup < self.Num_PassNeed then
         L_TipsTool.ShowTips_01("通关次数不足", Player_Controller, SoundMgr.SoundName.UI_Error)
-        self:LaunchPlayerOut(OtherActor)
-        return
-    end
-
-    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
-    local Is_Week_Card_Member = Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime -- 是否为周卡会员
-    if self.Type == 2 and not Is_Week_Card_Member then
-        L_TipsTool.ShowTips_01("您不是周卡会员", Player_Controller, SoundMgr.SoundName.UI_Error)
-        self:LaunchPlayerOut(OtherActor)
         return
     end
 

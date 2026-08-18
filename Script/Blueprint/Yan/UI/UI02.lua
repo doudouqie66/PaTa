@@ -227,6 +227,8 @@ end
 --[[--------------------超值周卡--------------------------]] --
 function UI02:Button_111_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI03, true)
+    local Week_Card_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI03] -- 周卡页面
+    Week_Card_UI:RefreshWeekGiftPurchased(UGCGameSystem.GetLocalPlayerController())
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 --[[--------------------金币商店--------------------------]] --

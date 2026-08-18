@@ -5,8 +5,8 @@ local Tower_Top_Location = Vector.New(15106.924804688, 37112.078125, 22335.98046
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 
 local GM_Backpack_Item_Config = { -- GM背包物品配置
-    {8310000, "喷射钩爪"}, {8310033, "击飞手指"}, {8310035, "大力拳套"},
-    {8310036, "冰冻锤"}, {8310037, "冲天炮"}, {8310002, "返回卷"},
+    {8310000, "喷射钩爪"}, {8310033, "击飞手指", 1}, {8310035, "大力拳套", 1},
+    {8310036, "冰冻锤", 1}, {8310037, "冲天炮"}, {8310002, "返回卷"},
     {8310014, "加速药水"}, {8310016, "每日登陆礼包"}, {8310018, "跳高药水"},
     {8310020, "无敌药水"}, {8310021, "香蕉皮"}, {8310023, "隐身药水"},
     {8310024, "金币宝箱"}, {8310026, "炸弹"}, {8310027, "密码纸条"},
@@ -15,18 +15,19 @@ local GM_Backpack_Item_Config = { -- GM背包物品配置
 }
 
 --[[----------------------创建指定物品的GM发放函数------------------------]]
-local function Create_Grant_Item_Function(Item_ID)
+local function Create_Grant_Item_Function(Item_ID, Item_Count)
     local Grant_Item_ID = Item_ID -- 需要发放的背包物品ID
-    --[[----------------------给玩家发放十个指定物品------------------------]]
+    local Grant_Item_Count = Item_Count or 10 -- 单次发放数量
+    --[[----------------------给玩家发放指定数量物品------------------------]]
     return function(Self, Param, PC)
         local Player_Pawn = PC:GetPlayerCharacterSafety() -- 当前玩家角色
-        UGCBackpackSystemV2.AddItemV2(Player_Pawn, Grant_Item_ID, 10)
+        UGCBackpackSystemV2.AddItemV2(Player_Pawn, Grant_Item_ID, Grant_Item_Count)
     end
 end
 
 for _, Item_Config in ipairs(GM_Backpack_Item_Config) do
     local Function_Name = "S_Grant_Item_" .. tostring(Item_Config[1]) -- 当前物品GM函数名
-    GM[Function_Name] = Create_Grant_Item_Function(Item_Config[1])
+    GM[Function_Name] = Create_Grant_Item_Function(Item_Config[1], Item_Config[3])
 end
 
 --[[----------------------注册自定义GM按钮------------------------]]
@@ -44,14 +45,16 @@ function GM:Register(DebugUI)
             {UGCGMUI.ItemTypeEnum.TextInput, {{"设置福利累计时长", "输入累计秒数"}, {"设置塔内在线福利累计时长"}}, "S_Set_Reward_Elapsed_Time"},
             {UGCGMUI.ItemTypeEnum.TextInput, {{"设置跑步机产出周期", "输入大于0的秒数"}, {"修改当前玩家跑步机金币产出周期"}}, "S_Set_Run_Area_Gold_Interval"},
             {UGCGMUI.ItemTypeEnum.Button, {{"激活周卡"}, {"发放并打开周卡礼包"}}, "S_Activate_Week_Card"},
-            {UGCGMUI.ItemTypeEnum.Button, {{"过期周卡"}, {"立即将周卡设置为过期"}}, "S_Expire_Week_Card"}
+            {UGCGMUI.ItemTypeEnum.Button, {{"过期周卡"}, {"立即将周卡设置为过期"}}, "CS_Expire_Week_Card"}
         },
         ["发放道具"] = {}
     }
     for _, Item_Config in ipairs(GM_Backpack_Item_Config) do
         local Function_Name = "S_Grant_Item_" .. tostring(Item_Config[1]) -- 当前物品GM函数名
+        local Grant_Item_Count = Item_Config[3] or 10 -- 单次发放数量
         table.insert(Cur_Func_List["GM"]["发放道具"],
-            {UGCGMUI.ItemTypeEnum.Button, {{Item_Config[2]}, {"发放10个" .. Item_Config[2]}}, Function_Name})
+            {UGCGMUI.ItemTypeEnum.Button,
+             {{Item_Config[2]}, {"发放" .. tostring(Grant_Item_Count) .. "个" .. Item_Config[2]}}, Function_Name})
     end
 
     return Cur_Func_List
@@ -167,11 +170,21 @@ function GM:S_Activate_Week_Card(Param, PC)
 end
 
 --[[----------------------将玩家周卡设置为过期------------------------]]
-function GM:S_Expire_Week_Card(Param, PC)
+function GM:CS_Expire_Week_Card(Param, PC)
     local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
-    PC.WeekEndTime = Current_Time - 1
-    UnrealNetwork.RepLazyProperty(PC, "WeekEndTime")
-    PC:SaveArchive()
+    if UGCGameSystem.IsServer() then
+        PC.WeekEndTime = Current_Time - 1
+        UnrealNetwork.RepLazyProperty(PC, "WeekEndTime")
+        PC:SaveArchive()
+        return
+    end
+
+    local Local_PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+    Local_PC.WeekEndTime = Current_Time - 1
+    local Week_Card_UI = L_GloTools.UI_Map[Project_Enum.Name_ClassPath.UI03] -- 已创建的周卡页面
+    if Week_Card_UI then
+        Week_Card_UI:RefreshWeekGiftPurchased(Local_PC)
+    end
 end
 
 return GM
