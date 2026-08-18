@@ -666,8 +666,6 @@ end
 function UGCPlayerController:Open_Ticket_UI(Is_Success)
     if not Is_Success then
         L_TipsTool.ShowTips_01("门票一百金币", nil, SoundMgr.SoundName.UI_Error)
-        local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI02] -- 主城界面
-        UI_BP.Button_2:SetIsEnabled(true)
         return
     end
 

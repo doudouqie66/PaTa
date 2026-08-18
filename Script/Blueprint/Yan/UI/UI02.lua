@@ -315,7 +315,6 @@ end
 --[[----------------------申请购买门票并打开界面------------------------]]
 function UI02:Button_2_OnClicked()
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    self.Button_2:SetIsEnabled(false)
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Buy_Ticket)
 end
 
