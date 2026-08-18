@@ -59,7 +59,7 @@ function RunArea:EjectPlayer(Player_Pawn)
     local Player_Location = Player_Pawn:K2_GetActorLocation() -- 玩家当前位置
     Area_Location.Z = Player_Location.Z
     local Eject_Direction = UGCMathUtility.GetDirectionUnitVector(Area_Location, Player_Location) -- 区域向外弹飞方向
-    local Eject_Skill_Slot = "Skill.Slot.Slot1" -- 区域弹飞技能临时槽位
+    local Eject_Skill_Slot = "Skill.Slot.RunArea" -- 区域弹飞技能专用隐藏槽位
     local Eject_Skill = UGCPersistEffectSystem.AddSkillByClass(Player_Pawn, L_Enum.Name_SkillPath.Skill_RunArea, 1,
         Eject_Skill_Slot) -- 区域弹飞技能实例
     if Eject_Skill then
@@ -78,7 +78,7 @@ function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Ot
     end
 
     if Player_Controller.WinCup < self.Num_PassNeed then
-        L_TipsTool.ShowTips_01("通关次数不足", Player_Controller, SoundMgr.SoundName.UI_Error)
+        L_TipsTool.ShowTips_01("通关次数不足", Player_Controller)
         self:EjectPlayer(OtherActor)
         return
     end
@@ -86,7 +86,7 @@ function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Ot
     local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
     local Is_Week_Card_Member = Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime -- 是否为周卡会员
     if self.Type == 2 and not Is_Week_Card_Member then
-        L_TipsTool.ShowTips_01("您不是周卡会员", Player_Controller, SoundMgr.SoundName.UI_Error)
+        L_TipsTool.ShowTips_01("您不是周卡会员", Player_Controller)
         self:EjectPlayer(OtherActor)
         return
     end
