@@ -90,6 +90,15 @@ function UGCPlayerController:GetReplicatedProperties()
         {"Tower_Reward_Claim_Mask", "Lazy"}, {"Flying_Item_ID", "Lazy"}, {"Jetpack_Durability", "Lazy"},
         {"Coin_Lottery_Free_Chance_Count", "Lazy"}, {"Coin_Lottery_Share_Reward_Count", "Lazy"}
 end
+
+--[[----------------------周卡有效期同步后刷新周卡页面------------------------]]
+function UGCPlayerController:OnRep_WeekEndTime()
+    local Week_Card_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI03] -- 已创建的周卡页面
+    if Week_Card_UI then
+        Week_Card_UI:RefreshWeekGiftPurchased(self)
+    end
+end
+
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
 function UGCPlayerController:GetAvailableServerRPCs()
     return L_Enum.Name_RPC.AddLevel, L_Enum.Name_RPC.UseRedemptionCode, L_Enum.Name_RPC.Mgr_Atten,
@@ -773,13 +782,19 @@ function UGCPlayerController:OnBuyUGCCommodityResult(bSuccess, PlayerKey, Commod
         return
     end
 
+    self:Activate_Week_Card(Count)
+end
+
+--[[----------------------激活周卡并保存有效期------------------------]]
+function UGCPlayerController:Activate_Week_Card(Card_Count)
+    if not self:HasAuthority() then
+        return
+    end
     local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
     local Week_Card_Duration = 7 * 24 * 60 * 60 -- 单张周卡持续秒数
-    self.WeekEndTime = math.max(self.WeekEndTime or 0, Current_Time) + Week_Card_Duration * Count
-    if self:HasAuthority() then
-        UnrealNetwork.RepLazyProperty(self, "WeekEndTime")
-        self:SaveArchive()
-    end
+    self.WeekEndTime = math.max(self.WeekEndTime or 0, Current_Time) + Week_Card_Duration * Card_Count
+    UnrealNetwork.RepLazyProperty(self, "WeekEndTime")
+    self:SaveArchive()
 end
 
 --[[--------------------通用提示方法1--------------------------]] --

@@ -5,6 +5,16 @@
 local Buff10 = {}
 local L_Enum = UGCGameSystem.UGCRequire("Script.L_Com.L_Enum") -- 枚举配置
 
+--[[----------------------Buff挂载时应用GM产出周期------------------------]]
+function Buff10:OnApply_BP(OwnerActor)
+    if self:HasAuthority() then
+        local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OwnerActor) -- 获取玩家控制器
+        if Player_Controller.Run_Area_Gold_Interval then
+            self.BuffInfo.BuffEffects[1].Interval = Player_Controller.Run_Area_Gold_Interval
+        end
+    end
+end
+
 -- buff启动条件
 --[[
 function Buff10:CanApply_BP(OwnerActor)
