@@ -129,7 +129,7 @@ function Reward_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActo
         return
     end
 
-    L_TipsTool.ShowTips_01("领取礼包成功", Player_Controller)
+    L_TipsTool.ShowTips_01("领取礼包成功", Player_Controller, SoundMgr.SoundName.Reward_Ready)
     self:StartRewardTimer()
 end
 

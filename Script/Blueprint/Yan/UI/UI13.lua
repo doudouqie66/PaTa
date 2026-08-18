@@ -1,8 +1,7 @@
 ---@class UI13_C:UUserWidget
 ---@field Button_0 UButton
----@field Button_194 UButton
----@field Image_1 UImage
----@field Image_265 UImage
+---@field Image_6 UImage
+---@field Image_145 UImage
 ---@field TextBlock_166 UTextBlock
 ---@field WrapBox_29 UWrapBox
 ---@field Pre_Item_01 UClass

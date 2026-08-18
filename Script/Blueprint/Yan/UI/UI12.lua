@@ -226,6 +226,7 @@ function UI12:Button_69_OnClicked()
         self:Refresh_Lottery_Stone_Count(Stone_Count - 1)
     end
 
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_Start)
     self.Is_Lottery_Drawing = true -- 抽奖动画进行中
     self.Button_69:SetIsEnabled(false)
     local Target_Index = self:GetLotteryResult() -- 本次抽奖结果
@@ -245,6 +246,7 @@ function UI12:Button_69_OnClicked()
             SoundMgr.PlaySound2D(SoundMgr.SoundName.Get_Gold)
             L_TipsTool.ShowTips_01("获得金币" .. tostring(Reward_Count) .. "个")
         else
+            SoundMgr.PlaySound2D(SoundMgr.SoundName.Lose)
             L_TipsTool.ShowTips_01("谢谢参与")
         end
     end, function()

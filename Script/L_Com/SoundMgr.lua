@@ -17,14 +17,19 @@ SoundMgr.SoundName = {
     Event_Alarm = "Event_Alarm", -- 危险事件警报
     Boom = "Boom", -- 爆炸音效
     Banana = "Banana", -- 香蕉音效
+    Child_Help = "Child_Help", -- 靠近怪物求救音效
+    CJ_Start = "CJ_Start", -- 开始抽奖音效
+    Close_AD = "Close_AD", -- 靠近广告购买区域音效
     Ding = "Ding", -- 抽奖转动音效
     Get_Gold = "Get_Gold", -- 抽奖获得金币音效
+    Lose = "Lose", -- 失败音效
     Trap_Explosion = "Trap_Explosion", -- 炸弹陷阱爆炸
     Freeze_Start = "Freeze_Start", -- 冰冻效果生效
     Freeze_Break = "Freeze_Break", -- 冰冻效果破碎
     Attention = "Attention", -- 怪物靠近警示
     Monster_Voice = "Monster_Voice", -- 怪物声音
     Hit_Punch = "Hit_Punch", -- 拳击命中
+    Top_Cup = "Top_Cup", -- 触碰登顶奖杯音效
     Fly_Start = "Fly_Start" -- 飞行效果生效
 }
 
@@ -41,14 +46,19 @@ SoundMgr.SoundPath = {
     Event_Alarm = RootPath .. "Asset/WwiseEvent/EventAlarm.EventAlarm", -- 危险事件警报
     Boom = RootPath .. "Asset/WwiseEvent/Boom.Boom", -- 爆炸音效
     Banana = RootPath .. "Asset/WwiseEvent/Banana.Banana", -- 香蕉音效
+    Child_Help = RootPath .. "Asset/WwiseEvent/ChildHelp.ChildHelp", -- 靠近怪物求救音效
+    CJ_Start = RootPath .. "Asset/WwiseEvent/CJStart.CJStart", -- 开始抽奖音效
+    Close_AD = RootPath .. "Asset/WwiseEvent/CloseAD.CloseAD", -- 靠近广告购买区域音效
     Ding = RootPath .. "Asset/WwiseEvent/Ding.Ding", -- 抽奖转动音效
     Get_Gold = RootPath .. "Asset/WwiseEvent/GetGold.GetGold", -- 抽奖获得金币音效
+    Lose = RootPath .. "Asset/WwiseEvent/Lose.Lose", -- 失败音效
     Trap_Explosion = RootPath .. "Asset/WwiseEvent/TrapExplosion.TrapExplosion", -- 炸弹陷阱爆炸
     Freeze_Start = RootPath .. "Asset/WwiseEvent/FreezeStart.FreezeStart", -- 冰冻效果生效
     Freeze_Break = RootPath .. "Asset/WwiseEvent/FreezeBreak.FreezeBreak", -- 冰冻效果破碎
     Attention = RootPath .. "Asset/WwiseEvent/Attention.Attention", -- 怪物靠近警示
     Monster_Voice = RootPath .. "Asset/WwiseEvent/MonsterVoice.MonsterVoice", -- 怪物声音
     Hit_Punch = RootPath .. "Asset/WwiseEvent/HitPunch.HitPunch", -- 拳击命中
+    Top_Cup = RootPath .. "Asset/WwiseEvent/TopCup.TopCup", -- 触碰登顶奖杯音效
     Fly_Start = RootPath .. "Asset/WwiseEvent/FlyStart.FlyStart" -- 飞行效果生效
 }
 

@@ -48,8 +48,10 @@ function ShowBuy_Colli:LuaInit()
     -- [Editor Generated Lua] BindingEvent End;
 end
 
+--[[----------------------靠近时播放音效并打开购买界面------------------------]]
 function ShowBuy_Colli:Capsule_OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex,
     bFromSweep, SweepResult)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Close_AD)
     L_GloTools.BuyShopProduct(self.ProductID)
 
 end

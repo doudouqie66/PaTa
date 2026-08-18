@@ -226,10 +226,12 @@ function UGCGameMode:UGC_PlayerLoginEvent(PlayerController)
     self:ScheduleRoomPlayerJoin()
 end
 
---[[----------------------玩家非怪物致死后自动复活------------------------]]
+--[[----------------------处理玩家死亡与复活------------------------]]
 function UGCGameMode:UGC_PlayerKilledEvent(Killer, VictimPlayer, VictimPawn, DamageType)
     if VictimPlayer.Is_Monster_Death then
         VictimPlayer.Is_Monster_Death = false -- 消耗怪物致死标记
+        UnrealNetwork.CallUnrealRPC(VictimPlayer, VictimPlayer, L_Enum.Name_RPC.Play_Sound,
+            SoundMgr.SoundName.Lose)
         UnrealNetwork.CallUnrealRPC(VictimPlayer, VictimPlayer, L_Enum.Name_RPC.Show_Respawn_UI)
         return
     end

@@ -81,6 +81,7 @@ function Cup_Colli:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, 
         end
     end
 
+    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Play_Sound, SoundMgr.SoundName.Top_Cup)
     -- 发放奖励
     PC:Add_WinCup(1)
     -- 传送回家

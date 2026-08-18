@@ -60,6 +60,7 @@ function Actor_ShopMan:Box_OnComponentBeginOverlap(OverlappedComponent, OtherAct
     if Player_Controller == nil or Player_Controller ~= UGCGameSystem.GetLocalPlayerController() then
         return
     end
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Close_AD)
     ShopV2Manager:OpenMainUI()
 end
 
