@@ -26,6 +26,7 @@
 ---@field HitBox UCapsuleComponent
 -- Edit Below--
 local BaseMonse = {}
+local Pistol_Item_ID = 8310045 -- 手枪物品ID
 
 -- --[[----------------------初始化怪物逻辑------------------------]]
 function BaseMonse:ReceiveBeginPlay()
@@ -51,9 +52,19 @@ function BaseMonse:BindOverlapEvent()
     self.InnerBox.OnComponentEndOverlap:Add(BaseMonse.InnerBox_OnComponentEndOverlap, self);
 end
 
--- function BaseMonse:ReceiveTick(DeltaTime)
---     BaseMonse.SuperClass.ReceiveTick(self, DeltaTime)
--- end
+--[[----------------------检查仇恨目标是否进入安全区------------------------]]
+function BaseMonse:ReceiveTick(DeltaTime)
+    BaseMonse.SuperClass.ReceiveTick(self, DeltaTime)
+    if not self:HasAuthority() or self.Last_Hit_Target == nil then
+        return
+    end
+
+    if self.Last_Hit_Target.Is_In_Monster_Safe_Area then
+        self:RemoveForceHatredTarget()
+        UGCGenericCharacterSystem.StopMove(self)
+        self.Last_Hit_Target = nil
+    end
+end
 
 -- function BaseMonse:ReceiveEndPlay()
 --     BaseMonse.SuperClass.ReceiveEndPlay(self) 
@@ -73,15 +84,31 @@ end
 
 -- end
 
--- ---受击后置事件
--- ---生效范围：服务器
--- ---@param Damage float 伤害值
--- ---@param EventInstigator AController 伤害来源的Controller
--- ---@param DamageCauser AActor 伤害来源
--- ---@param DamageContext FGameMagnitudeContext  伤害上下文
--- function BaseMonse:PostTakeDamageEvent(Damage, EventInstigator, DamageCauser, DamageContext)
+---受击后置事件
+---生效范围：服务器
+---@param Damage float 伤害值
+---@param EventInstigator AController 伤害来源的Controller
+---@param DamageCauser AActor 伤害来源
+---@param DamageContext FGameMagnitudeContext  伤害上下文
+--[[----------------------将手枪命中的玩家设为最新仇恨目标------------------------]]
+function BaseMonse:PostTakeDamageEvent(Damage, EventInstigator, DamageCauser, DamageContext)
+    if Damage <= 0 or EventInstigator == nil then
+        return
+    end
 
--- end
+    local Hit_Player = EventInstigator:K2_GetPawn() -- 本次命中的玩家
+    if Hit_Player == nil or Hit_Player.Is_In_Monster_Safe_Area then
+        return
+    end
+
+    local Current_Weapon = UGCWeaponManagerSystem.GetCurrentWeapon(Hit_Player) -- 玩家当前武器
+    if Current_Weapon == nil or UGCWeaponManagerSystem.GetWeaponItemID(Current_Weapon) ~= Pistol_Item_ID then
+        return
+    end
+
+    self.Last_Hit_Target = Hit_Player -- 记录最后命中的玩家
+    self:SetForceHatredTarget(Hit_Player)
+end
 
 -- ---受击前置伤害修改
 -- ---生效范围：服务器
