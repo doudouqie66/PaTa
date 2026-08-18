@@ -72,7 +72,7 @@ function UI12:LuaInit()
     self.Button_177.OnClicked:Add(self.Button_177_OnClicked, self);
     self.Button_69.OnClicked:Add(self.Button_69_OnClicked, self);
     self.Button_112.OnClicked:Add(self.Button_112_OnClicked, self);
-	-- [Editor Generated Lua] BindingEvent End;
+    -- [Editor Generated Lua] BindingEvent End;
     self.Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
     if self.Virtual_Item_Manager then
         self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Add(self.Refresh_Lottery_Stone_Count, self)
@@ -131,6 +131,8 @@ function UI12:Button_147_OnClicked()
     self.Is_Lottery_Drawing = false
     self.Button_69:SetIsEnabled(true)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI12, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, false)
+
 end
 --[[----------------------刷新今日免费抽奖次数显示------------------------]]
 function UI12:Refresh_Free_Lottery_Count(Free_Chance_Count_Override)
@@ -152,7 +154,7 @@ function UI12:Refresh_Lottery_Stone_Count(Stone_Count_Override)
 
     local Lottery_Stone_Count = Stone_Count_Override ~= nil and Stone_Count_Override or
                                     (self.Virtual_Item_Manager:GetItemNum(L_Enum.Lottery_Stone.Virtual_ID,
-                                        Player_Controller) or 0)
+            Player_Controller) or 0)
     self.TextBlock_166:SetText(tostring(Lottery_Stone_Count))
 end
 function UI12:Button_177_OnClicked()
@@ -207,20 +209,20 @@ function UI12:Button_69_OnClicked()
 
     local Free_Chance_Count = Player_Controller.Coin_Lottery_Free_Chance_Count or 0
     if Free_Chance_Count > 0 then
-        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller,
-            L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance)
+        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance)
         self:Refresh_Free_Lottery_Count(Free_Chance_Count - 1)
     else
-        local Stone_Count = self.Virtual_Item_Manager and self.Virtual_Item_Manager:GetItemNum(
-                                L_Enum.Lottery_Stone.Virtual_ID, Player_Controller) or 0
+        local Stone_Count = self.Virtual_Item_Manager and
+                                self.Virtual_Item_Manager:GetItemNum(L_Enum.Lottery_Stone.Virtual_ID, Player_Controller) or
+                                0
         if Stone_Count <= 0 then
             L_GloTools.BuyShopProduct(L_Enum.Lottery_Stone.Shop_ID)
             SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
             return
         end
 
-        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller,
-            L_Enum.Name_RPC.Remove_Item, L_Enum.Lottery_Stone.Virtual_ID, 1)
+        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Remove_Item,
+            L_Enum.Lottery_Stone.Virtual_ID, 1)
         self:Refresh_Lottery_Stone_Count(Stone_Count - 1)
     end
 
