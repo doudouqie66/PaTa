@@ -25,7 +25,7 @@
 ---@field Image_209 UImage
 ---@field Image_210 UImage
 ---@field Image_286 UImage
--- Edit Below--
+--Edit Below--
 local UI14 = {
     bInitDoOnce = false
 }
@@ -59,6 +59,8 @@ end
 
 function UI14:Button_159_OnClicked()
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI14, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true)
+
     SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
