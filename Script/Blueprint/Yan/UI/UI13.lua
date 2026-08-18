@@ -104,6 +104,16 @@ end
 function UI13:Item_05_OnClicked()
     self.Gold_Quantity = CFG_SL.All.Explosive.Effect_Value
     self:Refresh_Gold_Text()
+    L_TipsTool.ShowTips_01("踩到炸弹啦")
+    self.Button_0:SetIsEnabled(false)
+
+    UGCTimerUtility.CreateLuaTimer(2, function()
+        self.Button_0:SetIsEnabled(true)
+        self:Refresh()
+
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, false, false)
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
+    end, false)
 end
 
 function UI13:LuaInit()

@@ -130,8 +130,8 @@ function UI12:Button_147_OnClicked()
     UIMgr.StopLotteryEffect()
     self.Is_Lottery_Drawing = false
     self.Button_69:SetIsEnabled(true)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI12, false)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI12, false, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
 
 end
 --[[----------------------刷新今日免费抽奖次数显示------------------------]]

@@ -48,14 +48,14 @@ function UGCGameState:ReceiveBeginPlay()
             UGCGenericMessageSystem.Messages.UGC.GamePart.GamePartLoaded, self, self.OnGamePartLoaded)
     end
 
-    if not self:InitRankBP() then
-        self.Rank_BP_Init_Timer = Timer.InsertTimer(Rank_BP_Init_Check_Interval, function()
-            if self:InitRankBP() then
-                Timer.RemoveTimer(self.Rank_BP_Init_Timer)
-                self.Rank_BP_Init_Timer = nil
-            end
-        end, true, "RankBPInit", 0)
-    end
+    -- if not self:InitRankBP() then
+    --     self.Rank_BP_Init_Timer = Timer.InsertTimer(Rank_BP_Init_Check_Interval, function()
+    --         if self:InitRankBP() then
+    --             Timer.RemoveTimer(self.Rank_BP_Init_Timer)
+    --             self.Rank_BP_Init_Timer = nil
+    --         end
+    --     end, true, "RankBPInit", 0)
+    -- end
 end
 
 --[[----------------------替换获得物品默认界面------------------------]]
