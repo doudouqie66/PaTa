@@ -187,7 +187,7 @@ function UI02:RefreshTowerRewards()
                 self:StopTowerRewardCountdownEffect(Reward_Index)
             end
             if self.Reward_Available_State[Reward_Index] == false and Is_Available then
-                SoundMgr.PlaySound2D(SoundMgr.SoundName.Reward_Ready)
+                SoundMgr.PlaySound2D(SoundMgr.SoundName.Ding)
             end
             self.Reward_Available_State[Reward_Index] = Is_Available
             Reward_Buttons[Reward_Index]:SetVisibility(ESlateVisibility.Visible)

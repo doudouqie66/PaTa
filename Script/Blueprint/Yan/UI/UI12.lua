@@ -227,6 +227,7 @@ function UI12:Button_69_OnClicked()
     end
 
     SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_Start)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_In_Progress)
     self.Is_Lottery_Drawing = true -- 抽奖动画进行中
     self.Button_69:SetIsEnabled(false)
     local Target_Index = self:GetLotteryResult() -- 本次抽奖结果
@@ -237,6 +238,7 @@ function UI12:Button_69_OnClicked()
         end
         self.Is_Lottery_Drawing = false
         self.Button_69:SetIsEnabled(true)
+        SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_End)
         local Reward_Count = self.Last_Reward_Count or 0 -- 本次奖励数量
         if Reward_Count > 0 then
             if Player_Controller then

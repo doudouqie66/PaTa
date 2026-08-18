@@ -60,6 +60,7 @@ end
 --[[----------------------开金币------------------------]] --
 function UI11:Button_72_OnClicked()
     self.Button_72:SetIsEnabled(false)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_End)
 
     local Drop_Result = UGCDropSystem.DropItems(5)
     local Drop_Count = Drop_Result[1005]
