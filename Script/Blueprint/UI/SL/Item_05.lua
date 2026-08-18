@@ -26,7 +26,7 @@ end
 
 --[[----------------------播放点击音效并隐藏按钮------------------------]]
 function Item_05:PlayClickEffect()
-    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Error)
     self.UIParticleEmitter_0:SetVisibility(ESlateVisibility.Visible)
     self:FadeOutButton()
 end
