@@ -14,11 +14,10 @@ function L_TipsTool.ShowTips_01(text, PlayerController, Sound_Name)
     end
 
     local NowTime = os.time()
-    if NowTime - LastToastTime < 1 then
-        return
+    if NowTime - LastToastTime >= 1 then
+        LastToastTime = NowTime
+        TipsMgr.ShowTips_01(text)
     end
-    LastToastTime = NowTime
-    TipsMgr.ShowTips_01(text)
     if Sound_Name then
         SoundMgr.PlaySound2D(Sound_Name)
     end

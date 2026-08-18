@@ -52,9 +52,9 @@ function UI11:LuaInit()
 end
 --[[-------------------关闭界面---------------------------]] --
 function UI11:Button_147_OnClicked()
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, false)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, false, false)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI10, true, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
 
 end
 --[[----------------------开金币------------------------]] --

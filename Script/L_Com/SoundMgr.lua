@@ -2,6 +2,7 @@ SoundMgr = SoundMgr or {}
 
 local RootPath = UGCMapInfoLib.GetRootLongPackagePath()
 local Sound_Cache = {}
+local Last_Sound_ID = nil -- 上一个2D音效ID
 
 SoundMgr.SoundName = {
     UI_Click = "UI_Click", -- 通用按钮点击
@@ -43,7 +44,7 @@ SoundMgr.SoundPath = {
     Fly_Start = RootPath .. "Asset/WwiseEvent/FlyStart.FlyStart" -- 飞行效果生效
 }
 
---[[----------------------播放2D音效------------------------]]
+--[[----------------------停止上一个并播放2D音效------------------------]]
 function SoundMgr.PlaySound2D(Sound_Name)
     if UGCGameSystem.IsServer() then
         return
@@ -66,7 +67,11 @@ function SoundMgr.PlaySound2D(Sound_Name)
         return
     end
 
-    return UGCSoundManagerSystem.PlaySound2D(Sound_Asset)
+    if Last_Sound_ID then
+        UGCSoundManagerSystem.StopSoundByID(Last_Sound_ID)
+    end
+    Last_Sound_ID = UGCSoundManagerSystem.PlaySound2D(Sound_Asset)
+    return Last_Sound_ID
 end
 
 --[[----------------------依附Actor播放3D音效------------------------]]

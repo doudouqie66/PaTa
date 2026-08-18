@@ -35,6 +35,7 @@ function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统U
         UI_BP:SetVisibility(ESlateVisibility.Collapsed)
         L_GloTools.Change_SysUI(true)
     end
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
 
 --[[----------------------改变系统UI------------------------]]
