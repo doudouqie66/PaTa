@@ -1,4 +1,4 @@
----@class Weapon03_C:BP_UGC_MeleeWeap_TangDao_C
+---@class Weapon03_C:BP_UGC_MeleeWeap_Pan_C
 --Edit Below--
 local Weapon03 = {}
  
