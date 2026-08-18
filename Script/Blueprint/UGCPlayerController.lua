@@ -65,7 +65,7 @@ function UGCPlayerController:EnsureInitialWeapons()
             if UGCBackpackSystemV2.GetItemCountV2(self, Pistol_Item_ID) < 1 then
                 UGCBackpackSystemV2.AddItemV2(self, Pistol_Item_ID, 1)
             end
-            UGCBackpackSystemV2.AddItemV2(self, 8310046, 666)
+            -- UGCBackpackSystemV2.AddItemV2(self, 8310046, 666)d
             -- UGCBackpackSystemV2.AddItemV2(self, 8310044, 666)
         end
     end)

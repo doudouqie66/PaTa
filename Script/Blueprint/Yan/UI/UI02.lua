@@ -109,7 +109,9 @@ function UI02:LuaInit()
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyStarterGiftResult, self)
     UGCCommoditySystem.UGCProductsChangedDelegate:Add(self.RefreshStarterGiftButton, self)
     self.Button_181.OnClicked:Add(self.Button_181_OnClicked, self);
-	-- [Editor Generated Lua] BindingEvent End;
+    self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
+    self.Button_3.OnClicked:Add(self.Button_3_OnClicked, self);
+    -- [Editor Generated Lua] BindingEvent End;
     self:RefreshCurrency()
     local Reward_Buttons = {self.Button_5, self.Button_6, self.Button_7, self.Button_8, self.Button_9} -- 五档奖励按钮
     for _, Reward_Button in ipairs(Reward_Buttons) do
@@ -308,6 +310,17 @@ function UI02:Button_181_OnClicked()
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Tele_To_Point, 1)
     self.Button_181:SetVisibility(ESlateVisibility.Collapsed)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
+end
+
+function UI02:Button_2_OnClicked()
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, false, true)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI13, true, true)
+end
+
+function UI02:Button_3_OnClicked()
+
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, false, true)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI12, true, true)
 end
 
 -- [Editor Generated Lua] function define End;
