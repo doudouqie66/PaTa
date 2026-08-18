@@ -27,6 +27,7 @@
 -- Edit Below--
 local BaseMonse = {}
 local Pistol_Item_ID = 8310045 -- 手枪物品ID
+local Force_Hatred_Duration = 10 -- 强制追击持续时间
 
 -- --[[----------------------初始化怪物逻辑------------------------]]
 function BaseMonse:ReceiveBeginPlay()
@@ -60,6 +61,10 @@ function BaseMonse:ReceiveTick(DeltaTime)
     end
 
     if self.Last_Hit_Target.Is_In_Monster_Safe_Area then
+        if self.Force_Hatred_Timer then
+            UGCTimerUtility.RemoveLuaTimer(self.Force_Hatred_Timer)
+            self.Force_Hatred_Timer = nil -- 清空强制追击计时器
+        end
         self:RemoveForceHatredTarget()
         UGCGenericCharacterSystem.StopMove(self)
         self.Last_Hit_Target = nil
@@ -108,6 +113,21 @@ function BaseMonse:PostTakeDamageEvent(Damage, EventInstigator, DamageCauser, Da
 
     self.Last_Hit_Target = Hit_Player -- 记录最后命中的玩家
     self:SetForceHatredTarget(Hit_Player)
+
+    if self.Force_Hatred_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Force_Hatred_Timer)
+    end
+
+    local Chase_Target = Hit_Player -- 本次强制追击目标
+    self.Force_Hatred_Timer = UGCTimerUtility.CreateLuaTimer(Force_Hatred_Duration, function()
+        self.Force_Hatred_Timer = nil -- 清空强制追击计时器
+        if self.Last_Hit_Target ~= Chase_Target then
+            return
+        end
+
+        self:RemoveForceHatredTarget()
+        self.Last_Hit_Target = nil
+    end, false)
 end
 
 -- ---受击前置伤害修改
@@ -140,6 +160,11 @@ end
 ---@param FDamageEvent DamageEvent 伤害事件
 ---@param DamageTypeID int32 伤害类型
 function BaseMonse:BPDie(KillingDamage, EventInstigator, DamageCauser, DamageEvent, DamageTypeID)
+    if self.Force_Hatred_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Force_Hatred_Timer)
+        self.Force_Hatred_Timer = nil -- 清空强制追击计时器
+    end
+
     if self:HasAuthority() then
         -- 只有服务端才可以掉落
         self.UGCPresetCommonDropItemComponent:StartDrop(self, EventInstigator, {})

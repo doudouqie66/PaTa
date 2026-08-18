@@ -107,7 +107,7 @@ function UI13:Item_05_OnClicked()
     L_TipsTool.ShowTips_01("踩到炸弹啦，啥都没啦")
     self.Button_0:SetIsEnabled(false)
 
-    UGCTimerUtility.CreateLuaTimer(2, function()
+    UGCTimerUtility.CreateLuaTimer(5, function()
         self.Button_0:SetIsEnabled(true)
         self:Refresh()
 
