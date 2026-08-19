@@ -6,6 +6,7 @@
 ---@field Image_180 UImage
 ---@field Image_181 UImage
 ---@field TextBlock_132 UTextBlock
+---@field UIParticleEmitter_18 UUIParticleEmitter
 --Edit Below--
 ---@class UI09_C:UUserWidget
 ---@field Button_98 UButton

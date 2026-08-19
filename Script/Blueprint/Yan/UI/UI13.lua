@@ -3,6 +3,7 @@
 ---@field Image_6 UImage
 ---@field Image_145 UImage
 ---@field TextBlock_166 UTextBlock
+---@field UIParticleEmitter_18 UUIParticleEmitter
 ---@field WrapBox_29 UWrapBox
 ---@field Pre_Item_01 UClass
 ---@field Pre_Item_02 UClass

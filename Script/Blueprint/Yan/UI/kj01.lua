@@ -4,6 +4,7 @@
 ---@field Image_18 UImage
 ---@field TextBlock_81 UTextBlock
 ---@field TextBlock_82 UTextBlock
+---@field UIParticleEmitter_18 UUIParticleEmitter
 --Edit Below--
 local kj01 = {
     bInitDoOnce = false

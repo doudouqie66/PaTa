@@ -9,6 +9,7 @@
 ---@field Image_246 UImage
 ---@field ProgressBar_76 UProgressBar
 ---@field UIParticleEmitter_0 UUIParticleEmitter
+---@field UIParticleEmitter_18 UUIParticleEmitter
 --Edit Below--
 ---@class UI01_C:UUserWidget
 ---@field Button_75 UButton
