@@ -1,7 +1,10 @@
 ---@class UI_CountDownAttnetion_C:UUserWidget
+---@field Image_1 UImage
 ---@field Image_53 UImage
 ---@field TextBlock_0 UTextBlock
 ---@field TextBlock_1 UTextBlock
+---@field TextBlock_4 UTextBlock
+---@field TextBlock_5 UTextBlock
 --Edit Below--
 local Event_Countdown_Start_Scale = 1.5 -- 事件倒计时起始缩放
 local Event_Countdown_End_Scale = 1.0 -- 事件倒计时结束缩放
