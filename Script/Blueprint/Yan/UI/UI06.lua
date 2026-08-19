@@ -35,7 +35,7 @@
 ---@field Image_218 UImage
 ---@field Image_219 UImage
 ---@field Image_286 UImage
--- Edit Below--
+--Edit Below--
 ---@class UI06_C:UUserWidget
 ---@field Button_88 UButton
 ---@field Button_159 UButton
@@ -54,7 +54,7 @@
 ---@field Image_218 UImage
 ---@field Image_219 UImage
 ---@field Image_286 UImage
--- Edit Below--
+--Edit Below--
 ---@class UI06_C:UUserWidget
 ---@field Button_88 UButton
 ---@field Button_159 UButton
@@ -73,7 +73,7 @@
 ---@field Image_218 UImage
 ---@field Image_219 UImage
 ---@field Image_286 UImage
--- Edit Below--
+--Edit Below--
 local UI06 = {
     bInitDoOnce = false,
     Pending_Open_Gift_Pack = false,
@@ -123,7 +123,7 @@ end
 
 function UI06:Button_159_OnClicked()
 
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI06, false)
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI06, false, false)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.Event_Notice)
 end
 
