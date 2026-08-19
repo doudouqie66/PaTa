@@ -2,7 +2,7 @@ EventScheduler = EventScheduler or {}
 local L_Enum = UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
 local L_TipsTool = UGCGameSystem.UGCRequire('Script.L_Com.L_TipsTool')
 EventScheduler.Tower_Players = EventScheduler.Tower_Players or {} -- 当前在塔内的玩家
-local Ammo_Grant_Interval = 30 -- 火箭弹发放间隔秒数
+local Ammo_Grant_Interval = 60 -- 火箭弹发放间隔秒数
 local SQ_Ammo_Item_ID = 8310046 -- RPG火箭弹物品ID
 
 --[[---------------------启动事件循环-------------------------]] --
@@ -31,7 +31,7 @@ function EventScheduler.GetActiveEvent()
         local eventStart = event.warnStartTime + event.warnDuration
         local eventEnd = eventStart + event.eventDuration
         if cycleTime >= eventStart and cycleTime < eventEnd then
-            return event
+            return event, eventEnd - cycleTime
         end
     end
     return nil
@@ -80,7 +80,7 @@ function EventScheduler:_OnWarn(event)
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Player_Pawn) -- 塔内玩家控制器
         if Player_Controller then
             UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown,
-                event.warnDuration, event.name)
+                event.warnDuration, event.name, event.eventDuration)
         end
     end
 
@@ -88,6 +88,14 @@ end
 
 --[[---------------------事件生效中-------------------------]] --
 function EventScheduler:_OnStart(event)
+    for Player_Pawn in pairs(EventScheduler.Tower_Players) do
+        local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Player_Pawn) -- 塔内玩家控制器
+        if Player_Controller then
+            UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown,
+                0, event.name, event.eventDuration)
+        end
+    end
+
     if event.name == L_Enum.Name_Event.MonsterStop then
         -- 开启怪物静止效果
         EventScheduler:_AddBuffToAllMonsters(L_Enum.Name_BuffPath.Buff02, event)
@@ -102,6 +110,14 @@ end
 
 --[[--------------------事件结束，解除效果--------------------------]] --
 function EventScheduler:_OnEnd(event)
+    for Player_Pawn in pairs(EventScheduler.Tower_Players) do
+        local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Player_Pawn) -- 塔内玩家控制器
+        if Player_Controller then
+            UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown,
+                -1, "", 0)
+        end
+    end
+
     local Buff_Path = EventScheduler:_GetPlayerEventBuffPath(event) -- 当前事件对应的玩家Buff路径
     if Buff_Path then
         EventScheduler:_RemoveBuffFromTowerPlayers(Buff_Path)
@@ -159,14 +175,17 @@ function EventScheduler:RegisterTowerPlayer(Pawn)
     if Warning_Event then
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Pawn) -- 进入区域的玩家控制器
         UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown,
-            Countdown_Remaining, Warning_Event.name)
+            Countdown_Remaining, Warning_Event.name, Warning_Event.eventDuration)
     end
 
-    local Active_Event = EventScheduler.GetActiveEvent() -- 当前生效事件
+    local Active_Event, Active_Remaining = EventScheduler.GetActiveEvent() -- 当前生效事件和剩余秒数
     if Active_Event then
+        local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Pawn) -- 进入区域的玩家控制器
+        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown,
+            0, Active_Event.name, Active_Remaining)
         local Buff_Path = EventScheduler:_GetPlayerEventBuffPath(Active_Event) -- 当前事件对应的玩家Buff路径
         if Buff_Path then
-            EventScheduler:_AddBuffToOnePlayers(Pawn, Buff_Path, Active_Event.eventDuration)
+            EventScheduler:_AddBuffToOnePlayers(Pawn, Buff_Path, Active_Remaining)
             EventScheduler.Tower_Players[Pawn] = Buff_Path
         end
     end
@@ -177,7 +196,7 @@ function EventScheduler:UnregisterTowerPlayer(Pawn)
     local Buff_Path = EventScheduler.Tower_Players[Pawn] -- 区域给该玩家施加的Buff路径
     EventScheduler.Tower_Players[Pawn] = nil
     local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Pawn) -- 离开区域的玩家控制器
-    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown, 0, "")
+    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Event_Countdown, -1, "", 0)
     if Buff_Path then
         EventScheduler:_RemoveBuffFromOnePlayers(Pawn, Buff_Path)
     end

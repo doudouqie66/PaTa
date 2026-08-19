@@ -1,8 +1,9 @@
 ---@class UI_Black_C:UUserWidget
----@field Button_151 UButton
 ---@field Image_0 UImage
----@field ScaleBox_43 UScaleBox
----@field TextBlock_287 UTextBlock
+---@field Image_1 UImage
+---@field ScaleBox_1 UScaleBox
+---@field TextBlock_4 UTextBlock
+---@field TextBlock_5 UTextBlock
 --Edit Below--
 local UI_Black = {
     bInitDoOnce = false,
@@ -11,7 +12,7 @@ local UI_Black = {
 
 --[[----------------------构造黑夜界面------------------------]]
 function UI_Black:Construct()
-    self.ScaleBox_43:SetVisibility(ESlateVisibility.Hidden)
+    self.ScaleBox_1:SetVisibility(ESlateVisibility.Collapsed)
 end
 
 -- function UI_Black:Tick(MyGeometry, InDeltaTime)
@@ -19,11 +20,12 @@ end
 -- end
 
 --[[----------------------开始显示黑夜剩余时间------------------------]]
-function UI_Black:StartNightCountdown(Night_Buff)
+function UI_Black:StartNightCountdown(Night_Buff, Event_Name)
     self:StopNightCountdown()
     self.Night_Buff = Night_Buff -- 当前黑夜Buff
-    self.TextBlock_287:SetText(tostring(math.max(0, math.ceil(Night_Buff:GetRemainingTime()))))
-    self.ScaleBox_43:SetVisibility(ESlateVisibility.HitTestInvisible)
+    self.TextBlock_5:SetText("【" .. (Event_Name or "黑夜") .. "】剩余：")
+    self.TextBlock_4:SetText(tostring(math.max(0, math.ceil(Night_Buff:GetRemainingTime()))))
+    self.ScaleBox_1:SetVisibility(ESlateVisibility.HitTestInvisible)
 
     self.Night_Countdown_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
         if not self.Night_Buff or not UE.IsValid(self.Night_Buff) then
@@ -32,7 +34,7 @@ function UI_Black:StartNightCountdown(Night_Buff)
         end
 
         local Remaining_Seconds = math.max(0, math.ceil(self.Night_Buff:GetRemainingTime())) -- 黑夜剩余秒数
-        self.TextBlock_287:SetText(tostring(Remaining_Seconds))
+        self.TextBlock_4:SetText(tostring(Remaining_Seconds))
         if Remaining_Seconds <= 0 then
             self:StopNightCountdown()
         end
@@ -46,7 +48,7 @@ function UI_Black:StopNightCountdown()
         self.Night_Countdown_Timer = nil
     end
     self.Night_Buff = nil
-    self.ScaleBox_43:SetVisibility(ESlateVisibility.Hidden)
+    self.ScaleBox_1:SetVisibility(ESlateVisibility.Collapsed)
 end
 
 --[[----------------------销毁黑夜界面------------------------]]

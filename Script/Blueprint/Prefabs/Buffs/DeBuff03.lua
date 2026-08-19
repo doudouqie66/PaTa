@@ -14,7 +14,7 @@ function DeBuff03:OnApply_BP(OwnerActor)
     if self:IsAutonomous() then
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Black, true)
         local UI_Black = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Black] -- 黑夜界面
-        UI_Black:StartNightCountdown(self)
+        UI_Black:StartNightCountdown(self, L_Enum.Name_Event.ShortNight)
     end
 end
 

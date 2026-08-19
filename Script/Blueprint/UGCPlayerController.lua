@@ -865,8 +865,8 @@ function UGCPlayerController:Play_Sound(Sound_Name)
 end
 
 --[[----------------------播放事件倒计时------------------------]]
-function UGCPlayerController:Event_Countdown(Countdown_Duration, Event_Name)
-    if Countdown_Duration <= 0 then
+function UGCPlayerController:Event_Countdown(Countdown_Duration, Event_Name, Event_Duration)
+    if Countdown_Duration < 0 then
         local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_CountDownAttnetion] -- 倒计时提示界面
         if UI_BP then
             UI_BP:StopEventCountdown()
@@ -874,7 +874,7 @@ function UGCPlayerController:Event_Countdown(Countdown_Duration, Event_Name)
         return
     end
 
-    L_GloTools.StartEventCountdown(Countdown_Duration, Event_Name)
+    L_GloTools.StartEventCountdown(Countdown_Duration, Event_Name, Event_Duration)
 end
 
 --[[----------------------显示房间密码界面------------------------]]

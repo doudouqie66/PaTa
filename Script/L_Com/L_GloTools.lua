@@ -57,10 +57,10 @@ function L_GloTools.Change_SysUI(bool)
 end
 
 --[[----------------------播放事件倒计时------------------------]]
-function L_GloTools.StartEventCountdown(Countdown_Duration, Event_Name)
+function L_GloTools.StartEventCountdown(Countdown_Duration, Event_Name, Event_Duration)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_CountDownAttnetion, true, false)
     local UI_BP = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_CountDownAttnetion] -- 倒计时提示界面
-    UI_BP:StartEventCountdown(Countdown_Duration, Event_Name)
+    UI_BP:StartEventCountdown(Countdown_Duration, Event_Name, Event_Duration)
 end
 
 --[[----------------------购买商城商品------------------------]]
