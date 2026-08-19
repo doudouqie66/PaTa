@@ -18,6 +18,27 @@
 ---@field ClimbSpeed float
 ---@field UpSphereLocation FVector
 ---@field DownSphereLocation FVector
+--Edit Below--
+---@class BP_LadderChild_C:ActivityBaseActor
+---@field IdleSequence UActorSequenceComponent
+---@field CH_Base_SK USkeletalMeshComponent
+---@field UpSequence UActorSequenceComponent
+---@field DownSequence UActorSequenceComponent
+---@field OverlapCheckArea UOverlapCheckAreaComponent
+---@field ClickActorComponentBase UClickActorComponentBase
+---@field ActivityFakePossess UActivityFakePossessComponent
+---@field Box UBoxComponent
+---@field CustomActorMove UCustomActorMoveComponent
+---@field DefaultSceneRoot USceneComponent
+---@field SelfClass UClass
+---@field UpSequenceBind FActivityActorSequenceBinding
+---@field DownSequenceBind FActivityActorSequenceBinding
+---@field IdleSequenceBind FActivityActorSequenceBinding
+---@field UpPosition FVector
+---@field DownPosition FVector
+---@field ClimbSpeed float
+---@field UpSphereLocation FVector
+---@field DownSphereLocation FVector
 -- Edit Below--
 local BP_LadderChild = {
     DownLocation = nil,
