@@ -3,7 +3,6 @@
 ---@field Button_85 UButton
 ---@field Button_329 UButton
 ---@field UI_CTP_NJ UI_CTP_NJ_C
----@field UIParticleEmitter_18 UUIParticleEmitter
 --Edit Below--
 ---@class UI_Fly_C:UUserWidget
 ---@field Button_46 UButton

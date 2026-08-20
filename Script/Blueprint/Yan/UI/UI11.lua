@@ -13,7 +13,6 @@
 ---@field Image_286 UImage
 ---@field TextBlock_48 UTextBlock
 ---@field TextBlock_49 UTextBlock
----@field UIParticleEmitter_11 UUIParticleEmitter
 ---@field UIParticleEmitter_22 UUIParticleEmitter
 --Edit Below--
 local UI11 = {

@@ -26,7 +26,6 @@
 ---@field TextBlock_434 UTextBlock
 ---@field TextBlock_435 UTextBlock
 ---@field TextBlock_436 UTextBlock
----@field UIParticleEmitter_18 UUIParticleEmitter
 --Edit Below--
 ---@class UI03_C:UUserWidget
 ---@field Button_107 UButton

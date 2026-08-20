@@ -36,7 +36,6 @@
 ---@field Image_271 UImage
 ---@field TextBlock_165 UTextBlock
 ---@field TextBlock_166 UTextBlock
----@field UIParticleEmitter_32 UUIParticleEmitter
 --Edit Below--
 local UIMgr = UGCGameSystem.UGCRequire("Script.L_Com.UIMgr") -- 抽奖动画管理
 local Lottery_Hide_X = 0 -- 抽奖完成后的隐藏横坐标

@@ -41,7 +41,6 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
----@field UIParticleEmitter_18 UUIParticleEmitter
 --Edit Below--
 ---@class UI04_C:UUserWidget
 ---@field Button_0 UButton

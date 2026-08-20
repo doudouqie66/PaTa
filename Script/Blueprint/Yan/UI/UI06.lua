@@ -16,7 +16,6 @@
 ---@field Image_218 UImage
 ---@field Image_219 UImage
 ---@field Image_286 UImage
----@field UIParticleEmitter_18 UUIParticleEmitter
 --Edit Below--
 ---@class UI06_C:UUserWidget
 ---@field Button_88 UButton
