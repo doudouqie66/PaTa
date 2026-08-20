@@ -5,13 +5,29 @@
 local Buff10 = {}
 local L_Enum = UGCGameSystem.UGCRequire("Script.L_Com.L_Enum") -- 枚举配置
 
---[[----------------------Buff挂载时应用GM产出周期------------------------]]
+--[[----------------------Buff挂载时应用产出周期并播放音效------------------------]]
 function Buff10:OnApply_BP(OwnerActor)
     if self:HasAuthority() then
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OwnerActor) -- 获取玩家控制器
         if Player_Controller.Run_Area_Gold_Interval then
             self.BuffInfo.BuffEffects[1].Interval = Player_Controller.Run_Area_Gold_Interval
         end
+    end
+
+    if self:IsAutonomous() then
+        self.Hit_Sound_ID = SoundMgr.PlaySound2D(SoundMgr.SoundName.Hit)
+    end
+end
+
+--[[----------------------Buff移除时停止Hit音效------------------------]]
+function Buff10:OnUnApply_BP(OwnerActor, Reason)
+    if not self:IsAutonomous() then
+        return
+    end
+
+    if self.Hit_Sound_ID then
+        UGCSoundManagerSystem.StopSoundByID(self.Hit_Sound_ID)
+        self.Hit_Sound_ID = nil
     end
 end
 

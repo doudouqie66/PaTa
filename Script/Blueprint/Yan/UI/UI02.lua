@@ -57,6 +57,7 @@ local UI02 = {
 
 --[[----------------------构造主城界面------------------------]]
 function UI02:Construct()
+    self.First_Charge_Image_Hidden = false -- 首充图片本局隐藏状态
     self:LuaInit();
 
 end
@@ -226,6 +227,7 @@ function UI02:Button_86_OnClicked()
 end
 --[[--------------------超值周卡--------------------------]] --
 function UI02:Button_111_OnClicked()
+    self.Image_0:SetVisibility(ESlateVisibility.Collapsed)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI03, true)
     local Week_Card_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI03] -- 周卡页面
     Week_Card_UI:RefreshWeekGiftPurchased(UGCGameSystem.GetLocalPlayerController())
@@ -234,6 +236,7 @@ end
 --[[--------------------金币商店--------------------------]] --
 
 function UI02:Button_112_OnClicked()
+    self.Image_1:SetVisibility(ESlateVisibility.Collapsed)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI04, true)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
 end
@@ -251,8 +254,10 @@ function UI02:RefreshStarterGiftButton()
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
     local Purchased_Times = ShopV2Manager:GetPurchasedTimes(L_Enum.ID_ShopProduct.StarterGift, Player_Controller) -- 首充商品已购买次数
     local Starter_Gift_Visibility = Purchased_Times > 0 and ESlateVisibility.Collapsed or ESlateVisibility.Visible -- 首充入口显示状态
+    local Starter_Gift_Image_Visibility = (Purchased_Times > 0 or self.First_Charge_Image_Hidden) and
+                                              ESlateVisibility.Collapsed or ESlateVisibility.Visible -- 首充图片显示状态
     self.Button_0:SetVisibility(Starter_Gift_Visibility)
-    self.Image_187:SetVisibility(Starter_Gift_Visibility)
+    self.Image_187:SetVisibility(Starter_Gift_Image_Visibility)
 end
 
 --[[----------------------首充购买成功后隐藏入口按钮------------------------]]
@@ -269,6 +274,8 @@ end
 
 --[[---------------------首充-------------------------]] --
 function UI02:Button_0_OnClicked()
+    self.First_Charge_Image_Hidden = true -- 点击后本局不再显示首充图片
+    self.Image_187:SetVisibility(ESlateVisibility.Collapsed)
     local UI_Path = L_Enum.Name_ClassPath.UI06 -- 首充界面路径
     local UI_BP = L_GloTools.UI_Map[UI_Path] -- 已创建的首充界面
     local Is_Opening = UI_BP == nil or not UI_BP:IsVisible() -- 本次是否打开界面

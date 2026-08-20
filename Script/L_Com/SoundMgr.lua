@@ -31,7 +31,8 @@ SoundMgr.SoundName = {
     Monster_Voice = "Monster_Voice", -- 怪物声音
     Hit_Punch = "Hit_Punch", -- 拳击命中
     Top_Cup = "Top_Cup", -- 触碰登顶奖杯音效
-    Fly_Start = "Fly_Start" -- 飞行效果生效
+    Fly_Start = "Fly_Start", -- 飞行效果生效
+    Hit = "Hit" -- Buff持续音效
 }
 
 SoundMgr.SoundPath = {
@@ -62,7 +63,8 @@ SoundMgr.SoundPath = {
     Monster_Voice = RootPath .. "Asset/WwiseEvent/MonsterVoice.MonsterVoice", -- 怪物声音
     Hit_Punch = RootPath .. "Asset/WwiseEvent/HitPunch.HitPunch", -- 拳击命中
     Top_Cup = RootPath .. "Asset/WwiseEvent/TopCup.TopCup", -- 触碰登顶奖杯音效
-    Fly_Start = RootPath .. "Asset/WwiseEvent/FlyStart.FlyStart" -- 飞行效果生效
+    Fly_Start = RootPath .. "Asset/WwiseEvent/FlyStart.FlyStart", -- 飞行效果生效
+    Hit = RootPath .. "Asset/WwiseEvent/Hit.Hit" -- Buff持续音效
 }
 
 --[[----------------------播放2D音效------------------------]]
