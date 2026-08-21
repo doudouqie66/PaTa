@@ -25,7 +25,6 @@ local UGCGameState = {
 local Trophy_Rank_ID = 1 -- 奖杯排行榜ID
 local Max_Rank_Pawn_Count = 60 -- 最大排行角色数量
 local Rank_BP_Init_Check_Interval = 1 -- 排行角色初始化检查间隔秒数
-local Rank_BP_Collect_Check_Interval = 1 -- 排行角色同步检查间隔秒数
 local Virtual_Item_Get_UI_Class_Path = "Asset/Blueprint/UI/UGC_Get_UIBP.UGC_Get_UIBP_C" -- 自定义获得物品界面路径
 
 --[[----------------------注册客户端可调用的服务端RPC------------------------]]
@@ -48,14 +47,14 @@ function UGCGameState:ReceiveBeginPlay()
             UGCGenericMessageSystem.Messages.UGC.GamePart.GamePartLoaded, self, self.OnGamePartLoaded)
     end
 
-    -- if not self:InitRankBP() then
-    --     self.Rank_BP_Init_Timer = Timer.InsertTimer(Rank_BP_Init_Check_Interval, function()
-    --         if self:InitRankBP() then
-    --             Timer.RemoveTimer(self.Rank_BP_Init_Timer)
-    --             self.Rank_BP_Init_Timer = nil
-    --         end
-    --     end, true, "RankBPInit", 0)
-    -- end
+    if not self:InitRankBP() then
+        self.Rank_BP_Init_Timer = Timer.InsertTimer(Rank_BP_Init_Check_Interval, function()
+            if self:InitRankBP() then
+                Timer.RemoveTimer(self.Rank_BP_Init_Timer)
+                self.Rank_BP_Init_Timer = nil
+            end
+        end, true, "RankBPInit", 0)
+    end
 end
 
 --[[----------------------替换获得物品默认界面------------------------]]
@@ -90,27 +89,10 @@ end
 --[[----------------------初始化排行榜角色------------------------]]
 function UGCGameState:InitRankBP()
     if self:HasAuthority() then
-        return self:InitRankBPServer()
+        return true
     end
 
     return self:InitRankBPClient()
-end
-
---[[----------------------服务端初始化排行榜角色------------------------]]
-function UGCGameState:InitRankBPServer()
-    local Spawn_Points = UGCActorComponentUtility.GetAllActorsWithTag(self, "Point_RankBP") -- 排行角色点位
-    if #Spawn_Points == 0 then
-        return false
-    end
-
-    table.sort(Spawn_Points, function(Point_A, Point_B)
-        return Point_A.ID_PointSpawn < Point_B.ID_PointSpawn
-    end)
-
-    self.Rank_Spawn_Points = Spawn_Points
-    self.Rank_Pawn_By_ID = {}
-    self:SpawnRankPawns()
-    return true
 end
 
 --[[----------------------客户端初始化排行榜展示------------------------]]
@@ -123,35 +105,32 @@ function UGCGameState:InitRankBPClient()
         return false
     end
 
-    local Spawn_Points = UGCActorComponentUtility.GetAllActorsWithTag(self, "Point_RankBP") -- 排行角色点位
-    if #Spawn_Points == 0 then
+    local Rank_Pawns = UGCActorComponentUtility.GetAllActorsWithTag(self, "Pawn_Rank") -- 场景中的排行角色
+    if #Rank_Pawns == 0 then
         return false
     end
 
     self.Rank_Pawn_By_ID = {}
-    self.Rank_Spawn_Count = math.min(#Spawn_Points, Max_Rank_Pawn_Count)
+    local Max_Rank_ID = 0 -- 场景中最大的有效排行ID
+    for _, Rank_Pawn in ipairs(Rank_Pawns) do
+        local Rank_ID = Rank_Pawn.ID_Rank -- 角色对应的排行榜名次
+        if Rank_ID and Rank_ID > 0 and Rank_ID <= Max_Rank_Pawn_Count then
+            self.Rank_Pawn_By_ID[Rank_ID] = Rank_Pawn
+            Max_Rank_ID = math.max(Max_Rank_ID, Rank_ID)
+        end
+    end
+
+    if Max_Rank_ID == 0 then
+        return false
+    end
+
     self.Ranking_List_Manager = Ranking_List_Manager
 
     Ranking_List_Manager.ShowRankDataChangeDelegate:Add(self.OnTrophyRankDataChanged, self)
     Ranking_List_Manager.ProfileDataChangeDelegate:Add(self.OnTrophyProfileDataChanged, self)
     self.Rank_Data_Delegate_Bound = true
 
-    if self.Rank_Spawn_Count > 0 then
-        Player_Controller.RankingListComponent:RequestRankingListDataByRankID(Trophy_Rank_ID, 1, self.Rank_Spawn_Count,
-            0)
-    end
-
-    if self:CollectRankPawns() < self.Rank_Spawn_Count then
-        self.Rank_BP_Collect_Timer = Timer.InsertTimer(Rank_BP_Collect_Check_Interval, function()
-            local Collected_Count = self:CollectRankPawns() -- 已同步排行角色数量
-            self:RefreshRankPawnProfiles()
-
-            if Collected_Count >= self.Rank_Spawn_Count then
-                Timer.RemoveTimer(self.Rank_BP_Collect_Timer)
-                self.Rank_BP_Collect_Timer = nil
-            end
-        end, true, "RankBPCollect", 0)
-    end
+    Player_Controller.RankingListComponent:RequestRankingListDataByRankID(Trophy_Rank_ID, 1, Max_Rank_ID, 0)
 
     self:RefreshRankPawnProfiles()
     return true
@@ -169,53 +148,6 @@ function UGCGameState:OnTrophyProfileDataChanged(Rank_ID)
     if Rank_ID == Trophy_Rank_ID then
         self:RefreshRankPawnProfiles()
     end
-end
-
---[[----------------------在排行榜点位生成展示角色------------------------]]
-function UGCGameState:SpawnRankPawns()
-    if not self:HasAuthority() then
-        return
-    end
-
-    local Rank_Pawn_Class = UGCObjectUtility.LoadClass(L_Enum.Path_RankBP.BP_Rank_01) -- 排行角色类
-
-    for Spawn_Order, Spawn_Point in ipairs(self.Rank_Spawn_Points) do
-        if Spawn_Order > Max_Rank_Pawn_Count then
-            break
-        end
-
-        local Rank_Index = Spawn_Point.ID_PointSpawn -- 点位对应名次
-
-        if not self.Rank_Pawn_By_ID[Rank_Index] then
-            local Rank_Pawn = UGCGenericCharacterSystem.SpawnGenericCharacter(self, Rank_Pawn_Class,
-                Spawn_Point:K2_GetActorLocation(), Spawn_Point.Arrow:K2_GetComponentRotation()) -- 排行榜怪物
-
-            if Rank_Pawn then
-                Rank_Pawn.Rank_Index = Rank_Index
-                Rank_Pawn:K2_SetActorLocation(Spawn_Point:K2_GetActorLocation())
-                self.Rank_Pawn_By_ID[Rank_Index] = Rank_Pawn
-            end
-        end
-    end
-end
-
---[[----------------------收集服务端同步的排行角色------------------------]]
-function UGCGameState:CollectRankPawns()
-    local Rank_Pawn_Class = UGCObjectUtility.LoadClass(L_Enum.Path_RankBP.BP_Rank_01) -- 排行角色类
-    local Rank_Pawns = UGCActorComponentUtility.GetAllActorsOfClass(self, Rank_Pawn_Class) -- 已同步排行角色
-    local Collected_Count = 0 -- 已收集角色数量
-
-    for _, Rank_Pawn in ipairs(Rank_Pawns) do
-        if Rank_Pawn.Rank_Index and Rank_Pawn.Rank_Index > 0 then
-            self.Rank_Pawn_By_ID[Rank_Pawn.Rank_Index] = Rank_Pawn
-        end
-    end
-
-    for _ in pairs(self.Rank_Pawn_By_ID) do
-        Collected_Count = Collected_Count + 1
-    end
-
-    return Collected_Count
 end
 
 --[[----------------------刷新排行角色名字和头像------------------------]]
@@ -251,11 +183,6 @@ function UGCGameState:ReceiveEndPlay()
     if self.Rank_BP_Init_Timer then
         Timer.RemoveTimer(self.Rank_BP_Init_Timer)
         self.Rank_BP_Init_Timer = nil
-    end
-
-    if self.Rank_BP_Collect_Timer then
-        Timer.RemoveTimer(self.Rank_BP_Collect_Timer)
-        self.Rank_BP_Collect_Timer = nil
     end
 
     if self.Rank_Data_Delegate_Bound and UE.IsValid(self.Ranking_List_Manager) then

@@ -1,6 +1,6 @@
 ---@class BP_Rank_01_C:BP_UGC_GenericMobPawn_Base_C
 ---@field Widget UWidgetComponent
----@field HitBox UCapsuleComponent
+---@field ID_Rank int32
 --Edit Below--
 local BP_Rank_01 = {
     Rank_Index = 0 -- 排行榜名次
