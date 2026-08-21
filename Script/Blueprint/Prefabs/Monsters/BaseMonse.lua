@@ -220,9 +220,6 @@ function BaseMonse:LuaInit()
     -- [Editor Generated Lua] BindingEvent End;
 end
 
-local SHAKE_TYPE_RANDOM = 0 -- 随机类型的镜头震动
-local SHAKE_SCALE = 0.3 -- 镜头震动强度
-local SHAKE_DURATION = 0 -- 镜头震动持续时间
 local Inner_Box_Death_Damage = 9999999 -- 内部碰撞体致命伤害
 
 --[[--------------------开始碰撞，警示--------------------------]] --
@@ -243,9 +240,6 @@ function BaseMonse:OutBox_OnComponentBeginOverlap(OverlappedComponent, OtherActo
 
     -- 通知进入警示区域
     UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, true, self)
-    --[[---------------------开始震动-------------------------]] --
-    UGCGameSystem.ClientPlayCameraShake(PC, SHAKE_TYPE_RANDOM, SHAKE_SCALE, SHAKE_DURATION)
-
 end
 
 --[[--------------------离开碰撞，取消警示--------------------------]] --
@@ -261,9 +255,6 @@ function BaseMonse:OutBox_OnComponentEndOverlap(OverlappedComponent, OtherActor,
     end
     -- 通知退出警示区域
     UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, false)
-    -- 停止震动
-    UGCGameSystem.ClientStopCameraShake(PC, SHAKE_TYPE_RANDOM)
-
 end
 
 --[[----------------------内部碰撞体，死亡------------------------]] --
