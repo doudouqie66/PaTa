@@ -106,6 +106,9 @@ function UI11:Play_Room_Lottery_Result(Drop_Count, Is_Already_Claimed)
 
             UGCTweenSystem.BindCompletedDelegate(Gold_Count_Tween, function()
                 self.TextBlock_49:SetText("+" .. tostring(Drop_Count))
+                local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+                UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller,
+                    L_Enum.Name_RPC.Complete_Room_Lottery_Animation)
             end)
         end)
     end)

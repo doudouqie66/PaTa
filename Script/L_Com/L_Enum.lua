@@ -98,6 +98,7 @@ L_Enum.Name_RPC = {
     Claim_Tower_Reward = "Claim_Tower_Reward", -- 领取塔内计时奖励
     Grant_Virtual_Item = "Grant_Virtual_Item", -- 发放虚拟物品
     Claim_Room_Lottery = "Claim_Room_Lottery", -- 领取当前房间抽奖奖励RPC名称
+    Complete_Room_Lottery_Animation = "Complete_Room_Lottery_Animation", -- 完成当前房间抽奖动画RPC名称
     Show_Room_Lottery_Result = "Show_Room_Lottery_Result", -- 显示当前房间抽奖结果RPC名称
     Use_Coin_Lottery_Free_Chance = "Use_Coin_Lottery_Free_Chance", -- 消耗今日免费抽奖次数RPC名称
     Grant_Coin_Lottery_Share_Reward = "Grant_Coin_Lottery_Share_Reward", -- 分享成功奖励免费抽奖RPC名称
