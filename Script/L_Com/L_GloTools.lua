@@ -27,6 +27,9 @@ function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统U
 
     if bVisible == true then
         UI_BP:SetVisibility(L_GloTools.UI_Visibility_Map[str])
+        if str == L_Enum.Name_ClassPath.UI_Attention then
+            UI_BP:PlayAnimation(UI_BP.wh, 0, 1, EUMGSequencePlayMode.Forward, 1) -- 打开警示界面时播放一次动画
+        end
         if Is_Change_SysUI ~= false and str ~= L_Enum.Name_ClassPath.UI01 and str ~= L_Enum.Name_ClassPath.UI02 and str ~=
             L_Enum.Name_ClassPath.UI10 and str ~= L_Enum.Name_ClassPath.UI_TestBtn then
             L_GloTools.Change_SysUI(false)

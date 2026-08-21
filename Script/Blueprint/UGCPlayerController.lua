@@ -116,8 +116,8 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Tele_To_Point, L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
         L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
         L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
-        L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block,
-        L_Enum.Name_RPC.Claim_Room_Lottery, L_Enum.Name_RPC.Complete_Room_Lottery_Animation
+        L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block, L_Enum.Name_RPC.Claim_Room_Lottery,
+        L_Enum.Name_RPC.Complete_Room_Lottery_Animation
 
 end
 
@@ -531,8 +531,8 @@ end
 
 --[[----------------------完成当前房间抽奖动画并发放奖励------------------------]]
 function UGCPlayerController:Complete_Room_Lottery_Animation()
-    if not self:HasAuthority() or self.Room_Lottery_Pending_Drop_Count <= 0 or
-        UGCGameSystem.GetServerTimeSec() < self.Room_Lottery_Reward_Ready_Time then
+    if not self:HasAuthority() or self.Room_Lottery_Pending_Drop_Count <= 0 or UGCGameSystem.GetServerTimeSec() <
+        self.Room_Lottery_Reward_Ready_Time then
         return
     end
 
@@ -914,7 +914,7 @@ end
 function UGCPlayerController:Mgr_Atten(bool, Monster_Actor)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_Attention, bool, false)
     if bool and Monster_Actor then
-        SoundMgr.PlaySoundAttachActor(SoundMgr.SoundName.Child_Help, Monster_Actor)
+        SoundMgr.PlaySoundAttachActor(SoundMgr.SoundName.Attention02, Monster_Actor)
     end
 end
 --[[----------------------请求复活当前玩家------------------------]]
