@@ -15,7 +15,6 @@
 ---@field Button_112 UButton
 ---@field Button_113 UButton
 ---@field Button_115 UButton
----@field Button_151 UButton
 ---@field Button_181 UButton
 ---@field Image_0 UImage
 ---@field Image_1 UImage
@@ -30,7 +29,6 @@
 ---@field Image_282 UImage
 ---@field Image_283 UImage
 ---@field Image_284 UImage
----@field ScaleBox_43 UScaleBox
 ---@field TextBlock_5 UTextBlock
 ---@field TextBlock_6 UTextBlock
 ---@field TextBlock_7 UTextBlock
@@ -38,7 +36,6 @@
 ---@field TextBlock_9 UTextBlock
 ---@field TextBlock_61 UTextBlock
 ---@field TextBlock_62 UTextBlock
----@field TextBlock_287 UTextBlock
 --Edit Below--
 local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID
