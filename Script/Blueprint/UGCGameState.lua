@@ -258,7 +258,7 @@ function UGCGameState:InitUI()
         -- PlayerController.MainUI_BP = MainUI_BP;
         -- MainUI_BP:AddToViewport();
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI01, true)
-        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_TestBtn, true)
+        -- L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI_TestBtn, true)
 
     end
 
