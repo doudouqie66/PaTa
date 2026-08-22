@@ -1,8 +1,8 @@
 ---@class BP_Item_Jetpack_C:Item_Unuse_Tmp_C
 --Edit Below--
-local BP_Item_Jetpack = {} 
+local BP_Item_Jetpack = {}
 
---[[V2背包事件]]--
+--[[V2背包事件]] --
 --[[
 --- func 能否更新此物品实例，可重载并自定义(服务端生效)
 ---@param NewItemCount number 新物品数量
@@ -118,12 +118,12 @@ local BP_Item_Jetpack = {}
 -- function BP_Item_Jetpack:UGC_OnStopUse(Reason)
     BP_Item_Jetpack.SuperClass.UGC_OnStopUse(self, Reason)
 -- end
-]]--
+]] --
 
-local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
+local Jetpack_Item_ID = 8310037 -- 飞行背囊物品ID
 local Flying_Item_Slot_Name = "EquipmentSlot.Custom.Jetpack" -- 飞行物装备槽位
 
---[[----------------------装备冲天炮时显示飞行界面------------------------]]
+--[[----------------------装备飞行背囊时显示飞行界面------------------------]]
 function BP_Item_Jetpack:OnAttach(ParentDefineID, SlotName)
     BP_Item_Jetpack.SuperClass.OnAttach(self, ParentDefineID, SlotName)
     if SlotName == Flying_Item_Slot_Name then
@@ -133,7 +133,7 @@ function BP_Item_Jetpack:OnAttach(ParentDefineID, SlotName)
     end
 end
 
---[[----------------------卸下冲天炮时隐藏飞行界面------------------------]]
+--[[----------------------卸下飞行背囊时隐藏飞行界面------------------------]]
 function BP_Item_Jetpack:OnDetach(ParentDefineID, SlotName)
     local Own_Backpack_Component = UGCItemSystemV2.GetOwnBackpackComponent(self) -- 所属背包组件
     local Player_Controller = Own_Backpack_Component:GetOwner() -- 所属玩家控制器

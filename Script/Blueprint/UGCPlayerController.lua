@@ -21,7 +21,7 @@ local UGCPlayerController = {
     Tower_Climb_Magic_Carpet_Define_ID = nil, -- 本次爬塔使用的魔毯实例ID
     Is_Monster_Death = false, -- 是否由怪物内部碰撞体致死
     Flying_Item_ID = 0, -- 当前装备的飞行物ID
-    Jetpack_Durability = 0, -- 冲天炮当前耐久秒数
+    Jetpack_Durability = 0, -- 飞行背囊当前耐久秒数
     Coin_Lottery_Free_Chance_Count = 1, -- 今日金币抽奖剩余免费次数
     Coin_Lottery_Share_Reward_Count = 1, -- 今日金币抽奖剩余分享奖励次数
     Room_Lottery_Has_Claimed = false, -- 当前房间是否已经抽奖
@@ -29,7 +29,7 @@ local UGCPlayerController = {
     Room_Lottery_Reward_Ready_Time = 0 -- 当前房间抽奖最早发奖时间
 }
 
-local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
+local Jetpack_Item_ID = 8310037 -- 飞行背囊物品ID
 local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
 local RPG_Item_ID = 8310043 -- RPG物品ID
 local Pistol_Item_ID = 8310045 -- 手枪物品ID
@@ -39,9 +39,9 @@ local Falling_Movement_Mode = 3 -- 下落移动模式
 local Fly_State_Tag = "PawnState.Movement.Flying" -- 飞行状态标签
 local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
-local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能冲天炮最高飞行速度
-local Jetpack_Max_Durability = 10 -- 冲天炮最大耐久秒数
-local Jetpack_Consume_Interval = 0.1 -- 冲天炮耐久扣除间隔
+local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能飞行背囊最高飞行速度
+local Jetpack_Max_Durability = 10 -- 飞行背囊最大耐久秒数
+local Jetpack_Consume_Interval = 0.1 -- 飞行背囊耐久扣除间隔
 local Ticket_Price = 100 -- 门票金币价格
 local Room_Lottery_Drop_ID = 5 -- 当前房间抽奖掉落表ID
 local Room_Lottery_Item_ID = 1005 -- 当前房间抽奖金币物品ID
@@ -148,7 +148,7 @@ function UGCPlayerController:Set_Flying_Movement_Enabled(Is_Enabled)
     Player_Pawn.CharacterMovement:SetMovementMode(Fly_Movement_Mode, 0)
 end
 
---[[----------------------停止冲天炮耐久计时------------------------]]
+--[[----------------------停止飞行背囊耐久计时------------------------]]
 function UGCPlayerController:Stop_Jetpack_Durability_Timer()
     if not self.Jetpack_Durability_Timer_Handle then
         return
@@ -160,7 +160,7 @@ function UGCPlayerController:Stop_Jetpack_Durability_Timer()
     self.Jetpack_Durability_Timer_Delegate = nil
 end
 
---[[----------------------设置冲天炮飞行状态------------------------]]
+--[[----------------------设置飞行背囊飞行状态------------------------]]
 function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     if not self:HasAuthority() or self.Flying_Item_ID ~= Jetpack_Item_ID then
         return
@@ -168,8 +168,8 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
 
     local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
     local Equipped_Item = UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备飞行物
-    local Can_Fly = Equipped_Item and Equipped_Item.TypeSpecificID == Jetpack_Item_ID and self.Jetpack_Durability > 0 -- 是否允许冲天炮飞行
-    local Should_Fly = Is_Flying and Can_Fly -- 冲天炮实际飞行状态
+    local Can_Fly = Equipped_Item and Equipped_Item.TypeSpecificID == Jetpack_Item_ID and self.Jetpack_Durability > 0 -- 是否允许飞行背囊飞行
+    local Should_Fly = Is_Flying and Can_Fly -- 飞行背囊实际飞行状态
     if self.Jetpack_Is_Flying == Should_Fly then
         return
     end
@@ -185,9 +185,9 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
             UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
             if self.Jetpack_Durability <= 0 then
                 self:Set_Jetpack_Flying(false)
-                local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Equipped_Item, 1) -- 删除的冲天炮数量
+                local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Equipped_Item, 1) -- 删除的飞行背囊数量
                 if Removed_Count ~= 1 then
-                    ugcprint("[Jetpack] 耐久耗尽，但冲天炮删除失败")
+                    ugcprint("[Jetpack] 耐久耗尽，但飞行背囊删除失败")
                 end
             end
         end)
@@ -196,7 +196,7 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     else
         self:Stop_Jetpack_Durability_Timer()
         if Equipped_Item and Equipped_Item.TypeSpecificID == Jetpack_Item_ID then
-            local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Equipped_Item) or {} -- 冲天炮实例数据
+            local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Equipped_Item) or {} -- 飞行背囊实例数据
             Custom_Data.Jetpack_Durability = self.Jetpack_Durability
             UGCItemSystemV2.SaveItemCustomData(Equipped_Item, Custom_Data)
         end
@@ -205,16 +205,16 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
     self:Set_Flying_Movement_Enabled(Should_Fly)
 end
 
---[[----------------------设置技能冲天炮飞行状态------------------------]]
+--[[----------------------设置技能飞行背囊飞行状态------------------------]]
 function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
     if not self:HasAuthority() then
         return
     end
 
-    local Jetpack_Define_ID = self.Jetpack_Skill_Define_ID -- 当前技能消耗的冲天炮实例
+    local Jetpack_Define_ID = self.Jetpack_Skill_Define_ID -- 当前技能消耗的飞行背囊实例
     if Is_Flying then
         if not Jetpack_Define_ID or UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) <= 0 then
-            local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 冲天炮实例列表
+            local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 飞行背囊实例列表
             Jetpack_Define_ID = Item_Define_IDs[1]
             self.Jetpack_Skill_Define_ID = Jetpack_Define_ID
         end
@@ -224,7 +224,7 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
             return
         end
 
-        local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 冲天炮实例数据
+        local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 飞行背囊实例数据
         self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
             Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
         UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
@@ -247,12 +247,12 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
             self.Jetpack_Last_Consume_Time = Current_Time
             UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
             if self.Jetpack_Durability <= 0 then
-                local Depleted_Instance_ID = self.Jetpack_Skill_Define_ID.InstanceID -- 已耗尽的冲天炮实例ID
+                local Depleted_Instance_ID = self.Jetpack_Skill_Define_ID.InstanceID -- 已耗尽的飞行背囊实例ID
                 self.Jetpack_Skill_Durability_Depleted = true
                 self:Set_Jetpack_Skill_Flying(false)
                 self.Jetpack_Skill_Durability_Depleted = false
 
-                local Current_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 当前冲天炮实例列表
+                local Current_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 当前飞行背囊实例列表
                 local Depleted_Define_ID = nil -- 重新取得的有效耗尽实例
                 for _, Item_Define_ID in ipairs(Current_Define_IDs) do
                     if Item_Define_ID.InstanceID == Depleted_Instance_ID then
@@ -261,21 +261,21 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
                     end
                 end
                 if not Depleted_Define_ID then
-                    ugcprint("[JetpackSkill] 耐久耗尽，但未找到对应冲天炮实例")
+                    ugcprint("[JetpackSkill] 耐久耗尽，但未找到对应飞行背囊实例")
                     return
                 end
 
-                local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Depleted_Define_ID, 1) -- 删除的冲天炮数量
+                local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Depleted_Define_ID, 1) -- 删除的飞行背囊数量
                 if Removed_Count ~= 1 then
-                    ugcprint("[JetpackSkill] 耐久耗尽，但冲天炮删除失败")
+                    ugcprint("[JetpackSkill] 耐久耗尽，但飞行背囊删除失败")
                     return
                 end
 
                 self.Jetpack_Skill_Define_ID = nil
-                local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 剩余冲天炮实例列表
-                local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件冲天炮实例
+                local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 剩余飞行背囊实例列表
+                local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件飞行背囊实例
                 if Next_Define_ID then
-                    local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件冲天炮实例数据
+                    local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件飞行背囊实例数据
                     if Next_Define_ID.InstanceID == Depleted_Instance_ID then
                         Next_Custom_Data.Jetpack_Durability = Jetpack_Max_Durability
                         UGCItemSystemV2.SaveItemCustomData(Next_Define_ID, Next_Custom_Data)
@@ -295,7 +295,7 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
         self:Stop_Jetpack_Durability_Timer()
         if not self.Jetpack_Skill_Durability_Depleted and Jetpack_Define_ID and
             UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) > 0 then
-            local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 冲天炮实例数据
+            local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 飞行背囊实例数据
             Custom_Data.Jetpack_Durability = self.Jetpack_Durability
             UGCItemSystemV2.SaveItemCustomData(Jetpack_Define_ID, Custom_Data)
         end
@@ -351,8 +351,8 @@ function UGCPlayerController:Update_Flying_Item(Item_ID, Is_Equipped, Item_Defin
     if self.Flying_Item_ID == Jetpack_Item_ID then
         local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
         local Equipped_Item = Item_Define_ID or
-                                  UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备冲天炮
-        local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Equipped_Item) or {} -- 冲天炮实例数据
+                                  UGCBackpackSystemV2.GetEquippedItemBySlotName(Player_Pawn, Flying_Item_Slot_Name) -- 已装备飞行背囊
+        local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Equipped_Item) or {} -- 飞行背囊实例数据
         self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
             Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
     end
@@ -1048,7 +1048,7 @@ function UGCPlayerController:OnRep_Flying_Item_ID()
     self:OnRep_Jetpack_Durability()
 end
 
---[[----------------------刷新冲天炮耐久界面------------------------]]
+--[[----------------------刷新飞行背囊耐久界面------------------------]]
 function UGCPlayerController:OnRep_Jetpack_Durability()
     local Fly_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Fly] -- 飞行物控制界面
     if Fly_UI then

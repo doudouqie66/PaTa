@@ -16,12 +16,12 @@
 --Edit Below--
 local UI_Fly = {}
 
-local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
+local Jetpack_Item_ID = 8310037 -- 飞行背囊物品ID
 local Magic_Carpet_Item_ID = 8310038 -- 魔毯物品ID
-local Jetpack_Vertical_Input_Scale = 1 -- 冲天炮上升输入比例
+local Jetpack_Vertical_Input_Scale = 1 -- 飞行背囊上升输入比例
 local Magic_Carpet_Vertical_Input_Scale = 2 -- 魔毯升降输入比例
 local Magic_Carpet_Max_Fly_Speed = 250 -- 魔毯最高飞行速度
-local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能冲天炮最高飞行速度
+local Jetpack_Skill_Max_Fly_Speed = 500 -- 技能飞行背囊最高飞行速度
 -- local Magic_Carpet_Max_Fly_Speed = 2500 -- 魔毯最高飞行速度
 
 local Magic_Carpet_Braking_Deceleration = 2048 -- 魔毯飞行制动力
@@ -107,14 +107,14 @@ function UI_Fly:SetFlyingItem(Flying_Item_ID)
     end
 
     self.Magic_Carpet_Vertical_Input_Value = 0
-    local Is_Jetpack = Flying_Item_ID == Jetpack_Item_ID -- 是否装备冲天炮
+    local Is_Jetpack = Flying_Item_ID == Jetpack_Item_ID -- 是否装备飞行背囊
     local Is_Magic_Carpet = Flying_Item_ID == Magic_Carpet_Item_ID -- 是否装备魔毯
     if Is_Jetpack or Is_Magic_Carpet then
         self:ApplyMagicCarpetMovement()
     else
         self:RestoreMagicCarpetMovement()
     end
-    local Jetpack_Button_Visibility = Is_Jetpack and ESlateVisibility.Visible or ESlateVisibility.Collapsed -- 冲天炮按钮状态
+    local Jetpack_Button_Visibility = Is_Jetpack and ESlateVisibility.Visible or ESlateVisibility.Collapsed -- 飞行背囊按钮状态
     local Magic_Carpet_Button_Visibility = Is_Magic_Carpet and ESlateVisibility.Visible or ESlateVisibility.Collapsed -- 魔毯按钮状态
 
     self.Button_46:SetIsEnabled(Is_Jetpack)
@@ -131,7 +131,7 @@ function UI_Fly:SetFlyingItem(Flying_Item_ID)
     end
 end
 
---[[----------------------只显示技能冲天炮进度条------------------------]]
+--[[----------------------只显示技能飞行背囊进度条------------------------]]
 function UI_Fly:SetSkillJetpackProgressVisible(Is_Visible)
     self.Skill_Jetpack_Progress_Visible = Is_Visible
     if Is_Visible then
@@ -149,7 +149,7 @@ function UI_Fly:SetSkillJetpackProgressVisible(Is_Visible)
     self:SetFlyingItem(Player_Controller and Player_Controller.Flying_Item_ID or 0)
 end
 
---[[----------------------根据冲天炮耐久刷新飞行按钮------------------------]]
+--[[----------------------根据飞行背囊耐久刷新飞行按钮------------------------]]
 function UI_Fly:SetJetpackDurability(Durability_Percent)
     self.UI_CTP_NJ:SetPercent(Durability_Percent)
     if Durability_Percent <= 0 and self.Jetpack_Is_Pressed then
@@ -161,7 +161,7 @@ function UI_Fly:SetJetpackDurability(Durability_Percent)
     end
 end
 
---[[----------------------请求服务器设置冲天炮飞行状态------------------------]]
+--[[----------------------请求服务器设置飞行背囊飞行状态------------------------]]
 function UI_Fly:SetJetpackFlying(Is_Flying)
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
     if Player_Controller then

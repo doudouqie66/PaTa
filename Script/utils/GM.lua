@@ -5,14 +5,12 @@ local Tower_Top_Location = Vector.New(15106.924804688, 37112.078125, 22335.98046
 UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPack.GiftPackManager")
 
 local GM_Backpack_Item_Config = { -- GM背包物品配置
-    {8310000, "喷射钩爪"}, {8310033, "击飞手指", 1}, {8310035, "大力拳套", 1},
-    {8310036, "冰冻锤", 1}, {8310037, "冲天炮"}, {8310002, "返回卷"},
-    {8310014, "加速药水"}, {8310016, "每日登陆礼包"}, {8310018, "跳高药水"},
-    {8310020, "无敌药水"}, {8310021, "香蕉皮"}, {8310023, "隐身药水"},
-    {8310024, "金币宝箱"}, {8310026, "炸弹"}, {8310027, "密码纸条"},
-    {8310007, "粑粑"}, {8310010, "护盾药水"}, {8310003, "金币"},
-    {8310012, "塔顶奖杯"}, {8310044, "火箭弹"}, {8310046, "手枪子弹"}
-}
+{8310000, "喷射钩爪"}, {8310033, "击飞手指", 1}, {8310035, "大力拳套", 1}, {8310036, "冰冻锤", 1},
+{8310037, "飞行背囊"}, {8310002, "返回卷"}, {8310014, "加速药水"}, {8310016, "每日登陆礼包"},
+{8310018, "跳高药水"}, {8310020, "无敌药水"}, {8310021, "香蕉皮"}, {8310023, "隐身药水"},
+{8310024, "金币宝箱"}, {8310026, "炸弹"}, {8310027, "密码纸条"}, {8310007, "粑粑"},
+{8310010, "护盾药水"}, {8310003, "金币"}, {8310012, "塔顶奖杯"}, {8310044, "火箭弹"},
+{8310046, "手枪子弹"}}
 
 --[[----------------------创建指定物品的GM发放函数------------------------]]
 local function Create_Grant_Item_Function(Item_ID, Item_Count)
@@ -36,17 +34,28 @@ function GM:Register(DebugUI)
     local Cur_Func_List = {} -- 自定义GM功能列表
 
     Cur_Func_List["GM"] = {
-        ["数值与权益"] = {
-            {UGCGMUI.ItemTypeEnum.Button, {{"移动到塔顶"}, {"将玩家移动到塔顶"}}, "S_Move_To_Tower_Top"},
-            {UGCGMUI.ItemTypeEnum.Button, {{"添加所有物品"}, {"三把武器各1把，其余各20个"}}, "S_Add_All_Items"},
-            {UGCGMUI.ItemTypeEnum.Button, {{"塔内奖励到下一档"}, {"推进到下一档奖励时间"}}, "S_Advance_Tower_Reward"},
-            {UGCGMUI.ItemTypeEnum.TextInput, {{"设置金币数量", "输入非负整数"}, {"直接设置当前金币总数"}}, "S_Set_Gold_Count"},
-            {UGCGMUI.ItemTypeEnum.TextInput, {{"增加通关奖杯", "输入正整数"}, {"调用玩家控制器的奖杯增加流程"}}, "S_Add_Win_Cup"},
-            {UGCGMUI.ItemTypeEnum.TextInput, {{"设置福利累计时长", "输入累计秒数"}, {"设置塔内在线福利累计时长"}}, "S_Set_Reward_Elapsed_Time"},
-            {UGCGMUI.ItemTypeEnum.TextInput, {{"设置跑步机产出周期", "输入大于0的秒数"}, {"修改当前玩家跑步机金币产出周期"}}, "S_Set_Run_Area_Gold_Interval"},
-            {UGCGMUI.ItemTypeEnum.Button, {{"激活周卡"}, {"发放并打开周卡礼包"}}, "S_Activate_Week_Card"},
-            {UGCGMUI.ItemTypeEnum.Button, {{"过期周卡"}, {"立即将周卡设置为过期"}}, "CS_Expire_Week_Card"}
-        },
+        ["数值与权益"] = {{UGCGMUI.ItemTypeEnum.Button, {{"移动到塔顶"}, {"将玩家移动到塔顶"}},
+                                "S_Move_To_Tower_Top"},
+                               {UGCGMUI.ItemTypeEnum.Button,
+                                {{"添加所有物品"}, {"三把武器各1把，其余各20个"}}, "S_Add_All_Items"},
+                               {UGCGMUI.ItemTypeEnum.Button,
+                                {{"塔内奖励到下一档"}, {"推进到下一档奖励时间"}},
+                                "S_Advance_Tower_Reward"},
+                               {UGCGMUI.ItemTypeEnum.TextInput,
+                                {{"设置金币数量", "输入非负整数"}, {"直接设置当前金币总数"}},
+                                "S_Set_Gold_Count"}, {UGCGMUI.ItemTypeEnum.TextInput,
+                                                      {{"增加通关奖杯", "输入正整数"},
+                                                       {"调用玩家控制器的奖杯增加流程"}}, "S_Add_Win_Cup"},
+                               {UGCGMUI.ItemTypeEnum.TextInput,
+                                {{"设置福利累计时长", "输入累计秒数"},
+                                 {"设置塔内在线福利累计时长"}}, "S_Set_Reward_Elapsed_Time"},
+                               {UGCGMUI.ItemTypeEnum.TextInput,
+                                {{"设置跑步机产出周期", "输入大于0的秒数"},
+                                 {"修改当前玩家跑步机金币产出周期"}}, "S_Set_Run_Area_Gold_Interval"},
+                               {UGCGMUI.ItemTypeEnum.Button, {{"激活周卡"}, {"发放并打开周卡礼包"}},
+                                "S_Activate_Week_Card"},
+                               {UGCGMUI.ItemTypeEnum.Button, {{"过期周卡"}, {"立即将周卡设置为过期"}},
+                                "CS_Expire_Week_Card"}},
         ["发放道具"] = {}
     }
     for _, Item_Config in ipairs(GM_Backpack_Item_Config) do
@@ -63,8 +72,7 @@ end
 --[[----------------------将玩家移动到塔顶------------------------]]
 function GM:S_Move_To_Tower_Top(Param, PC)
     local Player_Pawn = PC:GetPlayerCharacterSafety() -- 当前玩家角色
-    Player_Pawn:DSTeleportToLocationOrRotation(
-        Tower_Top_Location, Rotator.New(0, 0, 0), true, false, true, false)
+    Player_Pawn:DSTeleportToLocationOrRotation(Tower_Top_Location, Rotator.New(0, 0, 0), true, false, true, false)
 end
 
 --[[----------------------给玩家添加所有物品------------------------]]
@@ -100,8 +108,7 @@ function GM:S_Advance_Tower_Reward(Param, PC)
         if Current_Elapsed_Time < Reward_Time then
             PC.Tower_Reward_Accumulated_Time = Reward_Time
             if PC.Tower_Reward_Is_Timing then
-                PC.Tower_Reward_Enter_Time =
-                    UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime())
+                PC.Tower_Reward_Enter_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime())
             end
             PC:SyncTowerRewardState()
             return

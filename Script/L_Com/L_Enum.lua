@@ -23,7 +23,7 @@ L_Enum.Name_ClassPath = {
     UI13 = RootPath .. "Asset/Blueprint/Yan/UI/UI13.UI13_C",
     UI_Black = RootPath .. "Asset/Blueprint/UI/UI_Black.UI_Black_C",
     UI_CountDownAttnetion = RootPath .. "Asset/Blueprint/UI/UI_CountDownAttnetion.UI_CountDownAttnetion_C",
-    BP_Jetpack_AttachActor = RootPath .. "Asset/Blueprint/Actor/BP_Jetpack_AttachActor.BP_Jetpack_AttachActor_C", -- 冲天炮附加Actor
+    BP_Jetpack_AttachActor = RootPath .. "Asset/Blueprint/Actor/BP_Jetpack_AttachActor.BP_Jetpack_AttachActor_C", -- 飞行背囊附加Actor
     kj01 = RootPath .. "Asset/Blueprint/Yan/UI/kj01.kj01_C",
     UI_Fly = RootPath .. "Asset/Blueprint/Yan/UI/UI_Fly.UI_Fly_C"
 
@@ -109,7 +109,7 @@ L_Enum.Name_RPC = {
     Open_Ticket_UI = "Open_Ticket_UI", -- 打开门票界面RPC名称
     Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称
     Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill", -- 切换陷阽物品技能RPC名称
-    Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置冲天炮飞行状态RPC名称
+    Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置飞行背囊飞行状态RPC名称
     Event_Countdown = "Event_Countdown", -- 事件倒计时RPC名称
     Set_Anim_Montage = "MulticastRPC_SetAnimMontage", -- 广播播放或停止蒙太奇RPC名称
     Broadcast_Tips = "MulticastRPC_ShowTips", -- 广播提示RPC名称
@@ -131,7 +131,7 @@ L_Enum.Gold_Shop = {
         [1012] = 3000, -- 护盾药水
         [1025] = 4500, -- 隐身药水
         [1013] = 4500, -- 喷射钩爪
-        [1011] = 5000, -- 冲天炮
+        [1011] = 5000, -- 飞行背囊
         [1010] = 7600, -- 冰冻锤
         [1006] = 7800 -- 大力拳套
     }
@@ -149,7 +149,7 @@ L_Enum.Trophy_Shop = {
         [1012] = 30, -- 护盾药水
         [1025] = 45, -- 隐身药水
         [1013] = 45, -- 喷射钩爪
-        [1011] = 50, -- 冲天炮
+        [1011] = 50, -- 飞行背囊
         [1010] = 66, -- 冰冻锤
         [1006] = 68 -- 大力拳套
     }

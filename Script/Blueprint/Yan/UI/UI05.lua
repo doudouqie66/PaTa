@@ -81,7 +81,7 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
--- Edit Below--
+--Edit Below--
 local Item_Trophy_Price_Config = L_Enum.Trophy_Shop.Item_Price_Config -- 奖杯兑换价格配置
 
 local UI05 = {
@@ -115,18 +115,18 @@ function UI05:LuaInit()
     -- [Editor Generated Lua] BindingEvent Begin:
     self.Button_330.OnClicked:Add(self.Button_330_OnClicked, self);
     self.Button_203.OnClicked:Add(self.Button_203_OnClicked, self);
-	self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
-	self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
-	self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
-	self.Button_4.OnClicked:Add(self.Button_4_OnClicked, self);
-	self.Button_5.OnClicked:Add(self.Button_5_OnClicked, self);
-	self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
-	self.Button_7.OnClicked:Add(self.Button_7_OnClicked, self);
-	self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
-	self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
-	self.Button_10.OnClicked:Add(self.Button_10_OnClicked, self);
-	self.Button_11.OnClicked:Add(self.Button_11_OnClicked, self);
-	-- [Editor Generated Lua] BindingEvent End;
+    self.Button_0.OnClicked:Add(self.Button_0_OnClicked, self);
+    self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
+    self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
+    self.Button_4.OnClicked:Add(self.Button_4_OnClicked, self);
+    self.Button_5.OnClicked:Add(self.Button_5_OnClicked, self);
+    self.Button_6.OnClicked:Add(self.Button_6_OnClicked, self);
+    self.Button_7.OnClicked:Add(self.Button_7_OnClicked, self);
+    self.Button_8.OnClicked:Add(self.Button_8_OnClicked, self);
+    self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
+    self.Button_10.OnClicked:Add(self.Button_10_OnClicked, self);
+    self.Button_11.OnClicked:Add(self.Button_11_OnClicked, self);
+    -- [Editor Generated Lua] BindingEvent End;
 end
 
 --[[----------------------关闭奖杯商店界面------------------------]]
@@ -194,7 +194,7 @@ function UI05:Button_8_OnClicked()
     self:Request_Trophy_Exchange(1013)
 end
 
---[[----------------------兑换冲天炮------------------------]]
+--[[----------------------兑换飞行背囊------------------------]]
 function UI05:Button_9_OnClicked()
     self:Request_Trophy_Exchange(1011)
 end

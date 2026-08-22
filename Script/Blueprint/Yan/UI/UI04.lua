@@ -243,7 +243,7 @@ function UI04:Button_8_OnClicked()
     self:Request_Gold_Purchase(1013)
 end
 
---[[----------------------购买冲天炮------------------------]]
+--[[----------------------购买飞行背囊------------------------]]
 function UI04:Button_9_OnClicked()
     self:Request_Gold_Purchase(1011)
 end
