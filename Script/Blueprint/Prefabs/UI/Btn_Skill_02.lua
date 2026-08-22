@@ -28,6 +28,7 @@ local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Jetpack_Product_ID = 9000010 -- 冲天炮商品ID
 local Jetpack_Max_Durability = 10 -- 单个冲天炮最大耐久秒数
 local Jetpack_Vertical_Input_Scale = 0.7 -- 冲天炮上升输入比例
+local Jetpack_Release_Check_Timeout = 0.5 -- 快速抬起后等待技能激活的最长秒数
 local Btn_Skill_02 = {
 	ReadyForActivateTimer = nil,
 	PreCDState = false,
@@ -35,6 +36,7 @@ local Btn_Skill_02 = {
 	PreTagDisableState = false,
 	Jetpack_Is_Pressed = false,
 	Jetpack_Press_Check_Timer = nil, -- 冲天炮按压状态检查计时器
+	Jetpack_Release_Check_Timer = nil, -- 冲天炮快速抬起延迟取消计时器
 }
 
 --[[----------------------构造冲天炮技能按钮------------------------]]
@@ -72,6 +74,10 @@ function Btn_Skill_02:Destruct()
 		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Press_Check_Timer)
 		self.Jetpack_Press_Check_Timer = nil
 	end
+	if self.Jetpack_Release_Check_Timer then
+		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Release_Check_Timer)
+		self.Jetpack_Release_Check_Timer = nil
+	end
 	if self.Backpack_Component then
 		self.Backpack_Component.ItemChangeDelegateV2:Remove(self.OnJetpackItemChanged, self)
 	end
@@ -95,6 +101,10 @@ function Btn_Skill_02:OnSkillButtonPressed()
 	local Skill = self:GetCurrentSkill() -- 当前冲天炮技能
 	if self.Jetpack_Is_Pressed or not Skill or not Skill:CanActivateSkill() then
 		return
+	end
+	if self.Jetpack_Release_Check_Timer then
+		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Release_Check_Timer)
+		self.Jetpack_Release_Check_Timer = nil
 	end
 	self.Jetpack_Is_Pressed = true
 	--[[----------------------检查冲天炮按钮是否仍处于按压状态------------------------]]
@@ -149,6 +159,10 @@ function Btn_Skill_02:OnSkillButtonReleased()
 		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Press_Check_Timer)
 		self.Jetpack_Press_Check_Timer = nil
 	end
+	if self.Jetpack_Release_Check_Timer then
+		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Release_Check_Timer)
+		self.Jetpack_Release_Check_Timer = nil
+	end
 	local Fly_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI_Fly] -- 冲天炮耐久界面
 	if Fly_UI then
 		Fly_UI:SetSkillJetpackProgressVisible(false)
@@ -156,7 +170,27 @@ function Btn_Skill_02:OnSkillButtonReleased()
 	local Skill = self:GetCurrentSkill() -- 当前冲天炮技能
 	if Skill and Skill:IsActivating() then
 		Skill:DeActivateSkill(EPESkillDeActivateReason.E_PESKILL_DeActivateReason_Cancel)
+		return
 	end
+	if not Skill then
+		return
+	end
+
+	local Release_Check_End_Time = UGCGameSystem.GetTimeSeconds(self) + Jetpack_Release_Check_Timeout -- 延迟取消截止时间
+	self.Jetpack_Release_Check_Timer = UGCTimerUtility.CreateLuaTimer(0, function()
+		if self.Jetpack_Is_Pressed or UGCGameSystem.GetTimeSeconds(self) >= Release_Check_End_Time then
+			UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Release_Check_Timer)
+			self.Jetpack_Release_Check_Timer = nil
+			return
+		end
+
+		local Current_Skill = self:GetCurrentSkill() -- 当前冲天炮技能
+		if Current_Skill and Current_Skill:IsActivating() then
+			Current_Skill:DeActivateSkill(EPESkillDeActivateReason.E_PESKILL_DeActivateReason_Cancel)
+			UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Release_Check_Timer)
+			self.Jetpack_Release_Check_Timer = nil
+		end
+	end, true)
 end
 
 --[[----------------------按住按钮时持续输入上升方向------------------------]]
