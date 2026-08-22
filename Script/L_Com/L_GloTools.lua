@@ -47,14 +47,16 @@ function L_GloTools.Change_SysUI(bool)
     if bool == true then
         if mainUI then
             mainUI:SetVisibility(L_GloTools.Main_UI_Visibility or ESlateVisibility.SelfHitTestInvisible) -- 恢复根节点原始可见性，避免挡住下层按钮
+            ugcprint("[Change_SysUI] 已恢复系统UI")
             L_GloTools.Main_UI = nil -- 清除缓存，下次隐藏时重新获取主UI实例
             L_GloTools.Main_UI_Visibility = nil -- 清除原始可见性缓存
         end
     else
-        L_GloTools.Main_UI = mainUI -- 缓存主UI实例，恢复时不再依赖GetMainUI
-        if mainUI then
+        if L_GloTools.Main_UI == nil and mainUI then
+            L_GloTools.Main_UI = mainUI -- 仅首次隐藏时缓存主UI实例
             L_GloTools.Main_UI_Visibility = mainUI:GetVisibility() -- 缓存主UI原始可见性
             mainUI:SetVisibility(ESlateVisibility.Collapsed) -- 直接收起根节点，确保系统UI不显示
+            ugcprint("[Change_SysUI] 已隐藏系统UI")
         end
     end
 end

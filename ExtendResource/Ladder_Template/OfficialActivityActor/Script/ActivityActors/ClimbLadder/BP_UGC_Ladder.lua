@@ -183,7 +183,7 @@ function BP_UGC_Ladder:OnUpClick(ClickParams)
     if not self:SetActiveParam(ClickParams.PlayerController,true) then
         return
     end
-    self:CheckAndResetExitLocation()
+    local Exit_Location_Up, Exit_Location_Down = self:CheckAndResetExitLocation()  -- 本次攀爬的安全离梯位置
     local SpawnTarget = UGCGameSystem.SpawnActor(self, self.ChildClass, self.AttachSceneComp:K2_GetComponentLocation(), self.AttachSceneComp:K2_GetComponentRotation(), Vector.New(1, 1, 1), self)
     print_dev("BP_UGC_Ladder:OnUpClick--SpawnTarget = "..KismetSystemLibrary.GetDisplayName(SpawnTarget))
     self.UpChildActorNumRemember = self.UpChildActorNumRemember + 1
@@ -197,12 +197,12 @@ function BP_UGC_Ladder:OnUpClick(ClickParams)
     if self.bUpBlock then
         SpawnTarget.DeattachPositionUp = nil
     else
-        SpawnTarget.DeattachPositionUp = UGCMathUtility.AddVector(self.DeattachPositionUp,self:K2_GetActorLocation())
+        SpawnTarget.DeattachPositionUp = Exit_Location_Up
     end
     if self.bDownBlock then
         SpawnTarget.DeattachPositionDown = nil
     else
-        SpawnTarget.DeattachPositionDown = UGCMathUtility.AddVector(self.DeattachPositionDown,self:K2_GetActorLocation())
+        SpawnTarget.DeattachPositionDown = Exit_Location_Down
     end
     self.InterActivePCList[PlayerKey] = true
     self.InUpCheckAreaList[PlayerKey] = true
@@ -256,7 +256,7 @@ function BP_UGC_Ladder:OnDownClick(ClickParams)
     if not self:SetActiveParam(ClickParams.PlayerController,false) then
         return
     end
-    self:CheckAndResetExitLocation()
+    local Exit_Location_Up, Exit_Location_Down = self:CheckAndResetExitLocation()  -- 本次攀爬的安全离梯位置
     --self.DownChildActorNumRemember = self.DownChildActorNumRemember + 1
     local  PlayerKey = tostring(UGCGameSystem.GetPlayerKeyByPlayerController(ClickParams.PlayerController))
     local SpawnTarget = UGCGameSystem.SpawnActor(self, self.ChildClass, self.AttachSceneComp:K2_GetComponentLocation(), self.AttachSceneComp:K2_GetComponentRotation(), Vector.New(1, 1, 1), self)
@@ -271,13 +271,13 @@ function BP_UGC_Ladder:OnDownClick(ClickParams)
         print_dev("BP_UGC_Ladder:OnDownClick--DeattachPositionUp is nil")
         SpawnTarget.DeattachPositionUp = nil
     else
-        SpawnTarget.DeattachPositionUp = UGCMathUtility.AddVector(self.DeattachPositionUp,self:K2_GetActorLocation())
+        SpawnTarget.DeattachPositionUp = Exit_Location_Up
     end
     if self.bDownBlock then
         print_dev("BP_UGC_Ladder:OnDownClick--DeattachPositionDown is nil")
         SpawnTarget.DeattachPositionDown = nil
     else
-        SpawnTarget.DeattachPositionDown = UGCMathUtility.AddVector(self.DeattachPositionDown,self:K2_GetActorLocation())
+        SpawnTarget.DeattachPositionDown = Exit_Location_Down
         print_dev("BP_UGC_Ladder:OnDownClick--self.DeattachPositionDown x= "..tostring(self.DeattachPositionDown.x).."y= "..tostring(self.DeattachPositionDown.y).."z= "..tostring(self.DeattachPositionDown.z))
     end
     self.InterActivePCList[PlayerKey] = true
@@ -292,32 +292,42 @@ function BP_UGC_Ladder:ReceiveBeginPlay()
     self.bAttachDir_UpAttachScene_DownAttachScene_Free = self:AreaBlockadeDetect(Vector.New(self.UpAttachScene:K2_GetComponentLocation().X,self.UpAttachScene:K2_GetComponentLocation().Y,self.UpPositionCheckSphere:K2_GetComponentLocation().Z),self.DownAttachScene:K2_GetComponentLocation())
     self.bAttachDir_UpAttachScene1_DownAttachScene1_Free = self:AreaBlockadeDetect(Vector.New(self.UpAttachScene1:K2_GetComponentLocation().X,self.UpAttachScene1:K2_GetComponentLocation().Y,self.UpPositionCheckSphere:K2_GetComponentLocation().Z),self.DownAttachScene1:K2_GetComponentLocation())
 end
+--[[----------------------检查并计算梯子两端的安全离开位置------------------------]]
 function BP_UGC_Ladder:CheckAndResetExitLocation()
     print_dev("BP_UGC_Ladder:CheckAndResetExitLocation")
-    local CheckLocationDown = UGCMathUtility.AddVector(self.DeattachPositionDown,self:K2_GetActorLocation())
-    local CheckLocationUp = UGCMathUtility.AddVector(self.DeattachPositionUp,self:K2_GetActorLocation())
+    self.bUpBlock = false
+    self.bDownBlock = false
 
-    local bUpLocationCheck,UpLocationCheck = self:TeleportAreaBlockadeDetect({CheckLocationUp})
-    if not bUpLocationCheck then
-        local bFindUpLocation,UpLocation = self:TeleportAreaBlockadeDetect(self:GenerateCheckpoint(CheckLocationUp))
-        if bFindUpLocation then
-            self.DeattachPositionUp = UGCMathUtility.AddVector(UGCMathUtility.SubtractVector(UpLocation, CheckLocationUp),self.DeattachPositionUp)--UpLocation
+    local Ladder_Location = self:K2_GetActorLocation()  -- 梯子世界位置
+    local Ladder_Rotation = self:K2_GetActorRotation()  -- 梯子世界旋转
+    local Check_Location_Up = UGCMathUtility.AddVector(UGCMathUtility.RotateVector(self.DeattachPositionUp, Ladder_Rotation), Ladder_Location)  -- 顶部配置位置
+    local Check_Location_Down = UGCMathUtility.AddVector(UGCMathUtility.RotateVector(self.DeattachPositionDown, Ladder_Rotation), Ladder_Location)  -- 底部配置位置
+    local Exit_Location_Up = Check_Location_Up  -- 顶部实际离开位置
+    local Exit_Location_Down = Check_Location_Down  -- 底部实际离开位置
+
+    local Is_Up_Location_Free = self:TeleportAreaBlockadeDetect({Check_Location_Up})  -- 顶部位置是否可用
+    if not Is_Up_Location_Free then
+        local Has_Up_Location, Up_Location = self:TeleportAreaBlockadeDetect(self:GenerateCheckpoint(Check_Location_Up))  -- 顶部备用位置
+        if Has_Up_Location then
+            Exit_Location_Up = Up_Location
         else
             self.bUpBlock = true
+            Exit_Location_Up = nil
         end
     end
-    local bDownLocationCheck,DownLocationCheck = self:TeleportAreaBlockadeDetect({CheckLocationDown})
-    if not bDownLocationCheck then
-        print_dev("BP_UGC_Ladder:CheckAndResetExitLocation--bDownLocationCheck is nil")
-        local bFindDownLocation,DownLocation = self:TeleportAreaBlockadeDetect(self:GenerateCheckpoint(CheckLocationDown))
-        if bFindDownLocation then
-            print_dev("BP_UGC_Ladder:CheckAndResetExitLocation--bFindDownLocation is nil--1")
-            self.DeattachPositionDown = UGCMathUtility.AddVector(UGCMathUtility.SubtractVector(DownLocation, CheckLocationDown),self.DeattachPositionDown)--DownLocation
+
+    local Is_Down_Location_Free = self:TeleportAreaBlockadeDetect({Check_Location_Down})  -- 底部位置是否可用
+    if not Is_Down_Location_Free then
+        local Has_Down_Location, Down_Location = self:TeleportAreaBlockadeDetect(self:GenerateCheckpoint(Check_Location_Down))  -- 底部备用位置
+        if Has_Down_Location then
+            Exit_Location_Down = Down_Location
         else
-            print_dev("BP_UGC_Ladder:CheckAndResetExitLocation--bFindDownLocation is nil--2")
             self.bDownBlock = true
+            Exit_Location_Down = nil
         end
     end
+
+    return Exit_Location_Up, Exit_Location_Down
 end
 
 function BP_UGC_Ladder:DownPositionOverlapCheckArea_OnOverlapCheckChange(CheckActorArray)
