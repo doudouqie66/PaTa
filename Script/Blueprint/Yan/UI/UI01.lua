@@ -3,7 +3,6 @@
 ---@field Image_0 UImage
 ---@field Image_42 UImage
 ---@field Image_43 UImage
----@field Image_44 UImage
 ---@field Image_45 UImage
 ---@field Image_98 UImage
 ---@field Image_246 UImage

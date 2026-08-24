@@ -6,7 +6,6 @@
 ---@field EditorUtilityEditableTextBox_216 UEditorUtilityEditableTextBox
 ---@field Image_0 UImage
 ---@field Image_18 UImage
----@field Image_34 UImage
 ---@field Image_97 UImage
 ---@field Image_111 UImage
 ---@field Image_112 UImage

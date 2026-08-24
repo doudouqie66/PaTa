@@ -15,7 +15,6 @@
 ---@field Image_217 UImage
 ---@field Image_218 UImage
 ---@field Image_219 UImage
----@field Image_286 UImage
 --Edit Below--
 ---@class UI06_C:UUserWidget
 ---@field Button_88 UButton
