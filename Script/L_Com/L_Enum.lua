@@ -33,7 +33,8 @@ L_Enum.Name_ClassPath = {
 L_Enum.ID_ItemShow = {
     ZhaDan = 0,
     XiangJiao = 1,
-    BaBa = 2
+    BaBa = 2,
+    WinCup = 3 -- 奖杯
 }
 --[[----------------------怪物的路径-----------------------]] --
 L_Enum.Path_Mons = {

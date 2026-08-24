@@ -2,9 +2,11 @@
 ---@field CanvasPanel_1 UCanvasPanel
 ---@field CanvasPanel_2 UCanvasPanel
 ---@field CanvasPanel_3 UCanvasPanel
+---@field CanvasPanel_4 UCanvasPanel
 ---@field Image_0 UImage
 ---@field Image_1 UImage
 ---@field Image_2 UImage
+---@field Image_3 UImage
 --Edit Below--
 local UI_ItemShow = {
     bInitDoOnce = false
@@ -16,7 +18,7 @@ local Item_Show_Config = {
         Start_Sound_Name = SoundMgr.SoundName.Boom
     }, -- 炸弹播放配置
     [L_Enum.ID_ItemShow.XiangJiao] = {
-        Duration = 0.75,
+        Duration = 1.5,
         Last_Frame_Progress = 2 / 3,
         Start_Sound_Name = SoundMgr.SoundName.Banana
     }, -- 香蕉播放配置
@@ -24,15 +26,23 @@ local Item_Show_Config = {
         Duration = 2.7,
         Last_Frame_Progress = 44 / 45,
         Start_Sound_Name = SoundMgr.SoundName.Freeze_Start
-    } -- 粑粑播放配置
+    }, -- 粑粑播放配置
+    [L_Enum.ID_ItemShow.WinCup] = {
+        Duration = 2.28,
+        Last_Frame_Progress = 29 / 30
+    } -- 奖杯播放配置
 }
 
 --[[----------------------初始化物品展示界面------------------------]]
 function UI_ItemShow:Construct()
+    local Trophy_Material = UGCObjectUtility.LoadObject(
+        UGCGameSystem.GetUGCResourcesFullPath('Asset/Blueprint/UI/Pic_Gif/M_UI_Pic_11_Flipbook.M_UI_Pic_11_Flipbook')) -- 奖杯材质
+    self.Image_3:SetBrushFromMaterial(Trophy_Material)
     self.Material_Instance_Map = {
         [L_Enum.ID_ItemShow.ZhaDan] = self.Image_0:GetDynamicMaterial(),
         [L_Enum.ID_ItemShow.XiangJiao] = self.Image_1:GetDynamicMaterial(),
-        [L_Enum.ID_ItemShow.BaBa] = self.Image_2:GetDynamicMaterial()
+        [L_Enum.ID_ItemShow.BaBa] = self.Image_2:GetDynamicMaterial(),
+        [L_Enum.ID_ItemShow.WinCup] = self.Image_3:GetDynamicMaterial()
     }
     self.Play_State_Map = { -- 各物品独立播放状态
         [L_Enum.ID_ItemShow.ZhaDan] = {
@@ -52,11 +62,18 @@ function UI_ItemShow:Construct()
             Material_Instance = self.Material_Instance_Map[L_Enum.ID_ItemShow.BaBa],
             Play_Elapsed_Time = 0,
             Is_Playing = false
+        },
+        [L_Enum.ID_ItemShow.WinCup] = {
+            Canvas_Panel = self.CanvasPanel_4,
+            Material_Instance = self.Material_Instance_Map[L_Enum.ID_ItemShow.WinCup],
+            Play_Elapsed_Time = 0,
+            Is_Playing = false
         }
     }
     self.CanvasPanel_1:SetVisibility(ESlateVisibility.Collapsed)
     self.CanvasPanel_2:SetVisibility(ESlateVisibility.Collapsed)
     self.CanvasPanel_3:SetVisibility(ESlateVisibility.Collapsed)
+    self.CanvasPanel_4:SetVisibility(ESlateVisibility.Collapsed)
 end
 
 --[[----------------------播放指定物品屏幕特效------------------------]]
