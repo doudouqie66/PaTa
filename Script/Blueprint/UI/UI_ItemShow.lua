@@ -18,12 +18,12 @@ local Item_Show_Config = {
         Start_Sound_Name = SoundMgr.SoundName.Boom
     }, -- 炸弹播放配置
     [L_Enum.ID_ItemShow.XiangJiao] = {
-        Duration = 0.75,
+        Duration = 2,
         Last_Frame_Progress = 2 / 3,
         Start_Sound_Name = SoundMgr.SoundName.Banana
     }, -- 香蕉播放配置
     [L_Enum.ID_ItemShow.BaBa] = {
-        Duration = 2.7,
+        Duration = 2,
         Last_Frame_Progress = 44 / 45,
         Start_Sound_Name = SoundMgr.SoundName.Freeze_Start
     }, -- 粑粑播放配置
