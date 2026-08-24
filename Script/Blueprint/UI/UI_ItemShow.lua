@@ -18,7 +18,7 @@ local Item_Show_Config = {
         Start_Sound_Name = SoundMgr.SoundName.Boom
     }, -- 炸弹播放配置
     [L_Enum.ID_ItemShow.XiangJiao] = {
-        Duration = 1.5,
+        Duration = 0.75,
         Last_Frame_Progress = 2 / 3,
         Start_Sound_Name = SoundMgr.SoundName.Banana
     }, -- 香蕉播放配置
@@ -35,8 +35,8 @@ local Item_Show_Config = {
 
 --[[----------------------初始化物品展示界面------------------------]]
 function UI_ItemShow:Construct()
-    local Trophy_Material = UGCObjectUtility.LoadObject(
-        UGCGameSystem.GetUGCResourcesFullPath('Asset/Blueprint/UI/Pic_Gif/M_UI_Pic_11_Flipbook.M_UI_Pic_11_Flipbook')) -- 奖杯材质
+    local Trophy_Material = UGCObjectUtility.LoadObject(UGCGameSystem.GetUGCResourcesFullPath(
+        'Asset/Blueprint/UI/Pic_Gif/M_UI_Pic_11_Flipbook.M_UI_Pic_11_Flipbook')) -- 奖杯材质
     self.Image_3:SetBrushFromMaterial(Trophy_Material)
     self.Material_Instance_Map = {
         [L_Enum.ID_ItemShow.ZhaDan] = self.Image_0:GetDynamicMaterial(),
