@@ -27,6 +27,9 @@ function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统U
 
     if bVisible == true then
         UI_BP:SetVisibility(L_GloTools.UI_Visibility_Map[str])
+        if str == L_Enum.Name_ClassPath.UI_Item_Show then
+            UI_BP:PlayOnce()
+        end
         if str == L_Enum.Name_ClassPath.UI_Attention then
             UI_BP:PlayAnimation(UI_BP.wh, 0, 0, EUMGSequencePlayMode.Forward, 4) -- 打开警示界面时加速循环播放动画
         end
@@ -39,6 +42,32 @@ function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统U
         L_GloTools.Change_SysUI(true)
     end
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Switch)
+end
+
+--[[----------------------简单管理UI显示隐藏------------------------]]
+function L_GloTools.SimpleUIMgr(UI_Path, Is_Visible)
+    local UI_BP = L_GloTools.UI_Map[UI_Path] -- UI实例
+
+    if UI_BP == nil then
+        if Is_Visible == false then
+            return
+        end
+
+        local UI_Class = UE.LoadClass(UI_Path) -- UI类
+        local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+        UI_BP = UserWidget.NewWidgetObjectBP(Player_Controller, UI_Class)
+        UI_BP:AddToViewport(1)
+        L_GloTools.UI_Map[UI_Path] = UI_BP
+        L_GloTools.UI_Visibility_Map[UI_Path] = UI_BP:GetVisibility()
+    end
+
+    if Is_Visible then
+        UI_BP:SetVisibility(L_GloTools.UI_Visibility_Map[UI_Path])
+    else
+        UI_BP:SetVisibility(ESlateVisibility.Collapsed)
+    end
+
+    return UI_BP
 end
 
 --[[----------------------改变系统UI------------------------]]

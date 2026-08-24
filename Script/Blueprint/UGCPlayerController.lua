@@ -890,6 +890,14 @@ function UGCPlayerController:Play_Sound(Sound_Name)
     SoundMgr.PlaySound2D(Sound_Name)
 end
 
+--[[----------------------设置指定UI显示状态------------------------]]
+function UGCPlayerController:Set_UI_Visible(UI_Path, Is_Visible, Item_Show_ID)
+    local UI_BP = L_GloTools.SimpleUIMgr(UI_Path, Is_Visible) -- 指定UI实例
+    if UI_BP and Is_Visible and Item_Show_ID ~= nil then
+        UI_BP:PlayOnce(Item_Show_ID)
+    end
+end
+
 --[[----------------------播放事件倒计时------------------------]]
 function UGCPlayerController:Event_Countdown(Countdown_Duration, Event_Name, Event_Duration)
     if Countdown_Duration < 0 then

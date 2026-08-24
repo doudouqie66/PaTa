@@ -22,11 +22,18 @@ L_Enum.Name_ClassPath = {
     UI12 = RootPath .. "Asset/Blueprint/Yan/UI/UI12.UI12_C",
     UI13 = RootPath .. "Asset/Blueprint/Yan/UI/UI13.UI13_C",
     UI_Black = RootPath .. "Asset/Blueprint/UI/UI_Black.UI_Black_C",
+    UI_Item_Show = RootPath .. "Asset/Blueprint/UI/UI_ItemShow.UI_ItemShow_C",
     UI_CountDownAttnetion = RootPath .. "Asset/Blueprint/UI/UI_CountDownAttnetion.UI_CountDownAttnetion_C",
     BP_Jetpack_AttachActor = RootPath .. "Asset/Blueprint/Actor/BP_Jetpack_AttachActor.BP_Jetpack_AttachActor_C", -- 飞行背囊附加Actor
     kj01 = RootPath .. "Asset/Blueprint/Yan/UI/kj01.kj01_C",
     UI_Fly = RootPath .. "Asset/Blueprint/Yan/UI/UI_Fly.UI_Fly_C"
 
+}
+--[[----------------------显示屏幕特效的ID-----------------------]] --
+L_Enum.ID_ItemShow = {
+    ZhaDan = 0,
+    XiangJiao = 1,
+    BaBa = 2
 }
 --[[----------------------怪物的路径-----------------------]] --
 L_Enum.Path_Mons = {
@@ -107,6 +114,7 @@ L_Enum.Name_RPC = {
     Buy_Gold_Item = "Buy_Gold_Item", -- 金币购买道具RPC名称
     Buy_Ticket = "Buy_Ticket", -- 购买门票RPC名称
     Open_Ticket_UI = "Open_Ticket_UI", -- 打开门票界面RPC名称
+    Set_UI_Visible = "Set_UI_Visible", -- 设置指定UI显示状态RPC名称
     Tele_To_Point = "TeleToPoint", -- 传送到指定出生点RPC名称
     Switch_Trap_Item_Skill = "Switch_Trap_Item_Skill", -- 切换陷阽物品技能RPC名称
     Set_Jetpack_Flying = "Set_Jetpack_Flying", -- 设置飞行背囊飞行状态RPC名称

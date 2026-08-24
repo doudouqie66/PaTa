@@ -79,7 +79,8 @@ function Aire04:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Oth
     end
 
     local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor)
-    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Play_Sound, SoundMgr.SoundName.Boom)
+    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Set_UI_Visible, L_Enum.Name_ClassPath.UI_Item_Show, true,
+        L_Enum.ID_ItemShow.ZhaDan)
     PC:TeleToPoint(1)
     self:K2_DestroyActor()
 

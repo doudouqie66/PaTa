@@ -22,8 +22,8 @@ function Aire01:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Oth
     SweepResult)
     local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(OtherActor) -- 踩中香蕉皮的玩家控制器
     if Player_Controller then
-        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Play_Sound,
-            SoundMgr.SoundName.Banana)
+        UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Set_UI_Visible,
+            L_Enum.Name_ClassPath.UI_Item_Show, true, L_Enum.ID_ItemShow.XiangJiao)
     end
 end
 
