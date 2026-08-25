@@ -1,4 +1,6 @@
 ---@class UI12_C:UUserWidget
+---@field Button_10 UButton
+---@field Button_11 UButton
 ---@field Button_69 UButton
 ---@field Button_112 UButton
 ---@field Button_147 UButton
@@ -20,6 +22,8 @@
 ---@field CanvasPanel_166 UCanvasPanel
 ---@field Image_0 UImage
 ---@field Image_1 UImage
+---@field Image_2 UImage
+---@field Image_3 UImage
 ---@field Image_69 UImage
 ---@field Image_70 UImage
 ---@field Image_95 UImage
