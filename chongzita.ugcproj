@@ -14,9 +14,9 @@ UpdateVersion=10
 GameModePath=/chongzita/Asset/Blueprint/UGCGameMode.UGCGameMode_C
 
 [FeatureFlags]
-bOpenItemEditorV1=1
+bOpenItemEditorV1=0
 bOpenSkillEditorV1=0
-bOpenParticleEditorV1=1
+bOpenParticleEditorV1=0
 
 [MatchSetting]
 NumberOfTeams=1
