@@ -12,6 +12,7 @@
 ---@field Button_197 UButton
 ---@field Button_198 UButton
 ---@field Button_200 UButton
+---@field CanvasPanel_2 UCanvasPanel
 ---@field CanvasPanel_152 UCanvasPanel
 ---@field CanvasPanel_160 UCanvasPanel
 ---@field CanvasPanel_161 UCanvasPanel
@@ -75,6 +76,8 @@ function UI12:LuaInit()
     self.Button_177.OnClicked:Add(self.Button_177_OnClicked, self);
     self.Button_69.OnClicked:Add(self.Button_69_OnClicked, self);
     self.Button_112.OnClicked:Add(self.Button_112_OnClicked, self);
+    self.Button_11.OnClicked:Add(self.Button_11_OnClicked, self);
+    self.Button_10.OnClicked:Add(self.Button_10_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
     self.Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager") -- 虚拟物品管理器
     if self.Virtual_Item_Manager then
@@ -261,6 +264,16 @@ end
 function UI12:Button_112_OnClicked()
     L_GloTools.BuyShopProduct(L_Enum.Lottery_Stone.Shop_ID)
     SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Click)
+end
+
+function UI12:Button_11_OnClicked()
+    ---CanvasPanel_2打开
+    self.CanvasPanel_2:SetVisibility(ESlateVisibility.Visible)
+end
+
+function UI12:Button_10_OnClicked()
+    ---CanvasPanel_2关闭
+    self.CanvasPanel_2:SetVisibility(ESlateVisibility.Collapsed)
 end
 
 -- [Editor Generated Lua] function define End;
