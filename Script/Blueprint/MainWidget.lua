@@ -47,6 +47,7 @@
 ---@field MainUI_Weapon1_C_0 MainUI_Weapon1_C
 ---@field MainUI_Weapon2_C_0 MainUI_Weapon2_C
 ---@field MainUI_WinFlag_56_C_0 MainUI_WinFlag_56_C
+---@field UGC_Modules_TeachingTips_UIBP UGC_Modules_TeachingTips_UIBP_C
 --Edit Below--
 local MainWidget = { bInitDoOnce = false } 
 
