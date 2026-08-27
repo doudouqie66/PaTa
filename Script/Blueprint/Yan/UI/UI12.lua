@@ -132,7 +132,11 @@ function UI12:LuaInit()
     self:Refresh_Free_Lottery_Count()
     self:Refresh_Lottery_Stone_Count()
 end
+--[[----------------------关闭抽奖界面------------------------]]
 function UI12:Button_147_OnClicked()
+    if self.Is_Lottery_Drawing then
+        return
+    end
     UIMgr.StopLotteryEffect()
     self.Is_Lottery_Drawing = false
     self.Button_69:SetIsEnabled(true)
@@ -204,6 +208,7 @@ function UI12:GetLotteryResult()
     self.Last_Reward_Count = 0 -- 兜底奖励数量
     return 1
 end
+--[[----------------------开始抽奖------------------------]]
 function UI12:Button_69_OnClicked()
     if self.Is_Lottery_Drawing then
         return
@@ -236,6 +241,7 @@ function UI12:Button_69_OnClicked()
     SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_In_Progress)
     self.Is_Lottery_Drawing = true -- 抽奖动画进行中
     self.Button_69:SetIsEnabled(false)
+    self.Button_147:SetIsEnabled(false)
     local Target_Index = self:GetLotteryResult() -- 本次抽奖结果
     UIMgr.PlayLotteryEffect(self.Lottery_Panels, self.Image_1, Target_Index, function(Stop_Index)
         local Image_Slot = UGCWidgetManagerSystem.SlotAsCanvasSlot(self.Image_1)
@@ -244,6 +250,7 @@ function UI12:Button_69_OnClicked()
         end
         self.Is_Lottery_Drawing = false
         self.Button_69:SetIsEnabled(true)
+        self.Button_147:SetIsEnabled(true)
         local Reward_Count = self.Last_Reward_Count or 0 -- 本次奖励数量
         if Reward_Count > 0 then
             SoundMgr.PlaySound2D(SoundMgr.SoundName.CJ_End)
