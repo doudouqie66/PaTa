@@ -93,7 +93,7 @@ function Buff10:GiveGold(Delta)
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Owner_Actor) -- 获取玩家控制器
         local Pass_Need = Player_Controller.Run_Area_Num_PassNeed -- 当前区域要求的通关次数
         local Gold_Count = 2 -- 本次获得的金币数量
-        local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+        local Current_Time = UGCGameSystem.GetServerTimeSec() -- 当前服务器时间
         local Is_Week_Card_Member = Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime -- 是否为周卡会员
         if Player_Controller.Run_Area_Type == 2 and not Is_Week_Card_Member then
             L_TipsTool.ShowTips_01("您不是周卡会员", Player_Controller, SoundMgr.SoundName.UI_Error)

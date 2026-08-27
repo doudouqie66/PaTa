@@ -178,7 +178,7 @@ end
 
 --[[----------------------将玩家周卡设置为过期------------------------]]
 function GM:CS_Expire_Week_Card(Param, PC)
-    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    local Current_Time = UGCGameSystem.GetServerTimeSec() -- 当前服务器时间
     if UGCGameSystem.IsServer() then
         PC.WeekEndTime = Current_Time - 1
         UnrealNetwork.RepLazyProperty(PC, "WeekEndTime")

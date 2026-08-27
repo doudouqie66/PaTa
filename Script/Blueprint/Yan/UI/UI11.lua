@@ -38,9 +38,6 @@ function UI11:LuaInit()
         return;
     end
     self.bInitDoOnce = true;
-    self:PlayAnimation(self.Rotate_Anim, 0, 0, EUMGSequencePlayMode.Forward, 0.1);
-    self:PlayAnimation(self.Box_Before, 0, 0, EUMGSequencePlayMode.Forward, 0.1);
-
     -- [Editor Generated Lua] BindingProperty Begin:
     -- [Editor Generated Lua] BindingProperty End;
 
@@ -49,8 +46,43 @@ function UI11:LuaInit()
     self.Button_72.OnClicked:Add(self.Button_72_OnClicked, self);
     -- [Editor Generated Lua] BindingEvent End;
 end
+
+--[[----------------------重置当前房间抽奖界面------------------------]]
+function UI11:Reset_Room_Lottery_UI()
+    if self.Open_Box_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Open_Box_Timer)
+        self.Open_Box_Timer = nil
+    end
+    if self.Show_Gold_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Show_Gold_Timer)
+        self.Show_Gold_Timer = nil
+    end
+    if self.Gold_Count_Tween and UGCTweenSystem.IsTweenValid(self.Gold_Count_Tween) then
+        UGCTweenSystem.KillTween(self.Gold_Count_Tween)
+    end
+    self.Gold_Count_Tween = nil
+
+    self:StopAnimation(self.Move_Down)
+    self:StopAnimation(self.Gold_Move_UP)
+    self:StopAnimation(self.Rotate_Anim)
+    self:StopAnimation(self.Box_Before)
+    self.CanvasPanel_2:SetVisibility(ESlateVisibility.Visible)
+    self.CanvasPanel_74:SetVisibility(ESlateVisibility.Collapsed)
+    self.Image_0:SetVisibility(ESlateVisibility.Collapsed)
+    self.TextBlock_49:SetVisibility(ESlateVisibility.Collapsed)
+    self.TextBlock_49:SetText("")
+    self.Is_Lottery_Drawing = true
+    self.Button_72:SetIsEnabled(true)
+    self.Button_147:SetIsEnabled(false)
+    self:PlayAnimation(self.Rotate_Anim, 0, 0, EUMGSequencePlayMode.Forward, 0.1)
+    self:PlayAnimation(self.Box_Before, 0, 0, EUMGSequencePlayMode.Forward, 0.1)
+end
+
 --[[-------------------关闭界面---------------------------]] --
 function UI11:Button_147_OnClicked()
+    if self.Is_Lottery_Drawing then
+        return
+    end
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, false, false)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI10, true, false)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
@@ -58,7 +90,9 @@ function UI11:Button_147_OnClicked()
 end
 --[[----------------------请求当前房间抽奖------------------------]]
 function UI11:Button_72_OnClicked()
+    self.Is_Lottery_Drawing = true
     self.Button_72:SetIsEnabled(false)
+    self.Button_147:SetIsEnabled(false)
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
     UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Claim_Room_Lottery)
 end
@@ -84,14 +118,16 @@ function UI11:Play_Room_Lottery_Result(Drop_Count, Is_Already_Claimed)
     self:PlayAnimation(self.Move_Down, 0, 1, EUMGSequencePlayMode.Forward, 1);
 
     ---
-    UGCTimerUtility.CreateLuaTimer(1, function()
+    self.Open_Box_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
+        self.Open_Box_Timer = nil
         ---打开宝箱开启的UI
         self.CanvasPanel_74:SetVisibility(ESlateVisibility.Visible)
         self.CanvasPanel_2:SetVisibility(ESlateVisibility.Collapsed)
 
         ---播放金币向上的动画
         self:PlayAnimation(self.Gold_Move_UP, 0, 1, EUMGSequencePlayMode.Forward, 0.5);
-        UGCTimerUtility.CreateLuaTimer(2, function()
+        self.Show_Gold_Timer = UGCTimerUtility.CreateLuaTimer(2, function()
+            self.Show_Gold_Timer = nil
             ---关闭点击图片
 
             self.Image_0:SetVisibility(ESlateVisibility.Collapsed)
@@ -99,13 +135,16 @@ function UI11:Play_Room_Lottery_Result(Drop_Count, Is_Already_Claimed)
             ---文本打开
             self.TextBlock_49:SetVisibility(ESlateVisibility.Visible)
             ---开启跳动的动画
-            local Gold_Count_Tween = UGCTweenSystem.TweenFloatValue(0, Drop_Count, 3, EEasingType.QuadOut,
+            self.Gold_Count_Tween = UGCTweenSystem.TweenFloatValue(0, Drop_Count, 3, EEasingType.QuadOut,
                 function(_, Gold_Count)
                     self.TextBlock_49:SetText("+" .. tostring(math.floor(Gold_Count + 0.5)))
                 end, UGCTweenSystem.MakeConfig(0, 0, false, 0))
 
-            UGCTweenSystem.BindCompletedDelegate(Gold_Count_Tween, function()
+            UGCTweenSystem.BindCompletedDelegate(self.Gold_Count_Tween, function()
+                self.Gold_Count_Tween = nil
                 self.TextBlock_49:SetText("+" .. tostring(Drop_Count))
+                self.Is_Lottery_Drawing = false
+                self.Button_147:SetIsEnabled(true)
                 local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
                 UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller,
                     L_Enum.Name_RPC.Complete_Room_Lottery_Animation)

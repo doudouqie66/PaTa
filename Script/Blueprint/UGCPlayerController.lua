@@ -26,7 +26,8 @@ local UGCPlayerController = {
     Coin_Lottery_Share_Reward_Count = 1, -- 今日金币抽奖剩余分享奖励次数
     Room_Lottery_Has_Claimed = false, -- 当前房间是否已经抽奖
     Room_Lottery_Pending_Drop_Count = 0, -- 当前房间抽奖待发金币数量
-    Room_Lottery_Reward_Ready_Time = 0 -- 当前房间抽奖最早发奖时间
+    Room_Lottery_Reward_Ready_Time = 0, -- 当前房间抽奖最早发奖时间
+    Is_Invisible_Weapon_Locked = false -- 隐身期间是否限制手枪和RPG
 }
 
 local Jetpack_Item_ID = 8310037 -- 飞行背囊物品ID
@@ -63,6 +64,19 @@ function UGCPlayerController:ReceiveEndPlay()
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
     self.SuperClass.ReceiveEndPlay(self)
 end
+
+--[[----------------------控制隐身期间切换武器------------------------]]
+function UGCPlayerController:UGC_SwitchWeaponControlEvent(Switch_Slot)
+    if not self.Is_Invisible_Weapon_Locked then
+        return true
+    end
+
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    local Target_Weapon = UGCWeaponManagerSystem.GetWeaponBySlot(Player_Pawn, Switch_Slot) -- 目标武器
+    local Target_Item_ID = Target_Weapon and UGCWeaponManagerSystem.GetWeaponItemID(Target_Weapon) or 0 -- 目标武器ID
+    return Target_Item_ID ~= RPG_Item_ID and Target_Item_ID ~= Pistol_Item_ID
+end
+
 --[[----------------------确保玩家拥有初始武器------------------------]]
 function UGCPlayerController:EnsureInitialWeapons()
     local OBTimerDelegate = ObjectExtend.CreateDelegate(self, function()
@@ -74,9 +88,9 @@ function UGCPlayerController:EnsureInitialWeapons()
                 UGCBackpackSystemV2.AddItemV2(self, Pistol_Item_ID, 1)
             end
             -- 这边是预留发放物品
-            UGCBackpackSystemV2.AddItemV2(self, 8310047, 666)
-            UGCBackpackSystemV2.AddItemV2(self, 8310048, 666)
-            UGCBackpackSystemV2.AddItemV2(self, 8310049, 666)
+            -- UGCBackpackSystemV2.AddItemV2(self, 8310047, 666)
+            -- UGCBackpackSystemV2.AddItemV2(self, 8310048, 666)
+            -- UGCBackpackSystemV2.AddItemV2(self, 8310049, 666)
 
         end
     end)
@@ -119,8 +133,8 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Tele_To_Point, L_Enum.Name_RPC.Switch_Trap_Item_Skill, L_Enum.Name_RPC.Set_Jetpack_Flying,
         L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
         L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
-        L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block, L_Enum.Name_RPC.Claim_Room_Lottery,
-        L_Enum.Name_RPC.Complete_Room_Lottery_Animation
+        L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block, L_Enum.Name_RPC.Request_Room_Lottery_UI,
+        L_Enum.Name_RPC.Claim_Room_Lottery, L_Enum.Name_RPC.Complete_Room_Lottery_Animation
 
 end
 
@@ -485,6 +499,42 @@ end
 function UGCPlayerController:Add_Backpack_Item(Item_ID, Item_Count)
     local Virtual_Item_Manager = UGCGamePartSystem.GetGamePartGlobalActor("VirtualItemManager")
     Virtual_Item_Manager:AddVirtualItem(self, Item_ID, Item_Count)
+end
+
+--[[----------------------请求打开当前房间抽奖界面------------------------]]
+function UGCPlayerController:Request_Room_Lottery_UI()
+    if not self:HasAuthority() then
+        return
+    end
+
+    local Game_Mode = UGCGameSystem.GetGameMode() -- 当前游戏模式
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    local Player_UID = Player_Pawn and UGCPawnAttrSystem.GetPlayerUID(Player_Pawn) -- 当前玩家UID
+    if not Game_Mode or Player_UID == nil then
+        L_TipsTool.ShowTips_01("抽奖状态获取失败，请重试", self, SoundMgr.SoundName.UI_Error)
+        UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Room_Lottery_UI, false)
+        return
+    end
+
+    local Has_Claimed = Game_Mode.Room_Lottery_Claimed_UIDs[tostring(Player_UID)] == true -- 当前房间是否已抽奖
+    if Has_Claimed then
+        L_TipsTool.ShowTips_01("本局已经抽过了", self, SoundMgr.SoundName.UI_Error)
+    end
+    UnrealNetwork.CallUnrealRPC(self, self, L_Enum.Name_RPC.Show_Room_Lottery_UI, not Has_Claimed)
+end
+
+--[[----------------------根据服务器结果打开当前房间抽奖界面------------------------]]
+function UGCPlayerController:Show_Room_Lottery_UI(Can_Lottery)
+    if not Can_Lottery then
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI10, true, false)
+        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
+        return
+    end
+
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, true)
+    local Lottery_UI = L_GloTools.UI_Map[L_Enum.Name_ClassPath.UI11] -- 当前房间抽奖界面
+    Lottery_UI:Reset_Room_Lottery_UI()
+    SoundMgr.PlaySound2D(SoundMgr.SoundName.Fly_Start)
 end
 
 --[[----------------------领取当前房间抽奖奖励------------------------]]
@@ -873,8 +923,9 @@ function UGCPlayerController:Activate_Week_Card(Card_Count)
     if not self:HasAuthority() then
         return
     end
-    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    local Current_Time = UGCGameSystem.GetServerTimeSec() -- 当前服务器时间
     local Week_Card_Duration = 7 * 24 * 60 * 60 -- 单张周卡持续秒数
+
     self.WeekEndTime = math.max(self.WeekEndTime or 0, Current_Time) + Week_Card_Duration * Card_Count
     UnrealNetwork.RepLazyProperty(self, "WeekEndTime")
     self:SaveArchive()

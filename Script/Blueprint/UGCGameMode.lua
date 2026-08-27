@@ -10,6 +10,8 @@ local Max_Room_Player_Count = 10 -- 房间最大玩家数量
 local Max_Room_Team_Count = 10 -- 房间最大队伍数量
 local Backfill_Refresh_Delay = 5 -- 补人刷新延迟
 local Room_Only_Item_ID = 8310033 -- 仅限当前房间使用的物品ID
+local Week_Time_Ver = 1 -- 周卡时间版本
+local Legacy_Week_Time_Offset = 8 * 60 * 60 -- 旧周卡时间偏移秒数
 UGCGameMode.Backfill_Request_Pending = false -- 是否存在补人请求
 UGCGameMode.Backfill_Match_Callback_Seen = false -- 是否收到补人成功回调
 UGCGameMode.Backfill_Login_Serial = 0 -- 玩家登录序号
@@ -274,12 +276,20 @@ function UGCGameMode:LoadPlayerArchive(PlayerController)
     PlayerController.PlayerGameLevel = archiveData.Level or 1
     PlayerController.PlayerAttack = archiveData.Attack or 1
     PlayerController.PlayerMaxHP = archiveData.MaxHP or 1
+    local Need_Week_Time_Migration = archiveData.WeekEndTime and (archiveData.WeekTimeVer or 0) < Week_Time_Ver -- 是否迁移旧周卡时间
+    if Need_Week_Time_Migration then
+        archiveData.WeekEndTime = archiveData.WeekEndTime - Legacy_Week_Time_Offset
+        archiveData.WeekTimeVer = Week_Time_Ver
+    end
     PlayerController.WeekEndTime = archiveData.WeekEndTime
     UnrealNetwork.RepLazyProperty(PlayerController, "WeekEndTime")
     PlayerController.WinCup = archiveData.WinCup or 0
     PlayerController:SyncWinCupToPawn()
     PlayerController.Coin_Lottery_Archive = archiveData.CoinLottery
     PlayerController:Sync_Coin_Lottery_Archive()
+    if Need_Week_Time_Migration then
+        self:SavePlayerArchive(PlayerController)
+    end
 end
 
 --[[----------------------保存玩家存档数据------------------------]]
@@ -292,6 +302,7 @@ function UGCGameMode:SavePlayerArchive(PlayerController)
     archiveData.Attack = PlayerController.PlayerAttack
     archiveData.MaxHP = PlayerController.PlayerMaxHP
     archiveData.WeekEndTime = PlayerController.WeekEndTime
+    archiveData.WeekTimeVer = Week_Time_Ver
     archiveData.WinCup = PlayerController.WinCup
     archiveData.CoinLottery = PlayerController:Get_Coin_Lottery_Archive()
 
@@ -312,6 +323,7 @@ function UGCGameMode:GetDefaultArchiveData()
         Level = 1,
         Attack = 1,
         MaxHP = 1,
+        WeekTimeVer = Week_Time_Ver,
         WinCup = 0
     }
 end

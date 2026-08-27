@@ -112,7 +112,8 @@ UGCGameSystem.UGCRequire("ExtendResource.GiftPack.OfficialPackage.Script.GiftPac
 
 local UI03 = {
     bInitDoOnce = false,
-    Pending_Open_Gift_Pack = false
+    Pending_Open_Gift_Pack = false,
+    Week_Ref_Elapsed = 0 -- 周卡刷新累计秒数
 }
 
 --[[----------------------构造商城界面------------------------]]
@@ -122,13 +123,20 @@ function UI03:Construct()
     self.Week_Default_End_Text = self.TextBlock_434:GetText() -- 周卡默认有效期文案
     self.Week_Default_Button_Text = self.TextBlock_436:GetText() -- 周卡默认购买按钮文案
     self.Week_Default_State_Color = self.TextBlock_435.ColorAndOpacity -- 周卡默认状态颜色
+    self.Week_Ref_Elapsed = 0
     self:RefreshWeekGiftPurchased(UGCGameSystem.GetLocalPlayerController())
 
 end
 
--- function UI03:Tick(MyGeometry, InDeltaTime)
-
--- end
+--[[----------------------定时刷新周卡状态------------------------]]
+function UI03:Tick(MyGeometry, InDeltaTime)
+    self.Week_Ref_Elapsed = self.Week_Ref_Elapsed + InDeltaTime
+    if self.Week_Ref_Elapsed < 1 then
+        return
+    end
+    self.Week_Ref_Elapsed = 0
+    self:RefreshWeekGiftPurchased(UGCGameSystem.GetLocalPlayerController())
+end
 
 --[[----------------------销毁商城界面并解绑委托------------------------]]
 function UI03:Destruct()
@@ -197,7 +205,7 @@ end
 
 --[[----------------------刷新周礼包已开通状态------------------------]]
 function UI03:RefreshWeekGiftPurchased(ctrl)
-    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    local Current_Time = UGCGameSystem.GetServerTimeSec() -- 当前服务器时间
     if not ctrl.WeekEndTime or Current_Time >= ctrl.WeekEndTime then
         self.TextBlock_435:SetText(self.Week_Default_State_Text)
         self.TextBlock_435:SetColorAndOpacity(self.Week_Default_State_Color)

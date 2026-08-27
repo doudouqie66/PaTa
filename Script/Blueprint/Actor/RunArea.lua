@@ -83,7 +83,7 @@ function RunArea:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Ot
         return
     end
 
-    local Current_Time = UGCGameSystem.DateTimeToTimeStamp(UGCGameSystem.GetCurrentDateTime()) -- 当前时间戳
+    local Current_Time = UGCGameSystem.GetServerTimeSec() -- 当前服务器时间
     local Is_Week_Card_Member = Player_Controller.WeekEndTime and Current_Time < Player_Controller.WeekEndTime -- 是否为周卡会员
     if self.Type == 2 and not Is_Week_Card_Member then
         L_TipsTool.ShowTips_01("您不是周卡会员", Player_Controller)
