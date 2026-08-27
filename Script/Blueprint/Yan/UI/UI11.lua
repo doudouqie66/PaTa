@@ -84,7 +84,6 @@ function UI11:Button_147_OnClicked()
         return
     end
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, false, false)
-    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI10, true, false)
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
 
 end
@@ -101,7 +100,6 @@ end
 function UI11:Play_Room_Lottery_Result(Drop_Count, Is_Already_Claimed)
     if Is_Already_Claimed then
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI11, false, false)
-        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI10, true, false)
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
         return
     end

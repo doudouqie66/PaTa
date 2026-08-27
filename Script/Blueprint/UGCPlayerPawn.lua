@@ -15,11 +15,13 @@ function UGCPlayerPawn:ReceiveBeginPlay()
     UGCPlayerPawn.SuperClass.ReceiveBeginPlay(self)
     self:TestLua()
 
-    if not UGCGameSystem.IsServer() and UGCGameSystem.GetLocalPlayerPawn() == self then
+    if self:IsLocallyControlled() then
         self.Local_Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(self) -- 本地玩家控制器
-        self.Move_Right_Input_Handle = UGCInputSystem.BindInputMapping(self, "Input.Move.MoveRight",
+        local Move_Right_Tag = UGCGameplayTagSystem.RequestGameplayTag("Input.Move.MoveRight") -- 左右移动标签
+        local Move_Forward_Tag = UGCGameplayTagSystem.RequestGameplayTag("Input.Move.MoveForward") -- 前后移动标签
+        self.Move_Right_Input_Handle = UGCInputSystem.BindInputMapping(self, Move_Right_Tag,
             ETriggerEvent.Triggered, self.ReverseMoveRightInput) -- 左右移动输入绑定
-        self.Move_Forward_Input_Handle = UGCInputSystem.BindInputMapping(self, "Input.Move.MoveForward",
+        self.Move_Forward_Input_Handle = UGCInputSystem.BindInputMapping(self, Move_Forward_Tag,
             ETriggerEvent.Triggered, self.ReverseMoveForwardInput) -- 前后移动输入绑定
         self:SetReverseMoveEnabled(false)
     end

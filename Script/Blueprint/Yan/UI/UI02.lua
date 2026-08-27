@@ -36,6 +36,7 @@
 ---@field TextBlock_9 UTextBlock
 ---@field TextBlock_61 UTextBlock
 ---@field TextBlock_62 UTextBlock
+---@field UI10 UI10_C
 --Edit Below--
 local Gold_Item_ID = 8310003 -- 金币物品ID
 local Win_Cup_Item_ID = 8310012 -- 奖杯物品ID

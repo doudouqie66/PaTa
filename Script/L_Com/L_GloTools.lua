@@ -35,7 +35,7 @@ function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统U
             UI_BP:PlayAnimation(UI_BP.wh, 0, 0, EUMGSequencePlayMode.Forward, 4) -- 打开警示界面时加速循环播放动画
         end
         if Is_Change_SysUI ~= false and str ~= L_Enum.Name_ClassPath.UI01 and str ~= L_Enum.Name_ClassPath.UI02 and str ~=
-            L_Enum.Name_ClassPath.UI10 and str ~= L_Enum.Name_ClassPath.UI_TestBtn then
+            L_Enum.Name_ClassPath.UI_TestBtn then
             L_GloTools.Change_SysUI(false)
         end
     elseif bVisible == false then

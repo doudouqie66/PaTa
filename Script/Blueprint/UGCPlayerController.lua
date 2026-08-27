@@ -134,8 +134,16 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Grant_Virtual_Item, L_Enum.Name_RPC.Use_Coin_Lottery_Free_Chance,
         L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
         L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block, L_Enum.Name_RPC.Request_Room_Lottery_UI,
-        L_Enum.Name_RPC.Claim_Room_Lottery, L_Enum.Name_RPC.Complete_Room_Lottery_Animation
+        L_Enum.Name_RPC.Claim_Room_Lottery, L_Enum.Name_RPC.Complete_Room_Lottery_Animation,
+        L_Enum.Name_RPC.Add_Player_Buff
 
+end
+
+--[[----------------------给当前玩家添加指定Buff------------------------]]
+function UGCPlayerController:Add_Player_Buff(Buff_Path)
+    local Player_Pawn = self:GetPlayerCharacterSafety() -- 当前玩家角色
+    local Buff_Class = UGCObjectUtility.LoadClass(Buff_Path) -- Buff类
+    UGCPersistEffectSystem.AddBuffByClass(Player_Pawn, Buff_Class, nil, -1, 1)
 end
 
 --[[----------------------设置飞行移动模式------------------------]]
@@ -526,7 +534,6 @@ end
 --[[----------------------根据服务器结果打开当前房间抽奖界面------------------------]]
 function UGCPlayerController:Show_Room_Lottery_UI(Can_Lottery)
     if not Can_Lottery then
-        L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI10, true, false)
         L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true, false)
         return
     end
