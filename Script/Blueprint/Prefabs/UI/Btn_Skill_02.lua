@@ -35,6 +35,7 @@ local Btn_Skill_02 = {
 	PreEnableState = false,
 	PreTagDisableState = false,
 	Jetpack_Is_Pressed = false,
+	Backpack_Init_Timer = nil, -- 背包初始化重试计时器
 	Jetpack_Press_Check_Timer = nil, -- 冲天炮按压状态检查计时器
 	Jetpack_Release_Check_Timer = nil, -- 冲天炮快速抬起延迟取消计时器
 }
@@ -59,17 +60,23 @@ function Btn_Skill_02:Construct()
 	local UI_Path = L_Enum.Name_ClassPath.UI_Fly -- 冲天炮进度条界面路径
 	L_GloTools.UIMgr(UI_Path, true, false)
 	L_GloTools.UI_Map[UI_Path]:SetSkillJetpackProgressVisible(false)
-	local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-	self.Backpack_Component = Player_Controller and UGCBackpackSystemV2.GetBackpackComponentV2(Player_Controller) -- 本地玩家背包组件
-	if self.Backpack_Component then
-		self.Backpack_Component.ItemChangeDelegateV2:Add(self.OnJetpackItemChanged, self)
+	if not self:TryInitBackpack() then
+		self.Backpack_Init_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
+			if self:TryInitBackpack() then
+				UGCTimerUtility.RemoveLuaTimer(self.Backpack_Init_Timer)
+				self.Backpack_Init_Timer = nil
+			end
+		end, true)
 	end
-	self:RefreshJetpackCount()
 end
 
 --[[----------------------销毁冲天炮技能按钮------------------------]]
 function Btn_Skill_02:Destruct()
 	self.Jetpack_Is_Pressed = false
+	if self.Backpack_Init_Timer then
+		UGCTimerUtility.RemoveLuaTimer(self.Backpack_Init_Timer)
+		self.Backpack_Init_Timer = nil
+	end
 	if self.Jetpack_Press_Check_Timer then
 		UGCTimerUtility.RemoveLuaTimer(self.Jetpack_Press_Check_Timer)
 		self.Jetpack_Press_Check_Timer = nil
@@ -91,10 +98,25 @@ function Btn_Skill_02:Destruct()
 	end
 end
 
+--[[----------------------等待背包就绪并初始化物品监听------------------------]]
+function Btn_Skill_02:TryInitBackpack()
+	local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+	self.Backpack_Component = PC and UGCBackpackSystemV2.GetBackpackComponentV2(PC) -- 本地玩家背包组件
+	if not self.Backpack_Component then
+		return false
+	end
+	self.Backpack_Component.ItemChangeDelegateV2:Add(self.OnJetpackItemChanged, self)
+	self:RefreshJetpackCount()
+	return true
+end
+
 --[[----------------------按下按钮时启动冲天炮技能------------------------]]
 function Btn_Skill_02:OnSkillButtonPressed()
-	local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-	if Player_Controller and UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Jetpack_Item_ID) < 1 then
+	if not self.Backpack_Component then
+		return
+	end
+	local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+	if PC and UGCBackpackSystemV2.GetItemCountV2(PC, Jetpack_Item_ID) < 1 then
 		L_GloTools.BuyShopProduct(Jetpack_Product_ID)
 		return
 	end
@@ -122,16 +144,16 @@ end
 
 --[[----------------------刷新冲天炮数量和耐久显示------------------------]]
 function Btn_Skill_02:RefreshJetpackCount()
-	local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-	if not Player_Controller then
+	local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+	if not PC or not self.Backpack_Component then
 		return
 	end
 
-	local Item_Count = UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Jetpack_Item_ID) -- 当前冲天炮数量
+	local Item_Count = UGCBackpackSystemV2.GetItemCountV2(PC, Jetpack_Item_ID) -- 当前冲天炮数量
 	self.TextBlock_0:SetText(tostring(Item_Count))
-	local Durability = Player_Controller.Jetpack_Durability or 0 -- 当前冲天炮耐久秒数
+	local Durability = PC.Jetpack_Durability or 0 -- 当前冲天炮耐久秒数
 	if Item_Count > 0 and Durability <= 0 then
-		local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(Player_Controller, Jetpack_Item_ID) -- 冲天炮实例列表
+		local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(PC, Jetpack_Item_ID) -- 冲天炮实例列表
 		local Custom_Data = Item_Define_IDs[1] and UGCItemSystemV2.LoadItemCustomData(Item_Define_IDs[1]) or {} -- 当前冲天炮实例数据
 		Durability = Custom_Data.Jetpack_Durability or Jetpack_Max_Durability
 	end

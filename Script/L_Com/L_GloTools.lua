@@ -1,6 +1,7 @@
 L_GloTools = L_GloTools or {}
 L_GloTools.UI_Map = L_GloTools.UI_Map or {} -- 缓存已创建的UI
 L_GloTools.UI_Visibility_Map = L_GloTools.UI_Visibility_Map or {} -- 缓存UI原始显示状态
+local SoundMgr = UGCGameSystem.UGCRequire('Script.L_Com.SoundMgr') -- 音效管理
 
 --[[----------------------管理UI显示隐藏------------------------]]
 function L_GloTools.UIMgr(str, bVisible, Is_Change_SysUI) -- 是否修改系统UI

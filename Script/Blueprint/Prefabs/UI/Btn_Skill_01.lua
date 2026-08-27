@@ -31,6 +31,7 @@ local Btn_Skill_01 = {
 	PreCDState = false,
 	PreEnableState = false,
 	PreTagDisableState = false,
+	Backpack_Init_Timer = nil, -- 背包初始化重试计时器
 }
 
 --[[----------------------构造技能按钮并监听喷射钩爪数量------------------------]]
@@ -45,25 +46,46 @@ function Btn_Skill_01:Construct()
 	Btn_Skill_01.SuperClass.InitTagDisableState(self, self.CanvasPanel_Disable)
 	Btn_Skill_01.SuperClass.InitVirtualJoystick(self, self.Border_VirtualJoystick, self.PESkillVirtualJoystick_0)
 	self.CanvasPanel_OneAvailable:SetVisibility(ESlateVisibility.Collapsed)
-	local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-	self.Backpack_Component = Player_Controller and UGCBackpackSystemV2.GetBackpackComponentV2(Player_Controller) -- 本地玩家背包组件
-	if self.Backpack_Component then
-		self.Backpack_Component.ItemChangeDelegateV2:Add(self.OnJetGrappleItemChanged, self)
+	if not self:TryInitBackpack() then
+		self.Backpack_Init_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
+			if self:TryInitBackpack() then
+				UGCTimerUtility.RemoveLuaTimer(self.Backpack_Init_Timer)
+				self.Backpack_Init_Timer = nil
+			end
+		end, true)
 	end
-	self:RefreshJetGrappleCount()
 end
 
 --[[----------------------销毁技能按钮并取消物品监听------------------------]]
 function Btn_Skill_01:Destruct()
+	if self.Backpack_Init_Timer then
+		UGCTimerUtility.RemoveLuaTimer(self.Backpack_Init_Timer)
+		self.Backpack_Init_Timer = nil
+	end
 	if self.Backpack_Component then
 		self.Backpack_Component.ItemChangeDelegateV2:Remove(self.OnJetGrappleItemChanged, self)
 	end
 end
 
+--[[----------------------等待背包就绪并初始化物品监听------------------------]]
+function Btn_Skill_01:TryInitBackpack()
+	local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+	self.Backpack_Component = PC and UGCBackpackSystemV2.GetBackpackComponentV2(PC) -- 本地玩家背包组件
+	if not self.Backpack_Component then
+		return false
+	end
+	self.Backpack_Component.ItemChangeDelegateV2:Add(self.OnJetGrappleItemChanged, self)
+	self:RefreshJetGrappleCount()
+	return true
+end
+
 --[[----------------------按下技能按钮时检查喷射钩爪数量------------------------]]
 function Btn_Skill_01:OnSkillButtonPressed()
-	local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-	if Player_Controller and UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Jet_Grapple_Item_ID) < 1 then
+	if not self.Backpack_Component then
+		return
+	end
+	local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+	if PC and UGCBackpackSystemV2.GetItemCountV2(PC, Jet_Grapple_Item_ID) < 1 then
 		print("[Btn_Skill_01] 喷射钩爪数量不足，打开商品9000012购买窗口")
 		L_GloTools.BuyShopProduct(Jet_Grapple_Product_ID)
 		return
@@ -83,9 +105,9 @@ end
 
 --[[----------------------刷新喷射钩爪数量显示------------------------]]
 function Btn_Skill_01:RefreshJetGrappleCount()
-	local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-	if Player_Controller then
-		self.TextBlock_0:SetText(tostring(UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Jet_Grapple_Item_ID)))
+	local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+	if PC and self.Backpack_Component then
+		self.TextBlock_0:SetText(tostring(UGCBackpackSystemV2.GetItemCountV2(PC, Jet_Grapple_Item_ID)))
 	end
 end
 
