@@ -1094,7 +1094,7 @@ function UGCPlayerController:OnRep_PlayerGameLevel()
     -- if self.MainUI_BP then
     --     self.MainUI_BP:RefreshPlayerGameLevel(self.PlayerGameLevel)
     -- end
-    L_TipsTool.ShowTips_01(tostring(self.PlayerGameLevel))
+    -- L_TipsTool.ShowTips_01(tostring(self.PlayerGameLevel))
 end
 
 --[[----------------------刷新飞行物控制界面------------------------]]
