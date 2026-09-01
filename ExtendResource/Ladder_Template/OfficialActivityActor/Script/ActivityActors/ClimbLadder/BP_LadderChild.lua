@@ -82,6 +82,7 @@ end
 -- ]]
 function BP_LadderChild:PossessWithAttach(PC)
     print_dev("BP_UGC_Ladder:PossessWithAttach")
+    UGCPlayerControllerSystem.DisableJoyStickSprint(PC)
     self.ActivityFakePossess:FakePossessWithAttach(PC, self.CH_Base_SK, "None")
     self.PlayerController = PC
 end
@@ -131,13 +132,15 @@ function BP_LadderChild:ActivityFakePossess_OnPossess(PC)
 end
 function BP_LadderChild:OnPlayerAttachedToThisActor_BP(InPlayer)
     print_dev("BP_LadderChild:OnPlayerAttachedToThisActor_BP")
+    local PC = InPlayer:GetPlayerControllerSafety() -- 本地玩家控制器
+    UGCPlayerControllerSystem.DisableJoyStickSprint(PC)
     self.UpSequence:AddBinding(self.UpSequenceBind.Binding, InPlayer, false)
     self.DownSequence:AddBinding(self.DownSequenceBind.Binding, InPlayer, false)
     self.IdleSequence:AddBinding(self.IdleSequenceBind.Binding, InPlayer, false)
     self.UpPosition:Copy()
     self.DownPosition:Copy()
     local MoveForwardTag = STExtraGameplayStatics.RequestGameplayTag("Input.Move.MoveForward", true)
-    UGCInputSystem.BindInputMapping(self, MoveForwardTag, ETriggerEvent.Triggered,
+    local Move_Forward_Triggered_Handle = UGCInputSystem.BindInputMapping(self, MoveForwardTag, ETriggerEvent.Triggered, -- 前进输入触发绑定
         function(InputValue, ElapsedTime, TriggerTime, InputTag)
             if not self.CanSwitchState then
                 return
@@ -146,19 +149,20 @@ function BP_LadderChild:OnPlayerAttachedToThisActor_BP(InPlayer)
                 if self.bUpBlock or self:GetCurrentStateName() == "Up" then
                     return
                 end
-                UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(), self, "ServerRPC_JumpToUpState")
-            end
-            if ElapsedTime < 0 then
+                UnrealNetwork.CallUnrealRPC(PC, self, "ServerRPC_JumpToUpState")
+            elseif ElapsedTime < 0 then
                 if self.bDownBlock or self:GetCurrentStateName() == "Down" then
                     return
                 end
-                UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(), self, "ServerRPC_JumpToDownState")
+                UnrealNetwork.CallUnrealRPC(PC, self, "ServerRPC_JumpToDownState")
             end
         end)
-    UGCInputSystem.BindInputMapping(self, MoveForwardTag, ETriggerEvent.Completed,
+    UGCInputSystem.SetBindingConsumeInput(self, Move_Forward_Triggered_Handle, true)
+    local Move_Forward_Completed_Handle = UGCInputSystem.BindInputMapping(self, MoveForwardTag, ETriggerEvent.Completed, -- 前进输入结束绑定
         function(InputValue, ElapsedTime, TriggerTime, InputTag)
-            UnrealNetwork.CallUnrealRPC(InPlayer:GetPlayerControllerSafety(), self, "ServerRPC_JumpToEndState")
+            UnrealNetwork.CallUnrealRPC(PC, self, "ServerRPC_JumpToEndState")
         end)
+    UGCInputSystem.SetBindingConsumeInput(self, Move_Forward_Completed_Handle, true)
 end
 function BP_LadderChild:ServerRPC_JumpToUpState()
     if self.bUpBlock then
@@ -183,6 +187,7 @@ function BP_LadderChild:CanShowExitUI(ClickParams)
 end
 function BP_LadderChild:ActivityFakePossess_OnUnPossess(PC)
     print_dev("BP_UGC_Ladder:OnUnPossess")
+    UGCPlayerControllerSystem.EnableJoyStickSprint(PC)
     UGCTimerUtility.CreateLuaTimer(0.1, function()
         self:K2_DestroyActor()
     end, false)
