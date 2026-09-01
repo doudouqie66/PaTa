@@ -239,7 +239,13 @@ function BP_UGC_Ladder:AreaBlockadeDetect(BeginLocation,EndLocation)
     40, 
     ECollisionChannel.ECC_WorldDynamic, 
     false,
-    IgnoreActors
+    IgnoreActors,
+    EDrawDebugTrace.None,
+    {},
+    true,
+    {R = 1, G = 0, B = 0, A = 1},
+    {R = 0, G = 1, B = 0, A = 1},
+    0
     )
     if not bHit then
         print_dev("BP_UGC_Ladder:AreaBlockadeDetect--true")
@@ -408,7 +414,14 @@ function BP_UGC_Ladder:TeleportAreaBlockadeDetect(LocationList)
 		UGCMathUtility.AddVector(Location,Vector.New(0, 0, 50)), 
 		40, 
 		ECollisionChannel.ECC_WorldDynamic, 
-		false
+		false,
+		{self},
+		EDrawDebugTrace.None,
+		{},
+		true,
+		{R = 1, G = 0, B = 0, A = 1},
+		{R = 0, G = 1, B = 0, A = 1},
+		0
 		)
 		if not bHit then
 			return true,Location

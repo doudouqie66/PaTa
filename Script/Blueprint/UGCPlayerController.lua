@@ -27,6 +27,11 @@ local UGCPlayerController = {
     Room_Lottery_Has_Claimed = false, -- 当前房间是否已经抽奖
     Room_Lottery_Pending_Drop_Count = 0, -- 当前房间抽奖待发金币数量
     Room_Lottery_Reward_Ready_Time = 0, -- 当前房间抽奖最早发奖时间
+    Room_Rotate_Target_Mode_ID = 0, -- 本次换房目标模式ID
+    Room_Rotate_Is_Leader = false, -- 是否负责发起队伍换房
+    Room_Match_Request_Count = 0, -- 本次换房请求次数
+    Room_Match_Requesting = false, -- 是否正在等待新房匹配
+    Room_Match_Succeeded = false, -- 是否已经匹配到新房
     Is_Invisible_Weapon_Locked = false -- 隐身期间是否限制手枪和RPG
 }
 
@@ -48,11 +53,24 @@ local Room_Lottery_Drop_ID = 5 -- 当前房间抽奖掉落表ID
 local Room_Lottery_Item_ID = 1005 -- 当前房间抽奖金币物品ID
 local Room_Lottery_Reward_Delay = 6 -- 当前房间抽奖动画总时长
 local Room_Lottery_Reward_Fallback_Delay = 8 -- 当前房间抽奖奖励兜底发放延迟
+local Room_Match_Start_Delay = 10 -- 队伍准备后的换房延迟
+local Room_Match_Retry_Delay = 5 -- 换房请求失败后的重试延迟
+local Room_Match_Max_Request_Count = 3 -- 单次换房最多请求次数
+local Room_Match_Watchdog_Time = 10 * 60 + 30 -- 新房匹配超时看门狗秒数
+local Room_Return_Lobby_Delay = 1.1 -- 取消匹配后的返回大厅延迟
 
 --[[----------------------初始化玩家控制器------------------------]]
 function UGCPlayerController:ReceiveBeginPlay()
     self.SuperClass.ReceiveBeginPlay(self)
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyUGCCommodityResult, self)
+    if not self:HasAuthority() then
+        self.Room_Rotate_Target_Mode_ID = 0
+        self.Room_Rotate_Is_Leader = false
+        self.Room_Match_Request_Count = 0
+        self.Room_Match_Requesting = false
+        self.Room_Match_Succeeded = false
+        UGCMultiMode.NotifyMatchSucceededDelegate:Add(self.OnRoomMatchSucceeded, self)
+    end
     self:EnsureInitialWeapons()
 end
 
@@ -60,6 +78,25 @@ end
 function UGCPlayerController:ReceiveEndPlay()
     if self:HasAuthority() and self.Flying_Item_ID == Jetpack_Item_ID then
         self:Set_Jetpack_Flying(false)
+    end
+    if not self:HasAuthority() then
+        UGCMultiMode.NotifyMatchSucceededDelegate:Remove(self.OnRoomMatchSucceeded, self)
+        if self.Room_Match_Start_Timer then
+            UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Start_Timer)
+            self.Room_Match_Start_Timer = nil
+        end
+        if self.Room_Match_Retry_Timer then
+            UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Retry_Timer)
+            self.Room_Match_Retry_Timer = nil
+        end
+        if self.Room_Match_Watchdog_Timer then
+            UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Watchdog_Timer)
+            self.Room_Match_Watchdog_Timer = nil
+        end
+        if self.Room_Return_Lobby_Timer then
+            UGCTimerUtility.RemoveLuaTimer(self.Room_Return_Lobby_Timer)
+            self.Room_Return_Lobby_Timer = nil
+        end
     end
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
     self.SuperClass.ReceiveEndPlay(self)
@@ -135,8 +172,161 @@ function UGCPlayerController:GetAvailableServerRPCs()
         L_Enum.Name_RPC.Grant_Coin_Lottery_Share_Reward, L_Enum.Name_RPC.Remove_Item,
         L_Enum.Name_RPC.Spawn_Random_Block, L_Enum.Name_RPC.Open_Random_Block, L_Enum.Name_RPC.Request_Room_Lottery_UI,
         L_Enum.Name_RPC.Claim_Room_Lottery, L_Enum.Name_RPC.Complete_Room_Lottery_Animation,
-        L_Enum.Name_RPC.Add_Player_Buff
+        L_Enum.Name_RPC.Add_Player_Buff, L_Enum.Name_RPC.Prepare_Room_Rotate,
+        L_Enum.Name_RPC.Retry_Room_Rotate, L_Enum.Name_RPC.Force_Room_Exit
 
+end
+
+--[[----------------------安排队长发起新房匹配------------------------]]
+function UGCPlayerController:ScheduleRoomMatch()
+    if self:HasAuthority() or not self.Room_Rotate_Is_Leader or self.Room_Match_Succeeded or
+        self.Room_Match_Start_Timer then
+        return
+    end
+
+    self.Room_Match_Start_Timer = UGCTimerUtility.CreateLuaTimer(Room_Match_Start_Delay, function()
+        self.Room_Match_Start_Timer = nil
+        self:StartRoomMatch()
+    end)
+end
+
+--[[----------------------准备自动换入新房------------------------]]
+function UGCPlayerController:Prepare_Room_Rotate(Target_Mode_ID, Is_Leader)
+    if self:HasAuthority() then
+        return
+    end
+
+    self.Room_Rotate_Target_Mode_ID = tonumber(Target_Mode_ID) or 0
+    self.Room_Rotate_Is_Leader = Is_Leader == true
+    self.Room_Match_Request_Count = 0
+    self.Room_Match_Requesting = false
+    self.Room_Match_Succeeded = false
+    UGCMultiMode.RequestReadyMatch(true)
+    L_TipsTool.ShowTips_01("当前房间即将维护，正在准备换入新房")
+    self:ScheduleRoomMatch()
+end
+
+--[[----------------------发起新房匹配------------------------]]
+function UGCPlayerController:StartRoomMatch()
+    if self:HasAuthority() or not self.Room_Rotate_Is_Leader or self.Room_Match_Succeeded or
+        self.Room_Match_Requesting or self.Room_Rotate_Target_Mode_ID <= 0 or
+        self.Room_Match_Request_Count >= Room_Match_Max_Request_Count then
+        return
+    end
+
+    self.Room_Match_Request_Count = self.Room_Match_Request_Count + 1
+    self.Room_Match_Requesting = true
+    local Request_Sent = UGCMultiMode.RequestMatch(self.Room_Rotate_Target_Mode_ID,
+        self.OnRoomMatchResponse, self, true) -- 换房请求是否已发出
+    if not Request_Sent then
+        self.Room_Match_Requesting = false
+        self:ScheduleRoomMatchRetry()
+        return
+    end
+    self:StartRoomMatchWatchdog()
+end
+
+--[[----------------------处理新房匹配请求结果------------------------]]
+function UGCPlayerController:OnRoomMatchResponse(Is_Success)
+    self.Room_Match_Requesting = Is_Success == true
+    if Is_Success then
+        L_TipsTool.ShowTips_01("正在匹配新房，请稍候")
+        return
+    end
+    if self.Room_Match_Watchdog_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Watchdog_Timer)
+        self.Room_Match_Watchdog_Timer = nil
+    end
+    self:ScheduleRoomMatchRetry()
+end
+
+--[[----------------------启动新房匹配超时看门狗------------------------]]
+function UGCPlayerController:StartRoomMatchWatchdog()
+    if self.Room_Match_Watchdog_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Watchdog_Timer)
+    end
+    self.Room_Match_Watchdog_Timer = UGCTimerUtility.CreateLuaTimer(Room_Match_Watchdog_Time, function()
+        self.Room_Match_Watchdog_Timer = nil
+        if self.Room_Match_Succeeded or not self.Room_Match_Requesting then
+            return
+        end
+        UGCMultiMode.RequestCancelMatch()
+        self.Room_Match_Requesting = false
+        self:ScheduleRoomMatchRetry()
+    end)
+end
+
+--[[----------------------安排失败后的换房重试------------------------]]
+function UGCPlayerController:ScheduleRoomMatchRetry()
+    if self.Room_Match_Succeeded or self.Room_Match_Retry_Timer or
+        self.Room_Match_Request_Count >= Room_Match_Max_Request_Count then
+        return
+    end
+
+    self.Room_Match_Retry_Timer = UGCTimerUtility.CreateLuaTimer(Room_Match_Retry_Delay, function()
+        self.Room_Match_Retry_Timer = nil
+        self:StartRoomMatch()
+    end)
+end
+
+--[[----------------------响应已经匹配到新房------------------------]]
+function UGCPlayerController:OnRoomMatchSucceeded()
+    self.Room_Match_Succeeded = true
+    self.Room_Match_Requesting = false
+    if self.Room_Match_Start_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Start_Timer)
+        self.Room_Match_Start_Timer = nil
+    end
+    if self.Room_Match_Retry_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Retry_Timer)
+        self.Room_Match_Retry_Timer = nil
+    end
+    if self.Room_Match_Watchdog_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Watchdog_Timer)
+        self.Room_Match_Watchdog_Timer = nil
+    end
+    L_TipsTool.ShowTips_01("新房匹配成功，即将进入")
+end
+
+--[[----------------------重试尚未开始的新房匹配------------------------]]
+function UGCPlayerController:Retry_Room_Rotate(Is_Leader)
+    if self:HasAuthority() or self.Room_Match_Succeeded or self.Room_Match_Requesting then
+        return
+    end
+
+    self.Room_Rotate_Is_Leader = Is_Leader == true
+    self.Room_Match_Request_Count = 0
+    self:ScheduleRoomMatch()
+end
+
+--[[----------------------匹配未完成时安全返回大厅------------------------]]
+function UGCPlayerController:Force_Room_Exit()
+    if self:HasAuthority() or self.Room_Match_Succeeded or self.Room_Return_Lobby_Timer then
+        return
+    end
+
+    if self.Room_Match_Start_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Start_Timer)
+        self.Room_Match_Start_Timer = nil
+    end
+    if self.Room_Match_Retry_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Retry_Timer)
+        self.Room_Match_Retry_Timer = nil
+    end
+    if self.Room_Match_Watchdog_Timer then
+        UGCTimerUtility.RemoveLuaTimer(self.Room_Match_Watchdog_Timer)
+        self.Room_Match_Watchdog_Timer = nil
+    end
+    if self.Room_Match_Requesting then
+        UGCMultiMode.RequestCancelMatch()
+        self.Room_Match_Requesting = false
+    end
+    UGCMultiMode.RequestReadyMatch(false)
+    L_TipsTool.ShowTips_01("新房匹配未完成，正在安全返回大厅")
+    self.Room_Return_Lobby_Timer = UGCTimerUtility.CreateLuaTimer(Room_Return_Lobby_Delay, function()
+        self.Room_Return_Lobby_Timer = nil
+        UGCGameSystem.ReturnToLobby()
+    end)
 end
 
 --[[----------------------给当前玩家添加指定Buff------------------------]]
@@ -500,6 +690,7 @@ function UGCPlayerController:Claim_Tower_Reward(Reward_Index)
 
     self.Tower_Reward_Claim_Mask = self.Tower_Reward_Claim_Mask + Reward_Flag
     UnrealNetwork.RepLazyProperty(self, "Tower_Reward_Claim_Mask")
+    self:SaveArchive()
     L_TipsTool.ShowTips_01("领取奖励成功", self, SoundMgr.SoundName.Reward_Ready)
 end
 

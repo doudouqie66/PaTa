@@ -127,7 +127,10 @@ L_Enum.Name_RPC = {
     Play_Sound = "Play_Sound", -- 播放2D音效RPC名称
     Spawn_Random_Block = "Spawn_Random_Block", -- 随机生成方块RPC名称
     Open_Random_Block = "Open_Random_Block", -- 开启随机方块RPC名称
-    Add_Player_Buff = "Add_Player_Buff" -- 给玩家添加Buff RPC名称
+    Add_Player_Buff = "Add_Player_Buff", -- 给玩家添加Buff RPC名称
+    Prepare_Room_Rotate = "Prepare_Room_Rotate", -- 准备自动换房RPC名称
+    Retry_Room_Rotate = "Retry_Room_Rotate", -- 重试自动换房RPC名称
+    Force_Room_Exit = "Force_Room_Exit" -- 旧房到期返回大厅RPC名称
     -- Client_RefUI_Level = "Client_RefUI_Level"
 }
 
