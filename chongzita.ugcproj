@@ -9,7 +9,7 @@ ProjectShortPath=/chongzita/
 StartMapName=/chongzita/UGCmap
 MapMode=0
 bIsBigWorld=0
-Version=1.38.12.15910
+Version=1.38.12.15912
 UpdateVersion=10
 GameModePath=/chongzita/Asset/Blueprint/UGCGameMode.UGCGameMode_C
 
