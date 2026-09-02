@@ -13,6 +13,7 @@
 ---@field IncreaseButton UButton
 ---@field ProductIcon UImage
 ---@field ProductName UTextBlock
+---@field Tex_Des UTextBlock
 ---@field TotalPriceText UTextBlock
 --Edit Below--
 
@@ -42,6 +43,7 @@ function ShopV2_PurchasePopups_UIBP:Refresh(ProductID, Buy_Count)
     self.Count = Buy_Count or 1;
     
     self.ProductName:SetText(self.ProductData.ProductName);
+    self.Tex_Des:SetText(ItemData.ItemDesc);
     Common.LoadObjectAsync(ItemData.ItemIcon, 
         function (IconTexture)
             if self ~= nil and UE.IsValid(self) then 
@@ -140,15 +142,12 @@ function ShopV2_PurchasePopups_UIBP:OnBuyClick()
         ShopV2Manager.bBlockRepeatPurchase = false
     end
 end
-
 --[[----------------------处理绿洲币确认弹窗操作------------------------]]
 function ShopV2_PurchasePopups_UIBP:OnConfirmationOperation(Value)
-
     if not Value then
         ShopV2Manager.bBlockRepeatPurchase = false;
     end
 end
-
 function ShopV2_PurchasePopups_UIBP:OnIncreaseClick()
     
     self:ChangeCount(1);
