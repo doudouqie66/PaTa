@@ -211,9 +211,14 @@ function ShopV2Manager:CloseMainUI()
     self.MainUI:SetVisibility(ESlateVisibility.Collapsed);
 end
 
-function ShopV2Manager:OpenPurchaseUI(ProductID)
+function ShopV2Manager:OpenPurchaseUI(ProductID, Buy_Count)
+
+    if not self.bBuyProductResultBinded then
+        self:GetCommodityOperationManager().BuyProductResultDelegate:Add(self.OnBuyProductResult, self);
+        self.bBuyProductResultBinded = true
+    end
     
-    self.MainUI:ShowPurchasePanel(ProductID);
+    self.MainUI:ShowPurchasePanel(ProductID, Buy_Count);
 end
 
 function ShopV2Manager:RefreshProducts()
@@ -350,7 +355,7 @@ end
 ---@param CurrentPrice int 商品价格
 function ShopV2Manager:BuyProduct(ProductID, Num, CurrentPrice)
 
-    self:GetCommodityOperationManager():BuyProduct(ProductID, CurrentPrice, Num);
+    return self:GetCommodityOperationManager():BuyProduct(ProductID, CurrentPrice, Num);
 end
 
 ---获取对应页签的所有商品ID

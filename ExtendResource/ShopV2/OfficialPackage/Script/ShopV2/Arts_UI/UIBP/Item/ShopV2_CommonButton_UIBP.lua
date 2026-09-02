@@ -92,23 +92,7 @@ function ShopV2_CommonButton_UIBP:OnClick()
     -- end
 
     ShopV2Manager.bBlockRepeatPurchase = true;
-    local ProductData = ShopV2Manager:GetProductConfigData(self.ProductID);
-
-    if ProductData.CurrencyType == ECurrencyType.OtherCoin then
-        ShopV2Manager:OpenPurchaseUI(self.ProductID);
-    else
-        local ObjectData = ShopV2Manager:GetItemConfigData(ProductData.ItemID);
-        self.bCanAfford = ShopV2Manager:CanAfford(self.ProductID, 1)
-        local PromiseFuture = UGCCommoditySystem.BuyUGCCommodity2(self.ProductID, ObjectData.ItemIcon, ObjectData.ItemDesc, 1);
-        if PromiseFuture ~= nil then
-            PromiseFuture:Then(
-                function (Result)
-                    local UI = Result:Get();
-                    UI.ConfirmationOperationDelegate:Add(self.ShouldBlockRepeatPurchase, self);
-                end
-            )
-        end
-    end
+    ShopV2Manager:OpenPurchaseUI(self.ProductID);
 end
 
 function ShopV2_CommonButton_UIBP:ShouldBlockRepeatPurchase(Value)

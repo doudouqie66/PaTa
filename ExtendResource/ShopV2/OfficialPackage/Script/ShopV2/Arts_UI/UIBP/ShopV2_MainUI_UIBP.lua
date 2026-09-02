@@ -142,10 +142,10 @@ function ShopV2_MainUI_UIBP:InitCurrencyBar()
     end    
 end
 
-function ShopV2_MainUI_UIBP:ShowPurchasePanel(ProductID)
+function ShopV2_MainUI_UIBP:ShowPurchasePanel(ProductID, Buy_Count)
     
     self.PurchasePanel:SetVisibility(ESlateVisibility.SelfHitTestInvisible);
-    self.PurchasePanel:Refresh(ProductID);
+    self.PurchasePanel:Refresh(ProductID, Buy_Count);
 end
 
 function ShopV2_MainUI_UIBP:ShowPurchaseTip(Message)

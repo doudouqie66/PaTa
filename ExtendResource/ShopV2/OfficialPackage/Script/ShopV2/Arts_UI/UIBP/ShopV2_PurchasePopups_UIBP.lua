@@ -34,12 +34,12 @@ function ShopV2_PurchasePopups_UIBP:Construct()
     self.CloseButton.OnClicked:Add(self.OnCloseClick, self);
 end
 
-function ShopV2_PurchasePopups_UIBP:Refresh(ProductID)
+function ShopV2_PurchasePopups_UIBP:Refresh(ProductID, Buy_Count)
     
     self.ProductData = ShopV2Manager:GetProductConfigData(ProductID);
     local ItemData = ShopV2Manager:GetItemConfigData(self.ProductData.ItemID);
 
-    self.Count = 1;
+    self.Count = Buy_Count or 1;
     
     self.ProductName:SetText(self.ProductData.ProductName);
     Common.LoadObjectAsync(ItemData.ItemIcon, 
@@ -122,7 +122,15 @@ function ShopV2_PurchasePopups_UIBP:OnBuyClick()
     elseif ShopV2Manager:IsProductValid(self.ProductData.ProductID) == false then
         ShopV2Manager:ShowPurchaseTip("购买失败，商品未上架");
     else
-        ShopV2Manager:BuyProduct(self.ProductData.ProductID, self.Count, self.CurrentPrice);
+        local PromiseFuture = ShopV2Manager:BuyProduct(self.ProductData.ProductID, self.Count, self.CurrentPrice);
+        if PromiseFuture ~= nil then
+            PromiseFuture:Then(
+                function (Result)
+                    local UI = Result:Get();
+                    UI.ConfirmationOperationDelegate:Add(self.OnConfirmationOperation, self);
+                end
+            )
+        end
         bRequested = true
     end
 
@@ -130,6 +138,14 @@ function ShopV2_PurchasePopups_UIBP:OnBuyClick()
 
     if not bRequested then
         ShopV2Manager.bBlockRepeatPurchase = false
+    end
+end
+
+--[[----------------------处理绿洲币确认弹窗操作------------------------]]
+function ShopV2_PurchasePopups_UIBP:OnConfirmationOperation(Value)
+
+    if not Value then
+        ShopV2Manager.bBlockRepeatPurchase = false;
     end
 end
 
