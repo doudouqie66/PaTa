@@ -2,6 +2,7 @@
 ---@field Button_0 UButton
 ---@field Image_6 UImage
 ---@field Image_145 UImage
+---@field MoHu MoHu_C
 ---@field TextBlock_166 UTextBlock
 ---@field WrapBox_29 UWrapBox
 ---@field Pre_Item_01 UClass

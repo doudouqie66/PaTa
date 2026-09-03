@@ -5,7 +5,7 @@
 ---@class UGCPlayerPawn_C:BP_UGCPlayerPawn_C
 ---@field HeadTop_UI_Component_Back UWidgetComponent
 ---@field HeadTop_UI_Component UWidgetComponent
--- Edit Below--
+--Edit Below--
 local UGCPlayerPawn = {
     WinCup = 0 -- 当前显示的奖杯数量
 }
@@ -19,8 +19,8 @@ function UGCPlayerPawn:ReceiveBeginPlay()
         self.Local_Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(self) -- 本地玩家控制器
         local Move_Right_Tag = UGCGameplayTagSystem.RequestGameplayTag("Input.Move.MoveRight") -- 左右移动标签
         local Move_Forward_Tag = UGCGameplayTagSystem.RequestGameplayTag("Input.Move.MoveForward") -- 前后移动标签
-        self.Move_Right_Input_Handle = UGCInputSystem.BindInputMapping(self, Move_Right_Tag,
-            ETriggerEvent.Triggered, self.ReverseMoveRightInput) -- 左右移动输入绑定
+        self.Move_Right_Input_Handle = UGCInputSystem.BindInputMapping(self, Move_Right_Tag, ETriggerEvent.Triggered,
+            self.ReverseMoveRightInput) -- 左右移动输入绑定
         self.Move_Forward_Input_Handle = UGCInputSystem.BindInputMapping(self, Move_Forward_Tag,
             ETriggerEvent.Triggered, self.ReverseMoveForwardInput) -- 前后移动输入绑定
         self:SetReverseMoveEnabled(false)
@@ -51,7 +51,7 @@ end
 function UGCPlayerPawn:TestLua()
 
     --[[--------------------开启滑铲--------------------------]] --
-    -- self.bIsOpenShovelAbility = true
+    self.bIsOpenShovelAbility = true
 
     -- if self:HasAuthority() then
     --     UGCAttributeSystem.SetGameAttributeValue(self, "UGCGeneralMoveSpeedScale", 6)

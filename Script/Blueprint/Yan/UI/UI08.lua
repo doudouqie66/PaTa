@@ -9,6 +9,7 @@
 ---@field Image_97 UImage
 ---@field Image_209 UImage
 ---@field Image_210 UImage
+---@field MoHu MoHu_C
 --Edit Below--
 ---@class UI08_C:UUserWidget
 ---@field Button_88 UButton

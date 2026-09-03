@@ -15,6 +15,7 @@
 ---@field Image_217 UImage
 ---@field Image_218 UImage
 ---@field Image_219 UImage
+---@field MoHu MoHu_C
 --Edit Below--
 ---@class UI06_C:UUserWidget
 ---@field Button_88 UButton

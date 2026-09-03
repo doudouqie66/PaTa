@@ -23,6 +23,7 @@
 ---@field Image_223 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
+---@field MoHu MoHu_C
 ---@field TextBlock_434 UTextBlock
 ---@field TextBlock_435 UTextBlock
 ---@field TextBlock_436 UTextBlock

@@ -39,6 +39,7 @@
 ---@field Image_269 UImage
 ---@field Image_270 UImage
 ---@field Image_271 UImage
+---@field MoHu MoHu_C
 ---@field TextBlock_165 UTextBlock
 ---@field TextBlock_166 UTextBlock
 --Edit Below--

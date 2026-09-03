@@ -11,6 +11,7 @@
 ---@field Image_96 UImage
 ---@field Image_285 UImage
 ---@field Image_286 UImage
+---@field MoHu MoHu_C
 ---@field TextBlock_48 UTextBlock
 ---@field TextBlock_49 UTextBlock
 ---@field UIParticleEmitter_22 UUIParticleEmitter

@@ -2,6 +2,7 @@
 ---@field Button_88 UButton
 ---@field Image_16 UImage
 ---@field Image_18 UImage
+---@field MoHu MoHu_C
 ---@field TextBlock_81 UTextBlock
 ---@field TextBlock_82 UTextBlock
 --Edit Below--

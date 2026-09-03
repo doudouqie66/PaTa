@@ -39,6 +39,7 @@
 ---@field Image_216 UImage
 ---@field Image_360 UImage
 ---@field Image_481 UImage
+---@field MoHu MoHu_C
 --Edit Below--
 ---@class UI05_C:UUserWidget
 ---@field Button_0 UButton

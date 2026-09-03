@@ -15,6 +15,7 @@
 ---@field Image_0 UImage
 ---@field Image_18 UImage
 ---@field Image_99 UImage
+---@field MoHu MoHu_C
 ---@field TextBlock_191 UTextBlock
 --Edit Below--
 ---@class UI07_C:UUserWidget
