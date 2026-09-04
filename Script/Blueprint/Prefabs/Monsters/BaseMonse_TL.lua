@@ -1,7 +1,5 @@
----@class BaseMonse_Child_C:BaseMonse_C
+---@class BaseMonse_TL:BaseMonse_C
 --Edit Below--
----@class BaseMonse_Child_C:BaseMonse_C
--- Edit Below--
 local BaseMonse_TL = {}
 
 -- function BaseMonse_TL:ReceiveTick(DeltaTime)
