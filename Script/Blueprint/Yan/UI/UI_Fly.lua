@@ -69,16 +69,20 @@ end
 
 --[[----------------------应用本地魔毯移动参数------------------------]]
 function UI_Fly:ApplyMagicCarpetMovement(Max_Fly_Speed)
-    if self.Magic_Carpet_Movement_Applied then
+    Max_Fly_Speed = Max_Fly_Speed or Magic_Carpet_Max_Fly_Speed
+    local Player_Pawn = UGCGameSystem.GetLocalPlayerPawn() -- 本地玩家角色
+    local Character_Movement = Player_Pawn.CharacterMovement -- 本地角色移动组件
+    if self.Magic_Carpet_Movement_Applied and self.Magic_Carpet_Movement_Pawn == Player_Pawn then
+        Character_Movement.MaxFlySpeed = Max_Fly_Speed
+        Character_Movement.BrakingDecelerationFlying = Magic_Carpet_Braking_Deceleration
         return
     end
 
-    Max_Fly_Speed = Max_Fly_Speed or Magic_Carpet_Max_Fly_Speed
-    local Character_Movement = UGCGameSystem.GetLocalPlayerPawn().CharacterMovement -- 本地角色移动组件
     self.Original_Max_Fly_Speed = Character_Movement.MaxFlySpeed
     self.Original_Braking_Deceleration_Flying = Character_Movement.BrakingDecelerationFlying
     Character_Movement.MaxFlySpeed = Max_Fly_Speed
     Character_Movement.BrakingDecelerationFlying = Magic_Carpet_Braking_Deceleration
+    self.Magic_Carpet_Movement_Pawn = Player_Pawn -- 已应用移动参数的玩家角色
     self.Magic_Carpet_Movement_Applied = true
 end
 
@@ -89,13 +93,12 @@ function UI_Fly:RestoreMagicCarpetMovement()
     end
 
     local Player_Pawn = UGCGameSystem.GetLocalPlayerPawn() -- 本地玩家角色
-    if not Player_Pawn then
-        self.Magic_Carpet_Movement_Applied = false
-        return
+    if Player_Pawn == self.Magic_Carpet_Movement_Pawn then
+        local Character_Movement = Player_Pawn.CharacterMovement -- 本地角色移动组件
+        Character_Movement.MaxFlySpeed = self.Original_Max_Fly_Speed
+        Character_Movement.BrakingDecelerationFlying = self.Original_Braking_Deceleration_Flying
     end
-    local Character_Movement = Player_Pawn.CharacterMovement -- 本地角色移动组件
-    Character_Movement.MaxFlySpeed = self.Original_Max_Fly_Speed
-    Character_Movement.BrakingDecelerationFlying = self.Original_Braking_Deceleration_Flying
+    self.Magic_Carpet_Movement_Pawn = nil
     self.Magic_Carpet_Movement_Applied = false
 end
 

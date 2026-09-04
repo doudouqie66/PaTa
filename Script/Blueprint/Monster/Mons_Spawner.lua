@@ -3,38 +3,36 @@
 --Edit Below--
 local Mons_Spawner = {}
 
-local Monster_Base_Speed = 300 -- 怪物蓝图中的真实基础速度
-local First_Patrol_Speed = 150 -- 第一层巡逻速度
-local Last_Patrol_Speed = 600 -- 最后一层巡逻速度
-local Total_Layer_Count = 19 -- 总层数
+-- local First_Patrol_Speed = 150 -- 第一层巡逻速度
+-- local Last_Patrol_Speed = 600 -- 最后一层巡逻速度
+-- local Total_Layer_Count = 19 -- 总层数
+-- local Layer_Speed_Reason = 1001 -- 分层速度修改原因
 
---[[
-function Mons_Spawner:ReceiveBeginPlay()
-    Mons_Spawner.SuperClass.ReceiveBeginPlay(self)
-end
---]]
+-- --[[
+-- function Mons_Spawner:ReceiveBeginPlay()
+--     Mons_Spawner.SuperClass.ReceiveBeginPlay(self)
+-- end
+-- --]]
 
---[[----------------------计算当前层巡逻速度------------------------]]
-local function Calc_Patrol_Speed(Layer_Index)
-    if Total_Layer_Count <= 1 then
-        return First_Patrol_Speed
-    end
+-- --[[----------------------计算当前层巡逻速度------------------------]]
+-- local function Calc_Patrol_Speed(Layer_Index)
+--     if Total_Layer_Count <= 1 then
+--         return First_Patrol_Speed
+--     end
 
-    local Progress = (Layer_Index - 1) / (Total_Layer_Count - 1)
-    local Speed = First_Patrol_Speed + (Last_Patrol_Speed - First_Patrol_Speed) * Progress
+--     local Progress = (Layer_Index - 1) / (Total_Layer_Count - 1)
+--     local Speed = First_Patrol_Speed + (Last_Patrol_Speed - First_Patrol_Speed) * Progress
 
-    return math.floor(Speed + 0.5)
-end
+--     return math.floor(Speed + 0.5)
+-- end
 
---[[----------------------怪物生成后设置巡逻速度------------------------]]
-function Mons_Spawner:OnMobSpawn(MobPawn)
-    local Target_Speed = Calc_Patrol_Speed(self.Layer_Index)
-    local Speed_Scale = Target_Speed / Monster_Base_Speed
+-- --[[----------------------怪物生成后设置巡逻速度------------------------]]
+-- function Mons_Spawner:OnMobSpawn(MobPawn)
+--     local Target_Speed = Calc_Patrol_Speed(self.Layer_Index)
 
-    -- 设置怪物UGC移动速度倍率
-    UGCAttributeSystem.SetGameAttributeValue(MobPawn,
-        UGCNativeGameAttributeType.Character_UGCGeneralMoveSpeedScale, Speed_Scale)
-end
+--     -- 设置怪物最大移动速度
+--     UGCGenericCharacterSystem.SetMaxSpeed(MobPawn, Target_Speed, Layer_Speed_Reason)
+-- end
 
 --[[
 function Mons_Spawner:CustomSpawnMob(InCustomParam)
