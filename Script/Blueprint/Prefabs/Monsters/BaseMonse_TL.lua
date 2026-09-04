@@ -2,17 +2,17 @@
 --Edit Below--
 ---@class BaseMonse_Child_C:BaseMonse_C
 -- Edit Below--
-local BaseMonse_Child = {}
+local BaseMonse_TL = {}
 
--- function BaseMonse_Child:ReceiveTick(DeltaTime)
---     BaseMonse_Child.SuperClass.ReceiveTick(self, DeltaTime)
+-- function BaseMonse_TL:ReceiveTick(DeltaTime)
+--     BaseMonse_TL.SuperClass.ReceiveTick(self, DeltaTime)
 -- end
 
--- function BaseMonse_Child:ReceiveEndPlay()
---     BaseMonse_Child.SuperClass.ReceiveEndPlay(self) 
+-- function BaseMonse_TL:ReceiveEndPlay()
+--     BaseMonse_TL.SuperClass.ReceiveEndPlay(self) 
 -- end
 
--- function BaseMonse_Child:GetReplicatedProperties()
+-- function BaseMonse_TL:GetReplicatedProperties()
 --     return
 -- end
 
@@ -22,7 +22,7 @@ local BaseMonse_Child = {}
 -- ---@param EventInstigator AController 伤害来源的Controller
 -- ---@param DamageCauser AActor 伤害来源
 -- ---@param DamageContext FGameMagnitudeContext  伤害上下文
--- function BaseMonse_Child:PreTakeDamageEvent(Damage, EventInstigator, DamageCauser, DamageContext)
+-- function BaseMonse_TL:PreTakeDamageEvent(Damage, EventInstigator, DamageCauser, DamageContext)
 
 -- end
 
@@ -32,7 +32,7 @@ local BaseMonse_Child = {}
 -- ---@param EventInstigator AController 伤害来源的Controller
 -- ---@param DamageCauser AActor 伤害来源
 -- ---@param DamageContext FGameMagnitudeContext  伤害上下文
--- function BaseMonse_Child:PostTakeDamageEvent(Damage, EventInstigator, DamageCauser, DamageContext)
+-- function BaseMonse_TL:PostTakeDamageEvent(Damage, EventInstigator, DamageCauser, DamageContext)
 
 -- end
 
@@ -43,7 +43,7 @@ local BaseMonse_Child = {}
 -- ---@param DamageCauser AActor 伤害来源
 -- ---@param DamageContext FGameMagnitudeContext  伤害上下文
 -- ---@return float 修改后的伤害值
--- function BaseMonse_Child:PreOverrideDamage(Damage, EventInstigator, DamageCauser, DamageContext)
+-- function BaseMonse_TL:PreOverrideDamage(Damage, EventInstigator, DamageCauser, DamageContext)
 --     return Damage
 -- end
 
@@ -54,7 +54,7 @@ local BaseMonse_Child = {}
 -- ---@param DamageCauser AActor 伤害来源
 -- ---@param DamageContext FGameMagnitudeContext  伤害上下文
 -- ---@return float 修改后的伤害值
--- function BaseMonse_Child:PostOverrideDamage(Damage, EventInstigator, DamageCauser, DamageContext)
+-- function BaseMonse_TL:PostOverrideDamage(Damage, EventInstigator, DamageCauser, DamageContext)
 --     return Damage
 -- end
 
@@ -65,7 +65,7 @@ local BaseMonse_Child = {}
 ---@param DamageCauser AActor 伤害来源
 ---@param FDamageEvent DamageEvent 伤害事件
 ---@param DamageTypeID int32 伤害类型
-function BaseMonse_Child:BPDie(KillingDamage, EventInstigator, DamageCauser, DamageEvent, DamageTypeID)
+function BaseMonse_TL:BPDie(KillingDamage, EventInstigator, DamageCauser, DamageEvent, DamageTypeID)
     if self:HasAuthority() then
         -- 只有服务端才可以掉落
         self.UGCPresetCommonDropItemComponent:StartDrop(self, EventInstigator, {})
@@ -75,36 +75,36 @@ end
 -- ---状态进入事件
 -- ---生效范围：服务器&客户端
 -- ---@param DynamicState FGameplayTag 进入的状态
--- function BaseMonse_Child:OnEnterTagState_BP(DynamicState)
+-- function BaseMonse_TL:OnEnterTagState_BP(DynamicState)
 --     local Tag = BlueprintGameplayTagLibrary.GetTagName(DynamicState)
 -- end
 
 -- ---状态退出事件
 -- ---生效范围：服务器&客户端
 -- ---@param DynamicState FGameplayTag 退出的状态
--- function BaseMonse_Child:OnLeaveTagState_BP(DynamicState)
+-- function BaseMonse_TL:OnLeaveTagState_BP(DynamicState)
 --     local Tag = BlueprintGameplayTagLibrary.GetTagName(DynamicState)
 -- end
 
 -- ---状态打断事件
 -- ---生效范围：服务器&客户端
 -- ---@param DynamicState FGameplayTag 打断的状态
--- function BaseMonse_Child:OnInterruptTagState_BP(DynamicState)
+-- function BaseMonse_TL:OnInterruptTagState_BP(DynamicState)
 --     local Tag = BlueprintGameplayTagLibrary.GetTagName(DynamicState)
 -- end
 
 -- ---行为树消息
 -- ---生效范围：服务器
 -- ---@param NotifyMsg string 消息
--- function BaseMonse_Child:OnBehaviorNotify_BP(NotifyMsg)
+-- function BaseMonse_TL:OnBehaviorNotify_BP(NotifyMsg)
 -- end
 
 -- ---怪物的目标发生变化事件
 -- ---生效范围：服务器&客户端
 -- ---@param NewTarget AActor 新目标
 -- ---@param OldTarget AActor 旧目标
--- function BaseMonse_Child:OnTargetChange_BP(NewTarget, OldTarget)
+-- function BaseMonse_TL:OnTargetChange_BP(NewTarget, OldTarget)
 
 -- end
 
-return BaseMonse_Child
+return BaseMonse_TL
