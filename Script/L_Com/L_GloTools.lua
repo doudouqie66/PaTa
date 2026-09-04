@@ -160,4 +160,10 @@ function L_GloTools.PlayParticleAtLocation(World_Context, Particle_Path, Locatio
     }, true)
 end
 
+--[[----------------------设置页面打开时的视角锁定状态------------------------]]
+function L_GloTools.SetViewLock(Is_Locked)
+    local PC = UGCGameSystem.GetLocalPlayerController()
+    PC:SetIgnoreLookInput(Is_Locked)
+end
+
 return L_GloTools
