@@ -28,6 +28,7 @@ local Jetpack_Item_ID = 8310037 -- 冲天炮物品ID
 local Jetpack_Product_ID = 9000010 -- 冲天炮商品ID
 local Jetpack_Max_Durability = 10 -- 单个冲天炮最大耐久秒数
 local Jetpack_Vertical_Input_Scale = 0.7 -- 冲天炮上升输入比例
+local Jetpack_Skill_Max_Fly_Speed = 500 -- 冲天炮最高飞行速度
 local Jetpack_Release_Check_Timeout = 0.5 -- 快速抬起后等待技能激活的最长秒数
 local Btn_Skill_02 = {
 	ReadyForActivateTimer = nil,
@@ -218,7 +219,9 @@ end
 --[[----------------------按住按钮时持续输入上升方向------------------------]]
 function Btn_Skill_02:Tick(MyGeometry, InDeltaTime)
 	if self.Jetpack_Is_Pressed then
-		UGCGameSystem.GetLocalPlayerPawn():AddMovementInput(Vector.New(0, 0, 1), Jetpack_Vertical_Input_Scale, false)
+		local Player_Pawn = UGCGameSystem.GetLocalPlayerPawn() -- 本地玩家角色
+		Player_Pawn.CharacterMovement.MaxFlySpeed = Jetpack_Skill_Max_Fly_Speed
+		Player_Pawn:AddMovementInput(Vector.New(0, 0, 1), Jetpack_Vertical_Input_Scale, false)
 	end
 end
 
