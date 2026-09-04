@@ -25,6 +25,7 @@ function TZ_Wu:Box_OnComponentBeginOverlap(OverlappedComponent, OtherActor, Othe
         OtherActor.Force_Hatred_Timer = nil -- 清空旧的追击计时器
     end
     OtherActor.Last_Hit_Target = nil
+    OtherActor.Alert_Hatred_Target = nil -- 清空警报仇恨目标
     UGCGenericCharacterSystem.StopMove(OtherActor)
 end
 

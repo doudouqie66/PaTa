@@ -65,7 +65,9 @@ end
 function UI01:Button_75_OnClicked()
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
     L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI01, false)
-    UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Request_Room_Lottery_UI)
+    ------解除测试
+    L_GloTools.UIMgr(L_Enum.Name_ClassPath.UI02, true)
+    -- UnrealNetwork.CallUnrealRPC(Player_Controller, Player_Controller, L_Enum.Name_RPC.Request_Room_Lottery_UI)
 end
 
 -- [Editor Generated Lua] function define End;
