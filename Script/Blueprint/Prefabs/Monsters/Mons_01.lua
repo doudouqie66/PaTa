@@ -1,4 +1,5 @@
 ---@class Mons_01_C:BP_UGC_GenericMobPawn_Base_C
+---@field HitBox UCapsuleComponent
 --Edit Below--
 local Mons_01 = {}
 local Monster_Lifetime = 10 -- 怪物存在时间

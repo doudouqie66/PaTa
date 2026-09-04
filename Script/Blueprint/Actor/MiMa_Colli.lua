@@ -27,6 +27,10 @@ end
 --[[----------------------初始化触摸区域检测------------------------]]
 function MiMa_Colli:ReceiveBeginPlay()
     MiMa_Colli.SuperClass.ReceiveBeginPlay(self)
+    if UGCGameSystem.IsServer() then
+        return
+    end
+
     self.Can_Touch = false -- 是否允许触摸
     local Tips_Widget = self.Widget:GetUserWidgetObject() -- 密码提示控件实例
     Tips_Widget:StopAnimation(Tips_Widget.Move)

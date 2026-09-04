@@ -1,4 +1,5 @@
 ---@class MoHu_C:UUserWidget
+---@field Button_0 UButton
 --Edit Below--
 local MoHu = { bInitDoOnce = false } 
 
