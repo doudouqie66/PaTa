@@ -617,7 +617,7 @@ end
 
 --[[----------------------更新本次爬塔进入时间戳------------------------]]
 function UGCPlayerController:StartTowerClimbTimer()
-    if not self:HasAuthority() then
+    if not self:HasAuthority() or self.Tower_Climb_Enter_Time > 0 then
         return
     end
 

@@ -1,4 +1,5 @@
 ---@class MiMa_Colli_C:AActor
+---@field Widget UWidgetComponent
 ---@field Box1 UBoxComponent
 ---@field StaticMesh UStaticMeshComponent
 ---@field Box UBoxComponent
@@ -27,6 +28,9 @@ end
 function MiMa_Colli:ReceiveBeginPlay()
     MiMa_Colli.SuperClass.ReceiveBeginPlay(self)
     self.Can_Touch = false -- 是否允许触摸
+    local Tips_Widget = self.Widget:GetUserWidgetObject() -- 密码提示控件实例
+    Tips_Widget:StopAnimation(Tips_Widget.Move)
+    self.Widget:SetVisibility(false, false, false) -- 默认隐藏交互提示
     self.Box1.OnComponentBeginOverlap:Add(self.Box1_OnComponentBeginOverlap, self);
     self.Box1.OnComponentEndOverlap:Add(self.Box1_OnComponentEndOverlap, self);
 end
@@ -53,6 +57,9 @@ function MiMa_Colli:Box1_OnComponentBeginOverlap(OverlappedComponent, OtherActor
     end
 
     self.Can_Touch = true -- 允许触摸
+    self.Widget:SetVisibility(true, false, false) -- 显示交互提示
+    local Tips_Widget = self.Widget:GetUserWidgetObject() -- 密码提示控件实例
+    Tips_Widget:PlayAnimation(Tips_Widget.Move, 0, 0, EUMGSequencePlayMode.Forward, 1)
 end
 
 --[[----------------------本地玩家离开区域时禁止触摸------------------------]]
@@ -62,6 +69,9 @@ function MiMa_Colli:Box1_OnComponentEndOverlap(OverlappedComponent, OtherActor, 
     end
 
     self.Can_Touch = false -- 禁止触摸
+    local Tips_Widget = self.Widget:GetUserWidgetObject() -- 密码提示控件实例
+    Tips_Widget:StopAnimation(Tips_Widget.Move)
+    self.Widget:SetVisibility(false, false, false) -- 隐藏交互提示
 end
 
 -- [Editor Generated Lua] function define End;

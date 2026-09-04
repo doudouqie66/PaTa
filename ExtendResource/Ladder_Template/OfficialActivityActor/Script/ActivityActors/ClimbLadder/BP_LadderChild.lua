@@ -132,6 +132,14 @@ function BP_LadderChild:ActivityFakePossess_OnPossess(PC)
 end
 function BP_LadderChild:OnPlayerAttachedToThisActor_BP(InPlayer)
     print_dev("BP_LadderChild:OnPlayerAttachedToThisActor_BP")
+    if UGCGameSystem.IsServer() or not InPlayer:IsLocallyControlled() then
+        return
+    end
+    local PC = InPlayer:GetPlayerControllerSafety()
+    if not UGCObjectUtility.IsObjectValid(PC) then
+        return
+    end
+    UGCPlayerControllerSystem.DisableJoyStickSprint(PC)
     local PC = InPlayer:GetPlayerControllerSafety() -- 本地玩家控制器
     UGCPlayerControllerSystem.DisableJoyStickSprint(PC)
     self.UpSequence:AddBinding(self.UpSequenceBind.Binding, InPlayer, false)
@@ -185,13 +193,17 @@ function BP_LadderChild:CanShowExitUI(ClickParams)
     end
     return true
 end
+--[[----------------------解除梯子控制并清理交互状态------------------------]]
 function BP_LadderChild:ActivityFakePossess_OnUnPossess(PC)
     print_dev("BP_UGC_Ladder:OnUnPossess")
+    self.CanSwitchState = false
+    self.PlayerController = nil
     UGCPlayerControllerSystem.EnableJoyStickSprint(PC)
     UGCTimerUtility.CreateLuaTimer(0.1, function()
         self:K2_DestroyActor()
     end, false)
     if UGCGameSystem.IsServer() then
+        self.OwnerLadder:RemoveInterActivePCList(PC)
         local PlayerCharacter = PC:GetPlayerCharacterSafety()
         if not UGCObjectUtility.IsObjectValid(PlayerCharacter) then
             return
@@ -204,15 +216,10 @@ function BP_LadderChild:ActivityFakePossess_OnUnPossess(PC)
                         if not PlayerCharacter:HasState(EPawnState.Dying) then
                             PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionUp,
                                 Rotator.New(0, 0, 0), true, false, false)
-                        else
-                            self.OwnerLadder:RemoveInterActivePCList(PC)
                         end
                     else
                         PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionUp, Rotator.New(0, 0, 0),
                             true, false, false)
-                        if PlayerCharacter:HasState(EPawnState.Dying) then
-                            self.OwnerLadder:RemoveInterActivePCList(PC)
-                        end
                     end
                 end
             elseif self.bDownBlock and self.bDownEnd then
@@ -221,15 +228,10 @@ function BP_LadderChild:ActivityFakePossess_OnUnPossess(PC)
                         if not PlayerCharacter:HasState(EPawnState.Dying) then
                             PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionDown,
                                 Rotator.New(0, 0, 0), true, false, false)
-                        else
-                            self.OwnerLadder:RemoveInterActivePCList(PC)
                         end
                     else
                         PlayerCharacter:DSTeleportToLocationOrRotation(self.DeattachPositionDown, Rotator.New(0, 0, 0),
                             true, false, false)
-                        if PlayerCharacter:HasState(EPawnState.Dying) then
-                            self.OwnerLadder:RemoveInterActivePCList(PC)
-                        end
                     end
                 end
             end
@@ -268,6 +270,7 @@ end
 --]]
 
 --[[
+--[[----------------------清理梯子输入绑定------------------------]]
 function BP_LadderChild:GetReplicatedProperties()
     return
 end
@@ -340,5 +343,13 @@ function BP_LadderChild:OverlapCheckArea_OnOverlapCheckChange(CheckActorArray)
 end
 
 -- [Editor Generated Lua] function define End;
+
+--[[----------------------清理梯子输入绑定------------------------]]
+function BP_LadderChild:ReceiveEndPlay()
+    if not UGCGameSystem.IsServer() then
+        UGCInputSystem.RemoveBindingToObject(self)
+    end
+    BP_LadderChild.SuperClass.ReceiveEndPlay(self)
+end
 
 return BP_LadderChild
