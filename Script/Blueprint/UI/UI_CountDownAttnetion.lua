@@ -64,7 +64,7 @@ function UI_CountDownAttnetion:StartEventCountdown(Countdown_Duration, Event_Nam
     self.ScaleBox_48:SetVisibility(ESlateVisibility.Visible)
     self.ScaleBox_1:SetVisibility(ESlateVisibility.Collapsed)
     self.Event_Countdown_Remaining = math.floor(Countdown_Duration) -- 事件预警剩余秒数
-    self.TextBlock_1:SetText("距离玩家进入【" .. (Event_Name or "事件") .. "】还有：")
+    self.TextBlock_1:SetText("距离【" .. (Event_Name or "事件") .. "】生效还有：")
     self:PlayEventCountdownNumber()
     self.Event_Countdown_Timer = UGCTimerUtility.CreateLuaTimer(1, function()
         self.Event_Countdown_Remaining = self.Event_Countdown_Remaining - 1
