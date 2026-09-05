@@ -32,6 +32,7 @@ local UGCPlayerController = {
     Room_Match_Request_Count = 0, -- 本次换房请求次数
     Room_Match_Requesting = false, -- 是否正在等待新房匹配
     Room_Match_Succeeded = false, -- 是否已经匹配到新房
+    Pending_Open_Starter_Gift = false, -- 是否等待新手礼包到账
     Is_Invisible_Weapon_Locked = false -- 隐身期间是否限制手枪和RPG
 }
 
@@ -1114,14 +1115,19 @@ function UGCPlayerController:OpenGiftPack(Gift_Pack_ID)
     GiftPackManager:OpenGiftPack(Gift_Pack_ID)
 end
 
---[[----------------------购买周卡成功后更新有效期------------------------]]
+--[[----------------------处理商品购买成功结果------------------------]]
 function UGCPlayerController:OnBuyUGCCommodityResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
-    if not bSuccess or PlayerKey ~= self.PlayerKey or ProductID ~= L_Enum.ID_ShopProduct.WeekdGift or CommodityID ~=
-        L_Enum.ID_Gift.WeekdGift then
+    if not bSuccess or PlayerKey ~= self.PlayerKey then
         return
     end
 
-    self:Activate_Week_Card(Count)
+    if not self:HasAuthority() and ProductID == L_Enum.ID_ShopProduct.StarterGift and CommodityID ==
+        L_Enum.ID_Gift.StarterGift then
+        self.Pending_Open_Starter_Gift = true
+    elseif self:HasAuthority() and ProductID == L_Enum.ID_ShopProduct.WeekdGift and CommodityID ==
+        L_Enum.ID_Gift.WeekdGift then
+        self:Activate_Week_Card(Count)
+    end
 end
 
 --[[----------------------激活周卡并保存有效期------------------------]]

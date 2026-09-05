@@ -20,7 +20,6 @@
 
 local UI06 = {
     bInitDoOnce = false,
-    Pending_Open_Gift_Pack = false,
     Opening_Starter_Gift_Pack = false -- 是否正在开启首充礼包
 
 }
@@ -34,7 +33,6 @@ end
 --[[----------------------解绑委托------------------------]]
 function UI06:Destruct()
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
-    self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Remove(self.OnItemNumUpdated, self)
     GiftPackManager.OnOpenGiftPackageDelegate:Remove(self.OnOpenGiftPackage, self)
 end
 -- function UI06:Tick(MyGeometry, InDeltaTime)
@@ -59,8 +57,6 @@ function UI06:LuaInit()
     self.Button_88.OnClicked:Add(self.Button_88_OnClicked, self);
 
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyUGCCommodityResult, self)
-    self.Virtual_Item_Manager = GiftPackManager:GetVirtualItemManager() -- 获取虚拟物品管理器
-    self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Add(self.OnItemNumUpdated, self)
     GiftPackManager.OnOpenGiftPackageDelegate:Add(self.OnOpenGiftPackage, self)
     -- [Editor Generated Lua] BindingEvent End;
 end
@@ -86,16 +82,7 @@ function UI06:OnBuyUGCCommodityResult(Result, PlayerKey, CommodityID, Count, UID
         return
     end
     SoundMgr.PlaySound2D(SoundMgr.SoundName.Reward_Gold)
-    self.Pending_Open_Gift_Pack = true
-end
-
---[[----------------------礼包到账后自动开启------------------------]]
-function UI06:OnItemNumUpdated()
-    if self.Pending_Open_Gift_Pack and GiftPackManager:GetItemNum(L_Enum.ID_Gift.StarterGift) > 0 then
-        self.Pending_Open_Gift_Pack = false
-        self.Opening_Starter_Gift_Pack = true
-        UGCGameSystem.GetLocalPlayerController():OpenGiftPack(L_Enum.ID_Gift.StarterGift)
-    end
+    self.Opening_Starter_Gift_Pack = true
 end
 
 --[[----------------------首充礼包开启后关闭首充界面------------------------]]

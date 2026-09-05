@@ -54,6 +54,7 @@ function GiftPackComponent:ReceiveBeginPlay()
     else
         if UE.IsValid(self:GetVirtualItemManager()) then
             self:GetVirtualItemManager().AddItemResultDelegate:Add(self.OnAddVirtualItem, self);
+            self:GetVirtualItemManager().OnItemNumUpdatedDelegate:Add(self.OnItemNumUpdated, self);
         else
             GMP.GlobalMessage.BindUObject(PlayerController, "UGC.GamePart.GamePartLoaded", self, self.InitGamePart); 
         end
@@ -73,6 +74,7 @@ function GiftPackComponent:ReceiveEndPlay()
     if self:GetOwner():HasAuthority() == false then
         if UE.IsValid(self:GetVirtualItemManager()) then
             self:GetVirtualItemManager().AddItemResultDelegate:Remove(self.OnAddVirtualItem, self);
+            self:GetVirtualItemManager().OnItemNumUpdatedDelegate:Remove(self.OnItemNumUpdated, self);
         end
     end
 end
@@ -141,6 +143,7 @@ function GiftPackComponent:InitGamePart(GamePartName)
     
         if PlayerController:HasAuthority() == false and UE.IsValid(self.VirtualItemManager) then
             self.VirtualItemManager.AddItemResultDelegate:Add(self.OnAddVirtualItem, self);
+            self.VirtualItemManager.OnItemNumUpdatedDelegate:Add(self.OnItemNumUpdated, self);
         end
     end
 end
@@ -358,6 +361,10 @@ function GiftPackComponent:OnAddVirtualItem(Result)
     local PlayerKey = Result.PlayerKey;
     local RequestMark = Result.RequestMark;
     local SelfPlayerKey = PlayerController:GetInt64PlayerKey();
+    if bSucceeded and PlayerKey == SelfPlayerKey and PlayerController.Pending_Open_Starter_Gift and
+        Result.ItemList[L_Enum.ID_Gift.StarterGift] then
+        PlayerController.Pending_Open_Starter_Gift = true
+    end
     if bSucceeded and PlayerKey == SelfPlayerKey and RequestMark == self.RequestMark then
         if self.GiftPackApplyUI then
             self.GiftPackApplyUI:SetVisibility(ESlateVisibility.Collapsed);
@@ -368,6 +375,16 @@ function GiftPackComponent:OnAddVirtualItem(Result)
         if self.GiftPackComplexUI then
             self.GiftPackComplexUI:SetVisibility(ESlateVisibility.Collapsed);
         end
+    end
+end
+
+--[[----------------------礼包到账后自动开启------------------------]]
+function GiftPackComponent:OnItemNumUpdated()
+    local PlayerController = self:GetOwner();
+    if not PlayerController:HasAuthority() and PlayerController.Pending_Open_Starter_Gift and
+        self:GetItemNum(L_Enum.ID_Gift.StarterGift) > 0 then
+        PlayerController.Pending_Open_Starter_Gift = false
+        PlayerController:OpenGiftPack(L_Enum.ID_Gift.StarterGift)
     end
 end
 
