@@ -45,6 +45,16 @@ function UGCPlayerPawn:OnRep_WinCup()
         self:RefreshHeadTopTrophy(self.WinCup)
     end
 end
+
+--[[----------------------将近战伤害改为1点------------------------]]
+function UGCPlayerPawn:UGC_TakeDamageOverrideEvent(Damage, DamageType, EventInstigator, DamageCauser, Hit)
+    if DamageType == EDamageType.MeleeDamage then
+        return 1
+    end
+
+    return Damage
+end
+
 --[[--------------------测试代码--------------------------]] --
 
 --[[----------------------初始化测试属性------------------------]]

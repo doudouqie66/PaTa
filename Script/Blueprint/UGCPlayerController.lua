@@ -403,6 +403,14 @@ function UGCPlayerController:Set_Jetpack_Flying(Is_Flying)
                 local Removed_Count = UGCBackpackSystemV2.RemoveItemByDefineIDV2(self, Equipped_Item, 1) -- 删除的飞行背囊数量
                 if Removed_Count ~= 1 then
                     ugcprint("[Jetpack] 耐久耗尽，但飞行背囊删除失败")
+                else
+                    local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 剩余飞行背囊实例列表
+                    local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件飞行背囊实例
+                    if Next_Define_ID and Next_Define_ID.InstanceID == Equipped_Item.InstanceID then
+                        local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件飞行背囊实例数据
+                        Custom_Data.Jetpack_Durability = Jetpack_Max_Durability
+                        UGCItemSystemV2.SaveItemCustomData(Next_Define_ID, Custom_Data)
+                    end
                 end
             end
         end)

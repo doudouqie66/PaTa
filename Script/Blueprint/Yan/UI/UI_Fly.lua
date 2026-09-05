@@ -143,7 +143,6 @@ function UI_Fly:SetSkillJetpackProgressVisible(Is_Visible)
         self.Button_85:SetVisibility(ESlateVisibility.Collapsed)
         self.Button_329:SetVisibility(ESlateVisibility.Collapsed)
         self.UI_CTP_NJ:SetVisibility(ESlateVisibility.SelfHitTestInvisible)
-        self.UI_CTP_NJ:SetPercent(1)
         self:SetVisibility(ESlateVisibility.SelfHitTestInvisible)
         return
     end

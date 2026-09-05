@@ -153,7 +153,11 @@ function Btn_Skill_02:RefreshJetpackCount()
 	local Item_Count = UGCBackpackSystemV2.GetItemCountV2(PC, Jetpack_Item_ID) -- 当前冲天炮数量
 	self.TextBlock_0:SetText(tostring(Item_Count))
 	local Durability = PC.Jetpack_Durability or 0 -- 当前冲天炮耐久秒数
-	if Item_Count > 0 and Durability <= 0 then
+	if Item_Count > 0 and not self.Jetpack_Is_Pressed then
+		local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(PC, Jetpack_Item_ID) -- 冲天炮实例列表
+		local Custom_Data = Item_Define_IDs[1] and UGCItemSystemV2.LoadItemCustomData(Item_Define_IDs[1]) or {} -- 当前冲天炮实例数据
+		Durability = Custom_Data.Jetpack_Durability or Jetpack_Max_Durability
+	elseif Item_Count > 0 and Durability <= 0 then
 		local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(PC, Jetpack_Item_ID) -- 冲天炮实例列表
 		local Custom_Data = Item_Define_IDs[1] and UGCItemSystemV2.LoadItemCustomData(Item_Define_IDs[1]) or {} -- 当前冲天炮实例数据
 		Durability = Custom_Data.Jetpack_Durability or Jetpack_Max_Durability

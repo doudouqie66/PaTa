@@ -16,10 +16,6 @@ end
 
 --[[----------------------检查是否拥有飞行背囊------------------------]]
 function Skill_Use_02:CanActivateSkill_BP()
-    local Player_Controller = self:GetOwnerActor():GetController() -- 技能所属玩家控制器
-    if UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Jetpack_Item_ID) < 1 then
-        return false
-    end
     return Skill_Use_02.SuperClass.CanActivateSkill_BP(self)
 end
 
