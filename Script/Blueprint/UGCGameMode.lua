@@ -438,11 +438,11 @@ function UGCGameMode:LoadPlayerArchive(PlayerController)
     UnrealNetwork.RepLazyProperty(PlayerController, "WeekEndTime")
     PlayerController.WinCup = archiveData.WinCup or 0
     PlayerController:SyncWinCupToPawn()
-    PlayerController.Tower_Reward_Has_Started = archiveData.TowerRewardHasStarted or false
+    PlayerController.Tower_Reward_Has_Started = false
     PlayerController.Tower_Reward_Is_Timing = false
     PlayerController.Tower_Reward_Enter_Time = 0
-    PlayerController.Tower_Reward_Accumulated_Time = archiveData.TowerRewardAccumulatedTime or 0
-    PlayerController.Tower_Reward_Claim_Mask = archiveData.TowerRewardClaimMask or 0
+    PlayerController.Tower_Reward_Accumulated_Time = 0
+    PlayerController.Tower_Reward_Claim_Mask = 0
     PlayerController:SyncTowerRewardState()
     PlayerController.Coin_Lottery_Archive = archiveData.CoinLottery
     PlayerController:Sync_Coin_Lottery_Archive()
@@ -463,9 +463,9 @@ function UGCGameMode:SavePlayerArchive(PlayerController)
     archiveData.WeekEndTime = PlayerController.WeekEndTime
     archiveData.WeekTimeVer = Week_Time_Ver
     archiveData.WinCup = PlayerController.WinCup
-    archiveData.TowerRewardHasStarted = PlayerController.Tower_Reward_Has_Started
-    archiveData.TowerRewardAccumulatedTime = PlayerController:GetTowerRewardElapsedTime()
-    archiveData.TowerRewardClaimMask = PlayerController.Tower_Reward_Claim_Mask
+    archiveData.TowerRewardHasStarted = nil
+    archiveData.TowerRewardAccumulatedTime = nil
+    archiveData.TowerRewardClaimMask = nil
     archiveData.CoinLottery = PlayerController:Get_Coin_Lottery_Archive()
 
     UGCPlayerStateSystem.SavePlayerArchiveData(tonumber(uid), archiveData)
@@ -486,10 +486,7 @@ function UGCGameMode:GetDefaultArchiveData()
         Attack = 1,
         MaxHP = 1,
         WeekTimeVer = Week_Time_Ver,
-        WinCup = 0,
-        TowerRewardHasStarted = false,
-        TowerRewardAccumulatedTime = 0,
-        TowerRewardClaimMask = 0
+        WinCup = 0
     }
 end
 
