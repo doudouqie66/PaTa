@@ -33,6 +33,7 @@ local UGCPlayerController = {
     Room_Match_Requesting = false, -- 是否正在等待新房匹配
     Room_Match_Succeeded = false, -- 是否已经匹配到新房
     Pending_Open_Starter_Gift = false, -- 是否等待新手礼包到账
+    Pending_Open_Week_Gift_Count = 0, -- 是否等待周卡礼包
     Is_Invisible_Weapon_Locked = false -- 隐身期间是否限制手枪和RPG
 }
 
@@ -1115,13 +1116,21 @@ function UGCPlayerController:OpenGiftPack(Gift_Pack_ID)
     GiftPackManager:OpenGiftPack(Gift_Pack_ID)
 end
 
+--[[----------------------按数量自动打开普通礼包------------------------]]
+function UGCPlayerController:OpenNormalGiftPack(Gift_Pack_ID, Gift_Pack_Num)
+    GiftPackManager:OpenNormalGiftPackage(Gift_Pack_ID, Gift_Pack_Num, self)
+end
+
 --[[----------------------处理商品购买成功结果------------------------]]
 function UGCPlayerController:OnBuyUGCCommodityResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
     if not bSuccess or PlayerKey ~= self.PlayerKey then
         return
     end
 
-    if not self:HasAuthority() and ProductID == L_Enum.ID_ShopProduct.StarterGift and CommodityID ==
+    if not self:HasAuthority() and ProductID == L_Enum.ID_ShopProduct.WeekdGift and CommodityID ==
+        L_Enum.ID_Gift.WeekdGift then
+        self.Pending_Open_Week_Gift_Count = (self.Pending_Open_Week_Gift_Count or 0) + Count
+    elseif not self:HasAuthority() and ProductID == L_Enum.ID_ShopProduct.StarterGift and CommodityID ==
         L_Enum.ID_Gift.StarterGift then
         self.Pending_Open_Starter_Gift = true
     elseif self:HasAuthority() and ProductID == L_Enum.ID_ShopProduct.WeekdGift and CommodityID ==

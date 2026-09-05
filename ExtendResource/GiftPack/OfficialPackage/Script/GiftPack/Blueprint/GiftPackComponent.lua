@@ -381,7 +381,14 @@ end
 --[[----------------------礼包到账后自动开启------------------------]]
 function GiftPackComponent:OnItemNumUpdated()
     local PlayerController = self:GetOwner();
-    if not PlayerController:HasAuthority() and PlayerController.Pending_Open_Starter_Gift and
+    if not PlayerController:HasAuthority() and PlayerController.Pending_Open_Week_Gift_Count and
+        PlayerController.Pending_Open_Week_Gift_Count > 0 and
+        self:GetItemNum(L_Enum.ID_Gift.WeekdGift) > 0 then
+        local Open_Num = math.min(PlayerController.Pending_Open_Week_Gift_Count,
+            self:GetItemNum(L_Enum.ID_Gift.WeekdGift))
+        PlayerController.Pending_Open_Week_Gift_Count = 0
+        PlayerController:OpenNormalGiftPack(L_Enum.ID_Gift.WeekdGift, Open_Num)
+    elseif not PlayerController:HasAuthority() and PlayerController.Pending_Open_Starter_Gift and
         self:GetItemNum(L_Enum.ID_Gift.StarterGift) > 0 then
         PlayerController.Pending_Open_Starter_Gift = false
         PlayerController:OpenGiftPack(L_Enum.ID_Gift.StarterGift)

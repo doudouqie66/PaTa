@@ -141,8 +141,7 @@ end
 
 --[[----------------------销毁商城界面并解绑委托------------------------]]
 function UI03:Destruct()
-    UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyUGCCommodityResult, self)
-    self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Remove(self.OnItemNumUpdated, self)
+    
     GiftPackManager.OnOpenGiftPackageDelegate:Remove(self.OnOpenGiftPackage, self)
 end
 
@@ -159,9 +158,7 @@ function UI03:LuaInit()
     -- [Editor Generated Lua] BindingEvent Begin:
     self.Button_330.OnClicked:Add(self.Button_330_OnClicked, self);
     self.Button_108.OnClicked:Add(self.Button_108_OnClicked, self);
-    UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyUGCCommodityResult, self)
     self.Virtual_Item_Manager = GiftPackManager:GetVirtualItemManager() -- 获取虚拟物品管理器
-    self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Add(self.OnItemNumUpdated, self)
     GiftPackManager.OnOpenGiftPackageDelegate:Add(self.OnOpenGiftPackage, self)
     -- [Editor Generated Lua] BindingEvent End;
 end
