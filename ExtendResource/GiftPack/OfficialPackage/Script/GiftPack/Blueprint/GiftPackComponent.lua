@@ -376,9 +376,12 @@ end
 ---@param ItemID number
 ---@return number
 function GiftPackComponent:GetItemNum(ItemID)
-    if UE.IsValid(self:GetVirtualItemManager()) then
+    local VirtualItemManager = self:GetVirtualItemManager();
+    if UE.IsValid(VirtualItemManager) then
         local PlayerController = self:GetOwner();
-        return self:GetVirtualItemManager():GetItemNum(ItemID, PlayerController); 
+        local VirtualItemNum = VirtualItemManager:GetVirtualItemNum(ItemID, PlayerController);
+        local MappedItemNum = VirtualItemManager:GetMappedItemNum(ItemID, PlayerController);
+        return VirtualItemNum + MappedItemNum;
     end
     return 0;
 end
