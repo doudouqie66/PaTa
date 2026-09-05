@@ -1,4 +1,4 @@
----@class BaseMonse_TL:BaseMonse_C
+---@class BaseMonse_TL_C:BaseMonse_C
 --Edit Below--
 local BaseMonse_TL = {}
 
