@@ -22,6 +22,7 @@ local UGCPlayerController = {
     Is_Monster_Death = false, -- 是否由怪物内部碰撞体致死
     Flying_Item_ID = 0, -- 当前装备的飞行物ID
     Jetpack_Durability = 0, -- 飞行背囊当前耐久秒数
+    Jetpack_Skill_Instance_ID = 0, -- 当前技能消耗的飞行背囊实例ID
     Coin_Lottery_Free_Chance_Count = 1, -- 今日金币抽奖剩余免费次数
     Coin_Lottery_Share_Reward_Count = 1, -- 今日金币抽奖剩余分享奖励次数
     Room_Lottery_Has_Claimed = false, -- 当前房间是否已经抽奖
@@ -436,19 +437,25 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
         return
     end
 
-    local Jetpack_Define_ID = self.Jetpack_Skill_Define_ID -- 当前技能消耗的飞行背囊实例
-    if Is_Flying then
-        if not Jetpack_Define_ID or UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) <= 0 then
-            local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 飞行背囊实例列表
-            Jetpack_Define_ID = Item_Define_IDs[1]
-            self.Jetpack_Skill_Define_ID = Jetpack_Define_ID
+    local Item_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 飞行背囊实例列表
+    local Jetpack_Define_ID = nil -- 当前有效的飞行背囊实例
+    for _, Item_Define_ID in ipairs(Item_Define_IDs) do
+        if Item_Define_ID.InstanceID == self.Jetpack_Skill_Instance_ID then
+            Jetpack_Define_ID = Item_Define_ID
+            break
         end
+    end
+    if Is_Flying and not Jetpack_Define_ID then
+        Jetpack_Define_ID = Item_Define_IDs[1]
+    end
+    if Is_Flying then
         if not Jetpack_Define_ID then
             self.Jetpack_Durability = 0
             UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
             return
         end
 
+        self.Jetpack_Skill_Instance_ID = Jetpack_Define_ID.InstanceID
         local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 飞行背囊实例数据
         self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
             Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
@@ -472,13 +479,13 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
             self.Jetpack_Last_Consume_Time = Current_Time
             UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
             if self.Jetpack_Durability <= 0 then
-                local Depleted_Instance_ID = self.Jetpack_Skill_Define_ID.InstanceID -- 已耗尽的飞行背囊实例ID
+                local Depleted_Instance_ID = self.Jetpack_Skill_Instance_ID -- 已耗尽的飞行背囊实例ID
                 self.Jetpack_Skill_Durability_Depleted = true
                 self:Set_Jetpack_Skill_Flying(false)
                 self.Jetpack_Skill_Durability_Depleted = false
 
                 local Current_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 当前飞行背囊实例列表
-                local Depleted_Define_ID = nil -- 重新取得的有效耗尽实例
+                local Depleted_Define_ID = Current_Define_IDs[1] -- 重新取得的有效耗尽实例
                 for _, Item_Define_ID in ipairs(Current_Define_IDs) do
                     if Item_Define_ID.InstanceID == Depleted_Instance_ID then
                         Depleted_Define_ID = Item_Define_ID
@@ -496,30 +503,33 @@ function UGCPlayerController:Set_Jetpack_Skill_Flying(Is_Flying)
                     return
                 end
 
-                self.Jetpack_Skill_Define_ID = nil
+                self.Jetpack_Skill_Instance_ID = 0
                 local Remaining_Define_IDs = UGCBackpackSystemV2.GetItemDefineIDsByIDV2(self, Jetpack_Item_ID) -- 剩余飞行背囊实例列表
                 local Next_Define_ID = Remaining_Define_IDs[1] -- 下一件飞行背囊实例
                 if Next_Define_ID then
+                    local Next_Instance_ID = Next_Define_ID.InstanceID -- 下一件飞行背囊实例ID
                     local Next_Custom_Data = UGCItemSystemV2.LoadItemCustomData(Next_Define_ID) or {} -- 下一件飞行背囊实例数据
-                    if Next_Define_ID.InstanceID == Depleted_Instance_ID then
+                    if Next_Instance_ID == Depleted_Instance_ID then
                         Next_Custom_Data.Jetpack_Durability = Jetpack_Max_Durability
                         UGCItemSystemV2.SaveItemCustomData(Next_Define_ID, Next_Custom_Data)
                     end
-                    self.Jetpack_Skill_Define_ID = Next_Define_ID
+                    self.Jetpack_Skill_Instance_ID = Next_Instance_ID
                     self.Jetpack_Durability = math.max(0, math.min(Jetpack_Max_Durability,
                         Next_Custom_Data.Jetpack_Durability or Jetpack_Max_Durability))
                 else
                     self.Jetpack_Durability = 0
                 end
                 UnrealNetwork.RepLazyProperty(self, "Jetpack_Durability")
+                if Next_Define_ID then
+                    self:Set_Jetpack_Skill_Flying(true)
+                end
             end
         end)
         self.Jetpack_Durability_Timer_Handle = KismetSystemLibrary.K2_SetTimerDelegateForLua(
             self.Jetpack_Durability_Timer_Delegate, self, Jetpack_Consume_Interval, true)
     else
         self:Stop_Jetpack_Durability_Timer()
-        if not self.Jetpack_Skill_Durability_Depleted and Jetpack_Define_ID and
-            UGCBackpackSystemV2.GetItemCountByDefineIDV2(self, Jetpack_Define_ID) > 0 then
+        if not self.Jetpack_Skill_Durability_Depleted and Jetpack_Define_ID then
             local Custom_Data = UGCItemSystemV2.LoadItemCustomData(Jetpack_Define_ID) or {} -- 飞行背囊实例数据
             Custom_Data.Jetpack_Durability = self.Jetpack_Durability
             UGCItemSystemV2.SaveItemCustomData(Jetpack_Define_ID, Custom_Data)

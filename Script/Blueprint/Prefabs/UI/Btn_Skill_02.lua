@@ -173,7 +173,8 @@ function Btn_Skill_02:OnJetpackItemChanged(Change_Type, Define_ID)
 	if Define_ID.TypeSpecificID ~= Jetpack_Item_ID then
 		return
 	end
-	if self.Jetpack_Is_Pressed then
+	local PC = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
+	if self.Jetpack_Is_Pressed and UGCBackpackSystemV2.GetItemCountV2(PC, Jetpack_Item_ID) < 1 then
 		self:OnSkillButtonReleased()
 	end
 	self:RefreshJetpackCount()
