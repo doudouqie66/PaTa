@@ -34,6 +34,7 @@ function BaseMonse:ReceiveBeginPlay()
     BaseMonse.SuperClass.ReceiveBeginPlay(self)
     self.Alert_Player_Count = {} -- 警报范围内玩家重叠次数
     self.Alert_Hatred_Target = nil -- 当前警报随机仇恨目标
+    self.Is_Blinded = false -- 是否处于致盲状态
     BaseMonse.BindOverlapEvent(self)
 end
 
@@ -55,9 +56,26 @@ function BaseMonse:BindOverlapEvent()
     self.InnerBox.OnComponentEndOverlap:Add(BaseMonse.InnerBox_OnComponentEndOverlap, self);
 end
 
+--[[----------------------设置警报范围内玩家的警告显示------------------------]]
+function BaseMonse:SetAlertVisible(Is_Visible)
+    for Player, Overlap_Count in pairs(self.Alert_Player_Count) do
+        if UE.IsValid(Player) and Overlap_Count > 0 and
+            (not Is_Visible or not Player.Is_In_Monster_Safe_Area) then
+            local PC = UGCGameSystem.GetPlayerControllerByPlayerPawn(Player)
+            if PC then
+                local Monster_Actor = nil -- 警告音效附着的怪物
+                if Is_Visible then
+                    Monster_Actor = self
+                end
+                UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, Is_Visible, Monster_Actor)
+            end
+        end
+    end
+end
+
 --[[----------------------刷新警报范围内随机仇恨目标------------------------]]
 function BaseMonse:RefAlertHatred()
-    if not self:HasAuthority() or self.Force_Hatred_Timer then
+    if not self:HasAuthority() or self.Is_Blinded or self.Force_Hatred_Timer then
         return
     end
 
@@ -144,7 +162,7 @@ end
 ---@param DamageContext FGameMagnitudeContext  伤害上下文
 --[[----------------------将手枪命中的玩家设为最新仇恨目标------------------------]]
 function BaseMonse:PostTakeDamageEvent(Damage, EventInstigator, DamageCauser, DamageContext)
-    if Damage <= 0 or EventInstigator == nil then
+    if self.Is_Blinded or Damage <= 0 or EventInstigator == nil then
         return
     end
 
@@ -312,7 +330,9 @@ function BaseMonse:OutBox_OnComponentBeginOverlap(OverlappedComponent, OtherActo
         return
     end
 
-    UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, true, self)
+    if not self.Is_Blinded then
+        UnrealNetwork.CallUnrealRPC(PC, PC, L_Enum.Name_RPC.Mgr_Atten, true, self)
+    end
     BaseMonse.RefAlertHatred(self)
 end
 
