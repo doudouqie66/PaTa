@@ -2,8 +2,8 @@ EventScheduler = EventScheduler or {}
 local L_Enum = UGCGameSystem.UGCRequire('Script.L_Com.L_Enum')
 local L_TipsTool = UGCGameSystem.UGCRequire('Script.L_Com.L_TipsTool')
 EventScheduler.Tower_Players = EventScheduler.Tower_Players or {} -- 当前在塔内的玩家
-local Ammo_Grant_Interval = 60 -- 火箭弹发放间隔秒数
-local SQ_Ammo_Item_ID = 8310046 -- RPG火箭弹物品ID
+local Ammo_Grant_Interval = 60 -- 手枪子弹发放间隔秒数
+local SQ_Ammo_Item_ID = 8310046 -- 手枪子弹物品ID
 
 --[[---------------------启动事件循环-------------------------]] --
 function EventScheduler.Start()
