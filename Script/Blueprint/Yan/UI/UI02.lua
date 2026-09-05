@@ -70,7 +70,7 @@ function UI02:Destruct()
         self.Virtual_Item_Manager.OnItemNumUpdatedDelegate:Remove(self.RefreshCurrency, self)
     end
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Remove(self.OnBuyStarterGiftResult, self)
-    UGCCommoditySystem.UGCProductsChangedDelegate:Remove(self.RefreshStarterGiftButton, self)
+    self.Commodity_Operation_Manager.LimitProductUpdateDelegate:Remove(self.RefreshStarterGiftButton, self)
     if self.Tower_Reward_UI_Timer then
         UGCTimerUtility.RemoveLuaTimer(self.Tower_Reward_UI_Timer)
         self.Tower_Reward_UI_Timer = nil
@@ -106,7 +106,8 @@ function UI02:LuaInit()
     self.Button_9.OnClicked:Add(self.Button_9_OnClicked, self);
     self.Button_1.OnClicked:Add(self.Button_1_OnClicked, self);
     UGCCommoditySystem.BuyUGCCommodityResultDelegate:Add(self.OnBuyStarterGiftResult, self)
-    UGCCommoditySystem.UGCProductsChangedDelegate:Add(self.RefreshStarterGiftButton, self)
+    self.Commodity_Operation_Manager = ShopV2Manager:GetCommodityOperationManager() -- 商业化管理器
+    self.Commodity_Operation_Manager.LimitProductUpdateDelegate:Add(self.RefreshStarterGiftButton, self)
     self.Button_181.OnClicked:Add(self.Button_181_OnClicked, self);
     self.Button_2.OnClicked:Add(self.Button_2_OnClicked, self);
     self.Button_3.OnClicked:Add(self.Button_3_OnClicked, self);
@@ -250,7 +251,7 @@ end
 --[[----------------------根据累计购买记录刷新首充按钮------------------------]]
 function UI02:RefreshStarterGiftButton()
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    local Purchased_Times = ShopV2Manager:GetPurchasedTimes(L_Enum.ID_ShopProduct.StarterGift, Player_Controller) -- 首充商品已购买次数
+    local Purchased_Times = ShopV2Manager:GetLimitPurchasedTimes(L_Enum.ID_ShopProduct.StarterGift, Player_Controller) -- 首充商品已购买次数
     local Starter_Gift_Visibility = Purchased_Times > 0 and ESlateVisibility.Collapsed or ESlateVisibility.Visible -- 首充入口显示状态
     local Starter_Gift_Image_Visibility = (Purchased_Times > 0 or self.First_Charge_Image_Hidden) and
                                               ESlateVisibility.Collapsed or ESlateVisibility.Visible -- 首充图片显示状态
@@ -259,9 +260,10 @@ function UI02:RefreshStarterGiftButton()
 end
 
 --[[----------------------首充购买成功后隐藏入口按钮------------------------]]
-function UI02:OnBuyStarterGiftResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
+function UI02:OnBuyStarterGiftResult(Result, PlayerKey, CommodityID, Count, UID, ProductID)
     local Player_Controller = UGCGameSystem.GetLocalPlayerController() -- 本地玩家控制器
-    if not bSuccess or PlayerKey ~= Player_Controller.PlayerKey or CommodityID ~= L_Enum.ID_Gift.StarterGift or
+    if (Result ~= true and Result ~= 0) or PlayerKey ~= Player_Controller.PlayerKey or
+        CommodityID ~= L_Enum.ID_Gift.StarterGift or
         ProductID ~= L_Enum.ID_ShopProduct.StarterGift then
         return
     end

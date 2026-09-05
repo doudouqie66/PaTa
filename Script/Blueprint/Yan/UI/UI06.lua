@@ -133,11 +133,11 @@ function UI06:Button_88_OnClicked()
 end
 
 --[[----------------------记录购买成功后待开启的礼包------------------------]]
-function UI06:OnBuyUGCCommodityResult(bSuccess, PlayerKey, CommodityID, Count, UID, ProductID)
+function UI06:OnBuyUGCCommodityResult(Result, PlayerKey, CommodityID, Count, UID, ProductID)
     if ProductID ~= L_Enum.ID_ShopProduct.StarterGift then
         return
     end
-    if not bSuccess or CommodityID ~= L_Enum.ID_Gift.StarterGift then
+    if (Result ~= true and Result ~= 0) or CommodityID ~= L_Enum.ID_Gift.StarterGift then
         SoundMgr.PlaySound2D(SoundMgr.SoundName.UI_Error)
         return
     end

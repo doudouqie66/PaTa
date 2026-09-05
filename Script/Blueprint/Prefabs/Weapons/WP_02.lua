@@ -36,18 +36,21 @@ end
 
 --[[----------------------检查手枪是否允许开火------------------------]]
 function WP_02:StartFireFilter()
-    if not UGCGameSystem.IsServer() then
+    if #UGCPersistEffectSystem.GetBuffsByClass(self:GetOwner(), L_Enum.Name_BuffPath.Buff07_2) > 0 then
+        return false
+    end
+    if not WP_02.SuperClass.StartFireFilter(self) then
+        if UGCGameSystem.IsServer() then
+            return false
+        end
         local Player_Pawn = self:GetOwner()
         local Player_Controller = UGCGameSystem.GetPlayerControllerByPlayerPawn(Player_Pawn)
         if UGCBackpackSystemV2.GetItemCountV2(Player_Controller, Pistol_Ammo_Item_ID) < 1 then
             L_TipsTool.ShowTips_01("手枪子弹每60秒自动发放", Player_Controller)
-            return false
         end
-    end
-    if not WP_02.SuperClass.StartFireFilter(self) then
         return false
     end
-    return #UGCPersistEffectSystem.GetBuffsByClass(self:GetOwner(), L_Enum.Name_BuffPath.Buff07_2) == 0
+    return true
 end
 
 return WP_02
